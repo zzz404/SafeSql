@@ -12,6 +12,11 @@ public class OpCondition extends Condition {
         this.value = value;
     }
 
+    public OpCondition(String field, String operator, Object value) {
+        this(operator, value);
+        this.field = field;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o.getClass() != this.getClass()) {

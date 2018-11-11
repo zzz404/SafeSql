@@ -14,6 +14,7 @@ public class SqlQuerier1<T> extends SqlQuerier {
     private Class<T> clazz;
     List<String> fields = Collections.emptyList();
     List<Condition> conditions = Collections.emptyList();
+    List<OrderBy> orderBys = Collections.emptyList();
 
     public SqlQuerier1(Class<T> clazz) {
         this.clazz = clazz;
@@ -39,20 +40,24 @@ public class SqlQuerier1<T> extends SqlQuerier {
     }
 
     public SqlQuerier1<T> where(Consumer<T> consumer) {
-        ConditionBuilder builder = new ConditionBuilder();
-        ConditionBuilder.instance.set(builder);
+        QueryContext ctx = QueryContext.instance.get();
 
         GetterLogger<T> getterLogger = createGetterLogger();
         consumer.accept(getterLogger.mockedObject);
         List<String> fields = getterLogger.calledGetterProperties;
 
-        this.conditions = builder.buildConditions(fields);
-
-        ConditionBuilder.instance.set(null);
+        this.conditions = ctx.buildConditions(fields);
         return this;
     }
 
     public SqlQuerier1<T> orderBy(Consumer<T> consumer) {
+        QueryContext ctx = QueryContext.instance.get();
+        
+        GetterLogger<T> getterLogger = createGetterLogger();
+        consumer.accept(getterLogger.mockedObject);
+        List<String> fields = getterLogger.calledGetterProperties;
+        
+        this.orderBys = ctx.buildOrderBys(fields);
         return this;
     }
 

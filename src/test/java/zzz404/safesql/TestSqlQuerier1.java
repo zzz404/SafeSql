@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.commons.collections4.ListUtils;
 import org.junit.jupiter.api.Test;
 
-class TestSqlQuery1 {
+class TestSqlQuerier1 {
 
     @Test
     void test_select_withAssignedFields() {
@@ -97,4 +97,17 @@ class TestSqlQuery1 {
         assertEquals(new OpCondition("id", "<", 2), conds.get(0));
         assertEquals(new OpCondition("id", ">", 10), conds.get(1));
     }
+
+    @Test
+    void test_orderBy() {
+        SqlQuerier1<Document> q = from(Document.class).orderBy(d -> {
+            asc(d.getId());
+            desc(d.getTitle());
+        }).build();
+        
+        assertEquals(2, q.orderBys.size());
+        assertEquals(new OrderBy("id", true), q.orderBys.get(0));
+        assertEquals(new OrderBy("title", false), q.orderBys.get(1));
+    }
+
 }

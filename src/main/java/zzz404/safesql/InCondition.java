@@ -13,8 +13,8 @@ public class InCondition extends Condition {
     }
 
     public InCondition(String field, Object... values) {
-        super(field);
-        this.values = values;
+        this(values);
+        this.field = field;
     }
 
     @Override

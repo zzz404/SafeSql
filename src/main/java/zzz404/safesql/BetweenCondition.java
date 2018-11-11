@@ -13,9 +13,8 @@ public class BetweenCondition extends Condition {
     }
 
     public BetweenCondition(String field, Object value1, Object value2) {
-        super(field);
-        this.value1 = value1;
-        this.value2 = value2;
+        this(value1, value2);
+        this.field = field;
     }
 
     @Override
