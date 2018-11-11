@@ -8,26 +8,29 @@ public class Sql {
 
     public static <T> SqlQuerier1<T> from(Class<T> class1) {
         QueryContext ctx = new QueryContext();
-        QueryContext.instance.set(ctx);
+        QueryContext.INSTANCE.set(ctx);
 
         return new SqlQuerier1<>(class1);
     }
 
     @SafeVarargs
     public static <T> Condition cond(T field, String operator, T... values) {
-        QueryContext ctx = QueryContext.instance.get();
-        Condition cond = Condition.of(operator, values);
-        ctx.addCondition(cond);
+        QueryContext ctx = QueryContext.INSTANCE.get();
+        Condition cond = Condition.of(ctx.takeColumnName(), operator, values);
+        ctx.conditions.add(cond);
         return cond;
     }
 
     public static void asc(Object o) {
-        QueryContext ctx = QueryContext.instance.get();
-        ctx.addOrderBy(new OrderBy(true));
+        addOrderByToContext(true);
     }
 
+    private static void addOrderByToContext(boolean isAsc) {
+        QueryContext ctx = QueryContext.INSTANCE.get();
+        ctx.orderBys.add(new OrderBy(ctx.takeColumnName(), isAsc));
+    }
+    
     public static void desc(Object o) {
-        QueryContext ctx = QueryContext.instance.get();
-        ctx.addOrderBy(new OrderBy(false));
+        addOrderByToContext(false);
     }
 }

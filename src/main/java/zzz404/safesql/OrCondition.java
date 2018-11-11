@@ -9,11 +9,13 @@ public class OrCondition extends Condition {
     public List<Condition> subConditions;
 
     protected OrCondition(Condition... subConditions) {
+        super(null);
         this.subConditions = Arrays.asList(subConditions);
     }
 
     public <T> Condition or(T field, String operator, Object... values) {
-        Condition cond = Condition.of(operator, values);
+        QueryContext ctx = QueryContext.INSTANCE.get();
+        Condition cond = Condition.of(ctx.takeColumnName(), operator, values);
         subConditions.add(cond);
         return this;
     }

@@ -28,7 +28,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_select_notCalled_meansAllFields() {
-        SqlQuerier1<Document> q = from(Document.class).build();
+        SqlQuerier1<Document> q = from(Document.class);
 
         assertEquals(1, q.fields.size());
         assertEquals("*", q.fields.get(0));
@@ -37,7 +37,6 @@ class TestSqlQuerier1 {
     @Test
     void test_where_notCalled_meansNoCondition() {
         SqlQuerier1<Document> q = from(Document.class);
-        q.build();
         assertEquals(0, q.conditions.size());
     }
 
@@ -45,7 +44,7 @@ class TestSqlQuerier1 {
     void test_where_commonOperator() {
         SqlQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), "=", 3);
-        }).build();
+        });
 
         assertEquals(1, q.conditions.size());
         assertEquals(new OpCondition("id", "=", 3), q.conditions.get(0));
@@ -55,7 +54,7 @@ class TestSqlQuerier1 {
     void test_where_between() {
         SqlQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), BETWEEN, 1, 3);
-        }).build();
+        });
 
         assertEquals(1, q.conditions.size());
         assertEquals(new BetweenCondition("id", 1, 3), q.conditions.get(0));
@@ -65,7 +64,7 @@ class TestSqlQuerier1 {
     void test_where_in() {
         SqlQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), IN, 3, 1, 4, 1, 5, 9, 2, 6, 5, 3);
-        }).build();
+        });
 
         assertEquals(1, q.conditions.size());
         assertEquals(new InCondition("id", 3, 1, 4, 1, 5, 9, 2, 6, 5, 3),
@@ -77,7 +76,7 @@ class TestSqlQuerier1 {
         SqlQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), ">", 3);
             cond(d.getTitle(), LIKE, "abc%");
-        }).build();
+        });
         assertEquals(2, q.conditions.size());
         assertEquals(new OpCondition("id", ">", 3), q.conditions.get(0));
         assertEquals(new OpCondition("title", "like", "abc%"),
@@ -88,7 +87,7 @@ class TestSqlQuerier1 {
     void test_where_or() {
         SqlQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), "<", 2).or(d.getId(), ">", 10);
-        }).build();
+        });
         assertEquals(1, q.conditions.size());
         assertTrue(q.conditions.get(0) instanceof OrCondition);
 
@@ -105,8 +104,8 @@ class TestSqlQuerier1 {
         SqlQuerier1<Document> q = from(Document.class).orderBy(d -> {
             asc(d.getId());
             desc(d.getTitle());
-        }).build();
-        
+        });
+
         assertEquals(2, q.orderBys.size());
         assertEquals(new OrderBy("id", true), q.orderBys.get(0));
         assertEquals(new OrderBy("title", false), q.orderBys.get(1));

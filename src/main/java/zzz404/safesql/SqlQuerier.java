@@ -1,11 +1,18 @@
 package zzz404.safesql;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class SqlQuerier {
 
-    private Integer offset;
-    private Integer limit;
+    protected List<String> fields = Collections.emptyList();
+    protected List<Condition> conditions = Collections.emptyList();
+    protected List<OrderBy> orderBys = Collections.emptyList();
+
+    protected Integer offset;
+    protected Integer limit;
 
     public SqlQuerier offset(int offset) {
         this.offset = offset;
@@ -18,10 +25,9 @@ public abstract class SqlQuerier {
     }
 
     public final <E> Stream<E> queryStream() {
-        build();
         return null;
     }
 
-    protected abstract SqlQuerier build();
+    protected abstract String buildSql();
 
 }

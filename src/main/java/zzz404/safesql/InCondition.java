@@ -8,13 +8,9 @@ public class InCondition extends Condition {
 
     private Object[] values;
 
-    public InCondition(Object... values) {
+    public InCondition(String columnName, Object... values) {
+        super(columnName);
         this.values = values;
-    }
-
-    public InCondition(String field, Object... values) {
-        this(values);
-        this.field = field;
     }
 
     @Override
@@ -23,13 +19,13 @@ public class InCondition extends Condition {
             return false;
         }
         InCondition that = (InCondition) o;
-        return new EqualsBuilder().append(this.field, that.field)
+        return new EqualsBuilder().append(this.columnName, that.columnName)
                 .append(this.values, that.values).isEquals();
     }
 
     @Override
     public String toString() {
-        return "InCondition [field=" + field + ", values="
+        return "InCondition [field=" + columnName + ", values="
                 + Arrays.toString(values) + "]";
     }
 

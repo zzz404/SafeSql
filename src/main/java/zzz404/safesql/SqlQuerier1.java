@@ -2,62 +2,52 @@ package zzz404.safesql;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
 
 import net.sf.cglib.proxy.Enhancer;
 
 public class SqlQuerier1<T> extends SqlQuerier {
 
     private Class<T> clazz;
-    List<String> fields = Collections.emptyList();
-    List<Condition> conditions = Collections.emptyList();
-    List<OrderBy> orderBys = Collections.emptyList();
 
     public SqlQuerier1(Class<T> clazz) {
         this.clazz = clazz;
+        this.fields = Arrays.asList("*");
     }
 
-    private GetterLogger<T> createGetterLogger() {
+    private T createMockedObject() {
         Enhancer en = new Enhancer();
         en.setSuperclass(clazz);
         GetterLogger<T> getterLogger = new GetterLogger<>(clazz);
         en.setCallback(getterLogger);
+        
         @SuppressWarnings("unchecked")
         T mockedObject = (T) en.create();
-        getterLogger.mockedObject = mockedObject;
-        return getterLogger;
+        return mockedObject;
     }
 
     public SqlQuerier1<T> select(Consumer<T> consumer) {
-        GetterLogger<T> getterLogger = createGetterLogger();
-        consumer.accept(getterLogger.mockedObject);
-        this.fields = new ArrayList<>(
-                new LinkedHashSet<>(getterLogger.calledGetterProperties));
+        T mockedObject = createMockedObject();
+        consumer.accept(mockedObject);
+        this.fields = new ArrayList<>(new LinkedHashSet<>(
+                QueryContext.INSTANCE.get().takeAllColumnNames()));
         return this;
     }
 
     public SqlQuerier1<T> where(Consumer<T> consumer) {
-        QueryContext ctx = QueryContext.instance.get();
-
-        GetterLogger<T> getterLogger = createGetterLogger();
-        consumer.accept(getterLogger.mockedObject);
-        List<String> fields = getterLogger.calledGetterProperties;
-
-        this.conditions = ctx.buildConditions(fields);
+        T mockedObject = createMockedObject();
+        consumer.accept(mockedObject);
+        this.conditions = QueryContext.INSTANCE.get().conditions;
         return this;
     }
 
     public SqlQuerier1<T> orderBy(Consumer<T> consumer) {
-        QueryContext ctx = QueryContext.instance.get();
-        
-        GetterLogger<T> getterLogger = createGetterLogger();
-        consumer.accept(getterLogger.mockedObject);
-        List<String> fields = getterLogger.calledGetterProperties;
-        
-        this.orderBys = ctx.buildOrderBys(fields);
+        T mockedObject = createMockedObject();
+        consumer.accept(mockedObject);
+        this.orderBys = QueryContext.INSTANCE.get().orderBys;
         return this;
     }
 
@@ -73,12 +63,8 @@ public class SqlQuerier1<T> extends SqlQuerier {
         return this;
     }
 
-    @Override
-    protected SqlQuerier1<T> build() {
-        if (fields.isEmpty()) {
-            fields = Arrays.asList("*");
-        }
-        return this;
+    public String buildSql() {
+        String sql = "SELECT " + StringUtils.join(fields, ", ") + " FROM ";
+        return "";
     }
-
 }

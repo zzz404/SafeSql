@@ -6,34 +6,38 @@ import java.util.Iterator;
 
 abstract class Condition {
 
-    protected String field;
+    protected String columnName;
 
-    public static Condition of(String operator, Object... values) {
+    protected Condition(String columnName) {
+        this.columnName = columnName;
+    }
+
+    public static <T> Condition of(String columnName, String operator,
+            Object... values) {
         if (operator.equals(BETWEEN)) {
             assert values.length == 2;
-            return new BetweenCondition(values[0], values[1]);
+            return new BetweenCondition(columnName, values[0], values[1]);
         }
         else if (operator.equals(IN)) {
-            return new InCondition(values);
+            return new InCondition(columnName, values);
         }
         else {
             assert values.length == 1;
-            return new OpCondition(operator, values[0]);
+            return new OpCondition(columnName, operator, values[0]);
         }
     }
 
     public <T> Condition or(T field, String operator, Object... values) {
-        QueryContext builder = QueryContext.instance.get();
-
-        Condition cond = Condition.of(operator, values);
+        QueryContext ctx = QueryContext.INSTANCE.get();
+        Condition cond = Condition.of(ctx.takeColumnName(), operator, values);
         cond = new OrCondition(this, cond);
 
-        builder.replaceLastCondition(cond);
+        ctx.replaceLastCondition(cond);
         return cond;
     }
 
     protected void fillField(Iterator<String> field_iter) {
-        this.field = field_iter.next();
+        this.columnName = field_iter.next();
     }
 
 }

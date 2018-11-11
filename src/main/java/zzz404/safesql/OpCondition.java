@@ -7,14 +7,10 @@ public class OpCondition extends Condition {
     private String operator;
     private Object value;
 
-    public OpCondition(String operator, Object value) {
+    public OpCondition(String columnName, String operator, Object value) {
+        super(columnName);
         this.operator = operator;
         this.value = value;
-    }
-
-    public OpCondition(String field, String operator, Object value) {
-        this(operator, value);
-        this.field = field;
     }
 
     @Override
@@ -23,14 +19,14 @@ public class OpCondition extends Condition {
             return false;
         }
         OpCondition that = (OpCondition) o;
-        return new EqualsBuilder().append(this.field, that.field)
+        return new EqualsBuilder().append(this.columnName, that.columnName)
                 .append(this.operator, that.operator)
                 .append(this.value, that.value).isEquals();
     }
 
     @Override
     public String toString() {
-        return "OpCondition [field=" + field + ", operator=" + operator
+        return "OpCondition [field=" + columnName + ", operator=" + operator
                 + ", value=" + value + "]";
     }
 

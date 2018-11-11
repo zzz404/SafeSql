@@ -1,44 +1,34 @@
 package zzz404.safesql;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 class QueryContext {
 
-    static ThreadLocal<QueryContext> instance = new ThreadLocal<>();
+    static final ThreadLocal<QueryContext> INSTANCE = new ThreadLocal<>();
 
-    private ArrayList<Condition> conditions = new ArrayList<>();
-    private List<OrderBy> orderBys = new ArrayList<>();
+    private Queue<String> columnNames = new LinkedList<>();
+    ArrayList<Condition> conditions = new ArrayList<>();
+    List<OrderBy> orderBys = new ArrayList<>();
 
-    public void addCondition(Condition cond) {
-        conditions.add(cond);
+    public void addColumnName(String columnName) {
+        columnNames.offer(columnName);
     }
 
-    public List<Condition> buildConditions(List<String> fields) {
-        Iterator<String> field_iter = fields.iterator();
+    public String takeColumnName() {
+        return columnNames.poll();
+    }
 
-        for (Condition cond : conditions) {
-            cond.fillField(field_iter);
-        }
-        return conditions;
+    public List<String> takeAllColumnNames() {
+        ArrayList<String> result = new ArrayList<>(columnNames);
+        columnNames.clear();
+        return result;
     }
 
     public void replaceLastCondition(Condition cond) {
         conditions.set(conditions.size() - 1, cond);
-    }
-
-    public void addOrderBy(OrderBy orderBy) {
-        orderBys.add(orderBy);
-    }
-
-    public List<OrderBy> buildOrderBys(List<String> fields) {
-        Iterator<String> field_iter = fields.iterator();
-
-        for (OrderBy orderBy : orderBys) {
-            orderBy.field = field_iter.next();
-        }
-        return orderBys;
     }
 
 }
