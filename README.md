@@ -13,3 +13,11 @@ Java
             asc(u.getName());
             asc(d.getTitle());
         }).offset(20).limit(10).queryStream();
+
+means
+
+SELECT d.id, d.title, u.name
+FROM Document d, User u
+WHERE d.ownerId=u.id AND (d.id IN (1,3,5) OR d.title LIKE 'abc%')
+ORDER BY u.name, d.title
+LIMIT 20, 10
