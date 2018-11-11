@@ -13,7 +13,7 @@ class GetterLogger<T> implements MethodInterceptor {
     T mockedObject;
 
     private ClassAnalyzer<T> classAnalyzer;
-    
+
     public GetterLogger(Class<T> clazz) {
         this.classAnalyzer = ClassAnalyzer.get(clazz);
     }
@@ -30,12 +30,7 @@ class GetterLogger<T> implements MethodInterceptor {
             return proxy.invokeSuper(obj, args);
         }
         catch (Throwable e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            }
-            else {
-                throw new RuntimeException(e);
-            }
+            throw Utils.throwRuntime(e);
         }
     }
 

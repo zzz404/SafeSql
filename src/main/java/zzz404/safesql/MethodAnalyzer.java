@@ -7,10 +7,16 @@ class MethodAnalyzer {
     private Method method;
     private boolean isGetter;
     private String propertyName;
+    private Class<?> returnType;
 
     public MethodAnalyzer(Method method) {
         this.method = method;
+        this.returnType = method.getReturnType();
         this.isGetter = analyze_isGetter();
+    }
+
+    public Class<?> getReturnType() {
+        return returnType;
     }
 
     public boolean isGetter() {
@@ -21,7 +27,7 @@ class MethodAnalyzer {
         if (hasParameters() || hasNoReturnType()) {
             return false;
         }
-        if (method.getReturnType() == boolean.class) {
+        if (returnType == boolean.class) {
             return matchGetterName_and_evaluatePropertyName("is");
         }
         else {
@@ -46,7 +52,7 @@ class MethodAnalyzer {
     }
 
     private boolean hasNoReturnType() {
-        return method.getReturnType() == void.class;
+        return returnType == void.class;
     }
 
     private boolean hasParameters() {

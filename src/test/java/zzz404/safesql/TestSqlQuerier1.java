@@ -10,6 +10,8 @@ import java.util.List;
 import org.apache.commons.collections4.ListUtils;
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.helper.Document;
+
 class TestSqlQuerier1 {
 
     @Test

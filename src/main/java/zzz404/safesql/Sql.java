@@ -9,7 +9,7 @@ public class Sql {
     public static <T> SqlQuerier1<T> from(Class<T> class1) {
         QueryContext ctx = new QueryContext();
         QueryContext.instance.set(ctx);
-        
+
         return new SqlQuerier1<>(class1);
     }
 

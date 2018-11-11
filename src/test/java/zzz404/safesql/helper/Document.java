@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.helper;
 
 public class Document {
     private Integer id;
