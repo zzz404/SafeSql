@@ -20,7 +20,7 @@ class GetterLogger<T> implements MethodInterceptor {
         MethodAnalyzer m = classAnalyzer.getMethodAnalyzer(method);
         if (m.isGetter()) {
             QueryContext ctx = QueryContext.INSTANCE.get();
-            ctx.addColumnName(m.getPropertyName());
+            ctx.addColumnName(m.getColumnName());
         }
         try {
             return proxy.invokeSuper(obj, args);

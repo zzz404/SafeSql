@@ -24,7 +24,7 @@ public class ClassAnalyzer<T> {
         }
         return analyzer;
     }
-    
+
     public MethodAnalyzer getMethodAnalyzer(Method method) {
         MethodAnalyzer analyzer = methodMap.get(method);
         if (analyzer == null) {
@@ -33,4 +33,10 @@ public class ClassAnalyzer<T> {
         }
         return analyzer;
     }
+
+    public String getTableName() {
+        // TODO support JPA annotation
+        return clazz.getSimpleName();
+    }
+
 }

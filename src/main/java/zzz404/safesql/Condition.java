@@ -2,7 +2,7 @@ package zzz404.safesql;
 
 import static zzz404.safesql.Sql.*;
 
-import java.util.Iterator;
+import java.sql.PreparedStatement;
 
 abstract class Condition {
 
@@ -36,8 +36,8 @@ abstract class Condition {
         return cond;
     }
 
-    protected void fillField(Iterator<String> field_iter) {
-        this.columnName = field_iter.next();
-    }
+    public abstract String toClause();
 
+    protected abstract int setValueToPstmt_and_returnNextIndex(int i, PreparedStatement pstmt);
+    
 }

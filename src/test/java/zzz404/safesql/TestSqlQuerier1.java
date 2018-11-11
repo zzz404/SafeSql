@@ -23,15 +23,15 @@ class TestSqlQuerier1 {
             d.setTitle("zzz");
         });
         List<String> fields = Arrays.asList("id", "title");
-        assertTrue(ListUtils.isEqualList(fields, q.fields));
+        assertTrue(ListUtils.isEqualList(fields, q.columnNames));
     }
 
     @Test
     void test_select_notCalled_meansAllFields() {
         SqlQuerier1<Document> q = from(Document.class);
 
-        assertEquals(1, q.fields.size());
-        assertEquals("*", q.fields.get(0));
+        assertEquals(1, q.columnNames.size());
+        assertEquals("*", q.columnNames.get(0));
     }
 
     @Test

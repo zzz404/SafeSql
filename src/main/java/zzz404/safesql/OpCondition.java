@@ -1,5 +1,8 @@
 package zzz404.safesql;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 public class OpCondition extends Condition {
@@ -30,4 +33,20 @@ public class OpCondition extends Condition {
                 + ", value=" + value + "]";
     }
 
+    @Override
+    public String toClause() {
+        return columnName + " " + operator + " ?";
+    }
+
+    @Override
+    protected int setValueToPstmt_and_returnNextIndex(int i,
+            PreparedStatement pstmt) {
+        try {
+            pstmt.setObject(i++, value);
+        }
+        catch (SQLException e) {
+            throw Utils.throwRuntime(e);
+        }
+        return i;
+    }
 }

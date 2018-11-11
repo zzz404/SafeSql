@@ -1,8 +1,9 @@
 package zzz404.safesql;
 
+import java.sql.PreparedStatement;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OrCondition extends Condition {
 
@@ -20,9 +21,19 @@ public class OrCondition extends Condition {
         return this;
     }
 
-    protected void fillField(Iterator<String> field_iter) {
-        for (Condition cond : subConditions) {
-            cond.fillField(field_iter);
-        }
+    @Override
+    public String toClause() {
+        return "(" + subConditions.stream().map(c -> c.toClause())
+                .collect(Collectors.joining(" OR ")) + ")";
     }
+    
+    @Override
+    protected int setValueToPstmt_and_returnNextIndex(int i,
+            PreparedStatement pstmt) {
+        for (Condition cond : subConditions) {
+            i = cond.setValueToPstmt_and_returnNextIndex(i, pstmt);
+        }
+        return i;
+    }
+
 }

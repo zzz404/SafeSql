@@ -6,7 +6,7 @@ class MethodAnalyzer {
 
     private Method method;
     private boolean isGetter;
-    private String propertyName;
+    private String columnName;
     private Class<?> returnType;
 
     public MethodAnalyzer(Method method) {
@@ -28,14 +28,14 @@ class MethodAnalyzer {
             return false;
         }
         if (returnType == boolean.class) {
-            return matchGetterName_and_evaluatePropertyName("is");
+            return matchGetterName_and_evaluateColumnName("is");
         }
         else {
-            return matchGetterName_and_evaluatePropertyName("get");
+            return matchGetterName_and_evaluateColumnName("get");
         }
     }
 
-    private boolean matchGetterName_and_evaluatePropertyName(String prefix) {
+    private boolean matchGetterName_and_evaluateColumnName(String prefix) {
         String methodName = method.getName();
         if (!methodName.startsWith(prefix)
                 || methodName.length() <= prefix.length()) {
@@ -45,7 +45,8 @@ class MethodAnalyzer {
 
         boolean isGetter = Character.isUpperCase(firstLetterAfterPrefix);
         if (isGetter) {
-            this.propertyName = Character.toLowerCase(firstLetterAfterPrefix)
+            // TODO support JPA annotation
+            this.columnName = Character.toLowerCase(firstLetterAfterPrefix)
                     + methodName.substring(prefix.length() + 1);
         }
         return isGetter;
@@ -59,8 +60,8 @@ class MethodAnalyzer {
         return method.getParameterTypes().length > 0;
     }
 
-    public String getPropertyName() {
-        return propertyName;
+    public String getColumnName() {
+        return columnName;
     }
 
 }

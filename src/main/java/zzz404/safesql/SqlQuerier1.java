@@ -3,7 +3,9 @@ package zzz404.safesql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,7 +17,7 @@ public class SqlQuerier1<T> extends SqlQuerier {
 
     public SqlQuerier1(Class<T> clazz) {
         this.clazz = clazz;
-        this.fields = Arrays.asList("*");
+        this.columnNames = Arrays.asList("*");
     }
 
     private T createMockedObject() {
@@ -23,7 +25,7 @@ public class SqlQuerier1<T> extends SqlQuerier {
         en.setSuperclass(clazz);
         GetterLogger<T> getterLogger = new GetterLogger<>(clazz);
         en.setCallback(getterLogger);
-        
+
         @SuppressWarnings("unchecked")
         T mockedObject = (T) en.create();
         return mockedObject;
@@ -32,7 +34,7 @@ public class SqlQuerier1<T> extends SqlQuerier {
     public SqlQuerier1<T> select(Consumer<T> consumer) {
         T mockedObject = createMockedObject();
         consumer.accept(mockedObject);
-        this.fields = new ArrayList<>(new LinkedHashSet<>(
+        this.columnNames = new ArrayList<>(new LinkedHashSet<>(
                 QueryContext.INSTANCE.get().takeAllColumnNames()));
         return this;
     }
@@ -64,7 +66,38 @@ public class SqlQuerier1<T> extends SqlQuerier {
     }
 
     public String buildSql() {
-        String sql = "SELECT " + StringUtils.join(fields, ", ") + " FROM ";
-        return "";
+        String tableName = ClassAnalyzer.get(clazz).getTableName();
+        String sql = "SELECT " + StringUtils.join(columnNames, ", ") + " FROM "
+                + tableName;
+        if (!this.conditions.isEmpty()) {
+            sql += " WHERE " + this.conditions.stream().map(Condition::toClause)
+                    .collect(Collectors.joining(" AND "));
+        }
+        if (!this.orderBys.isEmpty()) {
+            sql += " ORDER BY " + this.orderBys.stream().map(OrderBy::toClause)
+                    .collect(Collectors.joining(", "));
+        }
+        return sql;
+    }
+
+    public String buildSql_for_queryCount() {
+        String tableName = ClassAnalyzer.get(clazz).getTableName();
+        String sql = "SELECT count(*) FROM "
+                + tableName;
+        if (!this.conditions.isEmpty()) {
+            sql += " WHERE " + this.conditions.stream().map(Condition::toClause)
+                    .collect(Collectors.joining(" AND "));
+        }
+        return sql;
+    }
+
+    @Override
+    public Optional<T> queryOne() {
+        return queryOne(clazz);
+    }
+
+    @Override
+    public Page<T> queryPage() {
+        return queryPage(clazz);
     }
 }

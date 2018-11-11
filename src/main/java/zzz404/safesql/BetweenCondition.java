@@ -1,5 +1,8 @@
 package zzz404.safesql;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 public class BetweenCondition extends Condition {
@@ -28,6 +31,24 @@ public class BetweenCondition extends Condition {
     public String toString() {
         return "BetweenCondition [field=" + columnName + ", value1=" + value1
                 + ", value2=" + value2 + "]";
+    }
+
+    @Override
+    public String toClause() {
+        return columnName + " BETWEEN ? AND ?";
+    }
+
+    @Override
+    protected int setValueToPstmt_and_returnNextIndex(int i,
+            PreparedStatement pstmt) {
+        try {
+            pstmt.setObject(i++, value1);
+            pstmt.setObject(i++, value2);
+        }
+        catch (SQLException e) {
+            throw Utils.throwRuntime(e);
+        }
+        return i;
     }
 
 }
