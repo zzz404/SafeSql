@@ -5,11 +5,13 @@ public final class Utils {
     }
 
     public static RuntimeException throwRuntime(Throwable e) {
-        if (e instanceof RuntimeException) {
-            throw (RuntimeException) e;
-        }
-        else {
-            throw new RuntimeException(e);
-        }
+        Utils.<RuntimeException> _throwRuntime(e);
+        return null;
     }
+
+    @SuppressWarnings("unchecked")
+    private static <E extends Exception> void _throwRuntime(Throwable e) throws E {
+        throw (E)e;
+    }
+
 }

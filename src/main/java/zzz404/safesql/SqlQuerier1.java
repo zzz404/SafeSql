@@ -14,9 +14,12 @@ import net.sf.cglib.proxy.Enhancer;
 public class SqlQuerier1<T> extends SqlQuerier {
 
     private Class<T> clazz;
+    private T mockedObject;
 
     public SqlQuerier1(Class<T> clazz) {
         this.clazz = clazz;
+        this.mockedObject = createMockedObject();
+        
         this.columnNames = Arrays.asList("*");
     }
 
@@ -32,7 +35,6 @@ public class SqlQuerier1<T> extends SqlQuerier {
     }
 
     public SqlQuerier1<T> select(Consumer<T> consumer) {
-        T mockedObject = createMockedObject();
         consumer.accept(mockedObject);
         this.columnNames = new ArrayList<>(new LinkedHashSet<>(
                 QueryContext.INSTANCE.get().takeAllColumnNames()));
@@ -40,14 +42,12 @@ public class SqlQuerier1<T> extends SqlQuerier {
     }
 
     public SqlQuerier1<T> where(Consumer<T> consumer) {
-        T mockedObject = createMockedObject();
         consumer.accept(mockedObject);
         this.conditions = QueryContext.INSTANCE.get().conditions;
         return this;
     }
 
     public SqlQuerier1<T> orderBy(Consumer<T> consumer) {
-        T mockedObject = createMockedObject();
         consumer.accept(mockedObject);
         this.orderBys = QueryContext.INSTANCE.get().orderBys;
         return this;

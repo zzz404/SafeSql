@@ -4,6 +4,8 @@ import static zzz404.safesql.Sql.*;
 
 import java.sql.PreparedStatement;
 
+import org.apache.commons.lang3.Validate;
+
 abstract class Condition {
 
     protected String columnName;
@@ -15,14 +17,14 @@ abstract class Condition {
     public static <T> Condition of(String columnName, String operator,
             Object... values) {
         if (operator.equals(BETWEEN)) {
-            assert values.length == 2;
+            Validate.isTrue(values.length == 2);
             return new BetweenCondition(columnName, values[0], values[1]);
         }
         else if (operator.equals(IN)) {
             return new InCondition(columnName, values);
         }
         else {
-            assert values.length == 1;
+            Validate.isTrue(values.length == 1);
             return new OpCondition(columnName, operator, values[0]);
         }
     }

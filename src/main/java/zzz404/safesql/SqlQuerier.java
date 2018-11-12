@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import zzz404.safesql.sql.ResultSetAnalyzer;
+
 public abstract class SqlQuerier {
 
     protected List<String> columnNames = Collections.emptyList();
