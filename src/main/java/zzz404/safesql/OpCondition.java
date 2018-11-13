@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-public class OpCondition extends Condition {
+public class OpCondition extends Condition implements EqualsSupport {
 
     private String operator;
     private Object value;
@@ -28,6 +28,11 @@ public class OpCondition extends Condition {
     }
 
     @Override
+    public Object[] equalsByValues() {
+        return new Object[] { columnName, operator, value };
+    }
+
+    @Override
     public String toString() {
         return "OpCondition [field=" + columnName + ", operator=" + operator
                 + ", value=" + value + "]";
@@ -39,7 +44,7 @@ public class OpCondition extends Condition {
     }
 
     @Override
-    protected int setValueToPstmt_and_returnNextIndex(int i,
+    protected int do_setValueToPstmt_and_returnNextIndex(int i,
             PreparedStatement pstmt) {
         try {
             pstmt.setObject(i++, value);
@@ -49,4 +54,5 @@ public class OpCondition extends Condition {
         }
         return i;
     }
+
 }

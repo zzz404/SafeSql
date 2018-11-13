@@ -10,8 +10,9 @@ public final class Utils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <E extends Exception> void _throwRuntime(Throwable e) throws E {
-        throw (E)e;
+    private static <E extends Exception> void _throwRuntime(Throwable e)
+            throws E {
+        throw (E) e;
     }
 
 }

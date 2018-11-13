@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class TestMethodAnalyzer {
 
-    @ParameterizedTest
+    // @ParameterizedTest
     @ValueSource(strings = { "title", "gettitle", "get", "getTitle_returnVoid",
             "getTitle_withParameter", "isTitle",
             "isEnabled_returnObjectBoolean",
@@ -19,7 +19,7 @@ class TestMethodAnalyzer {
         assertFalse(new MethodAnalyzer(method).isGetter());
     }
 
-    @ParameterizedTest
+    // @ParameterizedTest
     @ValueSource(strings = { "getTitle", "isEnabled", "getDisabled" })
     void test_isGetter_return_true(String methodName) {
         Method method = getMyMethod(methodName);

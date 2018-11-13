@@ -1,5 +1,6 @@
 package zzz404.safesql;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,4 +40,8 @@ public class ClassAnalyzer<T> {
         return clazz.getSimpleName();
     }
 
+    public static Field[] getAllField(Class<?> clazz) {
+        Field[] fields = clazz.getDeclaredFields();
+        return fields;
+    }
 }

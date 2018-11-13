@@ -47,7 +47,7 @@ public class InCondition extends Condition {
     }
 
     @Override
-    protected int setValueToPstmt_and_returnNextIndex(int i,
+    protected int do_setValueToPstmt_and_returnNextIndex(int i,
             PreparedStatement pstmt) {
         try {
             for (Object value : values) {

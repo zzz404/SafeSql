@@ -1,8 +1,6 @@
 package zzz404.safesql;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-
-public final class OrderBy {
+public final class OrderBy implements EqualsSupport {
     public String field;
     public boolean isAsc;
 
@@ -25,13 +23,8 @@ public final class OrderBy {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o.getClass() != this.getClass()) {
-            return false;
-        }
-        OrderBy that = (OrderBy) o;
-        return new EqualsBuilder().append(this.field, that.field)
-                .append(this.isAsc, that.isAsc).isEquals();
+    public Object[] equalsByValues() {
+        return new Object[] { field, isAsc };
     }
 
 }

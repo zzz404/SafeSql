@@ -22,31 +22,13 @@ class TestBetweenCondition {
         BetweenCondition cond = new BetweenCondition("zzz", 123, 456);
         PreparedStatement pstmt = mock(PreparedStatement.class);
 
-        int nextIndex = cond.setValueToPstmt_and_returnNextIndex(1, pstmt);
+        int nextIndex = cond.do_setValueToPstmt_and_returnNextIndex(1, pstmt);
         assertEquals(3, nextIndex);
 
         InOrder inOrder = inOrder(pstmt);
 
         inOrder.verify(pstmt, times(1)).setObject(1, 123);
         inOrder.verify(pstmt, times(1)).setObject(2, 456);
-    }
-
-    @SuppressWarnings("unlikely-arg-type")
-    @Test
-    void test_nothing_justForCoverage() throws SQLException {
-        BetweenCondition cond = new BetweenCondition("zzz", 123, 456);
-
-        cond.toString();
-
-        assertFalse(cond.equals(""));
-
-        PreparedStatement pstmt = mock(PreparedStatement.class);
-        
-        doThrow(SQLException.class).when(pstmt).setObject(any(), any());
-
-        assertThrows(SQLException.class,
-                () -> cond.setValueToPstmt_and_returnNextIndex(11, pstmt));
-
     }
 
 }
