@@ -3,7 +3,7 @@ package zzz404.safesql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class BetweenCondition extends Condition implements EqualsSupport {
+public class BetweenCondition extends Condition {
 
     private Object value1;
     private Object value2;
@@ -12,11 +12,6 @@ public class BetweenCondition extends Condition implements EqualsSupport {
         super(columnName);
         this.value1 = value1;
         this.value2 = value2;
-    }
-
-    @Override
-    public Object[] equalsByValues() {
-        return new Object[] { columnName, value1, value2 };
     }
 
     @Override
@@ -41,6 +36,12 @@ public class BetweenCondition extends Condition implements EqualsSupport {
             throw Utils.throwRuntime(e);
         }
         return i;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        return Utils.isEquals(this, that,
+                o -> new Object[] { o.columnName, o.value1, o.value2 });
     }
 
 }

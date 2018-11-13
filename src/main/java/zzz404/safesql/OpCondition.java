@@ -3,9 +3,7 @@ package zzz404.safesql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-
-public class OpCondition extends Condition implements EqualsSupport {
+public class OpCondition extends Condition {
 
     private String operator;
     private Object value;
@@ -17,19 +15,9 @@ public class OpCondition extends Condition implements EqualsSupport {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o.getClass() != this.getClass()) {
-            return false;
-        }
-        OpCondition that = (OpCondition) o;
-        return new EqualsBuilder().append(this.columnName, that.columnName)
-                .append(this.operator, that.operator)
-                .append(this.value, that.value).isEquals();
-    }
-
-    @Override
-    public Object[] equalsByValues() {
-        return new Object[] { columnName, operator, value };
+    public boolean equals(Object that) {
+        return Utils.isEquals(this, that,
+                o -> new Object[] { o.columnName, o.operator, o.value });
     }
 
     @Override

@@ -1,15 +1,11 @@
 package zzz404.safesql;
 
-public final class OrderBy implements EqualsSupport {
+public final class OrderBy {
     public String field;
     public boolean isAsc;
 
     public OrderBy(String field, boolean isAsc) {
         this.field = field;
-        this.isAsc = isAsc;
-    }
-
-    public OrderBy(boolean isAsc) {
         this.isAsc = isAsc;
     }
 
@@ -23,8 +19,9 @@ public final class OrderBy implements EqualsSupport {
     }
 
     @Override
-    public Object[] equalsByValues() {
-        return new Object[] { field, isAsc };
+    public boolean equals(Object that) {
+        return Utils.isEquals(this, that,
+                o -> new Object[] { o.field, o.isAsc });
     }
 
 }

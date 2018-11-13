@@ -36,4 +36,9 @@ public class OrCondition extends Condition {
         return i;
     }
 
+    @Override
+    public boolean equals(Object that) {
+        return Utils.isEquals(this, that, o -> subConditions.toArray());
+    }
+
 }

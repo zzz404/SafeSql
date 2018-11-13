@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TestMethodAnalyzer {
