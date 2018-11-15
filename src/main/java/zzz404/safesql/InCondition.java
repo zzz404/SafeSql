@@ -1,6 +1,5 @@
 package zzz404.safesql;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -36,8 +35,8 @@ public class InCondition extends Condition {
     }
 
     @Override
-    protected int do_setValueToPstmt_and_returnNextIndex(int i,
-            QuietPreparedStatement pstmt) throws SQLException {
+    protected int setValueToPstmt_and_returnNextIndex(int i,
+            QuietPreparedStatement pstmt) {
         for (Object value : values) {
             pstmt.setObject(i++, value);
         }

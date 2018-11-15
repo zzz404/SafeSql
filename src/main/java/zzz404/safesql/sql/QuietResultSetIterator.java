@@ -1,35 +1,27 @@
 package zzz404.safesql.sql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.CommonUtils;
-
-public class ResultSetIterator implements Iterator<ResultSet> {
-    private ResultSet rs;
+public class QuietResultSetIterator implements Iterator<QuietResultSet> {
+    private QuietResultSet rs;
     private int limit = -1;
 
     private boolean hasNext = true;
     private int count_of_dataInput = 0;
     private int count_of_dataOutput = 0;
 
-    public ResultSetIterator(ResultSet rs) {
+    public QuietResultSetIterator(QuietResultSet rs) {
         this(rs, null, null);
     }
 
-    public ResultSetIterator(ResultSet rs, Integer start, Integer limit) {
+    public QuietResultSetIterator(QuietResultSet rs, Integer start,
+            Integer limit) {
         this.rs = rs;
         if (start != null) {
-            try {
-                this.rs.absolute(start);
-            }
-            catch (SQLException e) {
-                throw CommonUtils.wrapToRuntime(e);
-            }
+            this.rs.absolute(start);
         }
         if (limit != null) {
             this.limit = limit;
@@ -51,12 +43,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
                 return true;
             }
             Validate.isTrue(count_of_dataInput == count_of_dataOutput);
-            try {
-                hasNext = rs.next();
-            }
-            catch (SQLException e) {
-                throw CommonUtils.wrapToRuntime(e);
-            }
+            hasNext = rs.next();
             if (hasNext) {
                 count_of_dataInput++;
             }
@@ -65,7 +52,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
     }
 
     @Override
-    public ResultSet next() {
+    public QuietResultSet next() {
         if (!hasNext) {
             throw new NoSuchElementException();
         }
@@ -79,12 +66,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
             if (limit >= 0 && count_of_dataOutput >= limit) {
                 throw new NoSuchElementException();
             }
-            try {
-                hasNext = rs.next();
-            }
-            catch (SQLException e) {
-                throw CommonUtils.wrapToRuntime(e);
-            }
+            hasNext = rs.next();
             if (!hasNext) {
                 throw new NoSuchElementException();
             }

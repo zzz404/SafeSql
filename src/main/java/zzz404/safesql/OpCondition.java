@@ -31,7 +31,7 @@ public class OpCondition extends Condition {
     }
 
     @Override
-    protected int do_setValueToPstmt_and_returnNextIndex(int i,
+    protected int setValueToPstmt_and_returnNextIndex(int i,
             QuietPreparedStatement pstmt) {
         pstmt.setObject(i++, value);
         return i;

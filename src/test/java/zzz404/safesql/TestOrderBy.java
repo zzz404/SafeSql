@@ -9,8 +9,13 @@ public class TestOrderBy {
     void test_toClause_asc() {
         OrderBy orderBy = new OrderBy("aa", true);
         assertEquals("aa ASC", orderBy.toClause());
-        
+
         orderBy = new OrderBy("bb", false);
         assertEquals("bb DESC", orderBy.toClause());
+    }
+
+    @Test
+    void coverRest() {
+        new OrderBy("", false).toString();
     }
 }

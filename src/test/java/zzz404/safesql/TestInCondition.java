@@ -25,12 +25,12 @@ class TestInCondition {
     }
 
     @Test
-    void test__do_setValueToPstmt_and_returnNextIndex() throws SQLException {
+    void test__setValueToPstmt_and_returnNextIndex() throws SQLException {
         InCondition cond = new InCondition("zzz", 1, 3, 7);
         QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
         InOrder inOrder = inOrder(pstmt);
 
-        int nextIndex = cond.do_setValueToPstmt_and_returnNextIndex(2, pstmt);
+        int nextIndex = cond.setValueToPstmt_and_returnNextIndex(2, pstmt);
         assertEquals(5, nextIndex);
 
         inOrder.verify(pstmt, times(1)).setObject(2, 1);
@@ -38,4 +38,8 @@ class TestInCondition {
         inOrder.verify(pstmt, times(1)).setObject(4, 7);
     }
 
+    @Test
+    void coverRest() {
+        new InCondition("", "", "").toString();
+    }
 }

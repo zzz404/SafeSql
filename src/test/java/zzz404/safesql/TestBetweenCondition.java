@@ -19,11 +19,11 @@ class TestBetweenCondition {
     }
 
     @Test
-    void test__do_setValueToPstmt_and_returnNextIndex() throws SQLException {
+    void test__setValueToPstmt_and_returnNextIndex() throws SQLException {
         BetweenCondition cond = new BetweenCondition("zzz", 123, 456);
         QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
 
-        int nextIndex = cond.do_setValueToPstmt_and_returnNextIndex(1, pstmt);
+        int nextIndex = cond.setValueToPstmt_and_returnNextIndex(1, pstmt);
         assertEquals(3, nextIndex);
 
         InOrder inOrder = inOrder(pstmt);
@@ -32,4 +32,8 @@ class TestBetweenCondition {
         inOrder.verify(pstmt, times(1)).setObject(2, 456);
     }
 
+    @Test
+    void coverRest() {
+        new BetweenCondition("", "", "").toString();
+    }
 }

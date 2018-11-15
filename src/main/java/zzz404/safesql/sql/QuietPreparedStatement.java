@@ -329,6 +329,7 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void setUnicodeStream(int parameterIndex, InputStream x,
             int length) {
         try {

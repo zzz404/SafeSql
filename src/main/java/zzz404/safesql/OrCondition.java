@@ -1,6 +1,5 @@
 package zzz404.safesql;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,10 +29,10 @@ public class OrCondition extends Condition {
     }
 
     @Override
-    protected int do_setValueToPstmt_and_returnNextIndex(int i,
-            QuietPreparedStatement pstmt) throws SQLException {
+    protected int setValueToPstmt_and_returnNextIndex(int i,
+            QuietPreparedStatement pstmt) {
         for (Condition cond : subConditions) {
-            i = cond.do_setValueToPstmt_and_returnNextIndex(i, pstmt);
+            i = cond.setValueToPstmt_and_returnNextIndex(i, pstmt);
         }
         return i;
     }

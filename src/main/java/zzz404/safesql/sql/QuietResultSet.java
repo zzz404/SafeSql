@@ -148,6 +148,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public BigDecimal getBigDecimal(int columnIndex, int scale) {
         try {
             return rs.getBigDecimal(columnIndex, scale);
@@ -202,6 +203,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public InputStream getUnicodeStream(int columnIndex) {
         try {
             return rs.getUnicodeStream(columnIndex);
@@ -292,6 +294,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public BigDecimal getBigDecimal(String columnLabel, int scale) {
         try {
             return rs.getBigDecimal(columnLabel, scale);
@@ -346,6 +349,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public InputStream getUnicodeStream(String columnLabel) {
         try {
             return rs.getUnicodeStream(columnLabel);

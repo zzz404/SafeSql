@@ -22,17 +22,22 @@ class TestOrCondition {
     }
 
     @Test
-    void test__do_setValueToPstmt_and_returnNextIndex() throws SQLException {
+    void test__setValueToPstmt_and_returnNextIndex() throws SQLException {
         OrCondition cond = new OrCondition(cond1, cond2);
 
         QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
         InOrder inOrder = inOrder(pstmt);
 
-        int nextIndex = cond.do_setValueToPstmt_and_returnNextIndex(1, pstmt);
+        int nextIndex = cond.setValueToPstmt_and_returnNextIndex(1, pstmt);
         assertEquals(3, nextIndex);
 
         inOrder.verify(pstmt, times(1)).setObject(1, 2);
         inOrder.verify(pstmt, times(1)).setObject(2, "4");
     }
 
+    @Test
+    void coverRest() {
+        new OrCondition(new OpCondition("", "", ""),
+                new OpCondition("", "", "")).toString();
+    }
 }

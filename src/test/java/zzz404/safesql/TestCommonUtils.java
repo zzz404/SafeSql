@@ -14,4 +14,8 @@ public class TestCommonUtils {
     void test_isEquals_noField_return_true() {
         assertTrue(CommonUtils.isEquals("", "", o -> null));
     }
+
+    void coverRest() {
+        CommonUtils.wrapToRuntime(new Exception());
+    }
 }

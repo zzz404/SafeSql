@@ -1,7 +1,5 @@
 package zzz404.safesql;
 
-import java.sql.SQLException;
-
 import zzz404.safesql.sql.QuietPreparedStatement;
 
 public class BetweenCondition extends Condition {
@@ -27,8 +25,8 @@ public class BetweenCondition extends Condition {
     }
 
     @Override
-    protected int do_setValueToPstmt_and_returnNextIndex(int i,
-            QuietPreparedStatement pstmt) throws SQLException {
+    protected int setValueToPstmt_and_returnNextIndex(int i,
+            QuietPreparedStatement pstmt) {
         pstmt.setObject(i++, value1);
         pstmt.setObject(i++, value2);
         return i;

@@ -27,4 +27,8 @@ class TestOpCondition {
         verify(pstmt, times(1)).setObject(11, 123);
     }
 
+    @Test
+    void coverRest() {
+        new OpCondition("", "", "").toString();
+    }
 }
