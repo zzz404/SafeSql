@@ -3,10 +3,11 @@ package zzz404.safesql;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.Test;
+
+import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestOpCondition {
 
@@ -17,9 +18,9 @@ class TestOpCondition {
     }
 
     @Test
-    void test__setValueToPstmt_and_returnNextIndex() throws SQLException {
+    void test__do_setValueToPstmt_and_returnNextIndex() throws SQLException {
         OpCondition cond = new OpCondition("zzz", "=", 123);
-        PreparedStatement pstmt = mock(PreparedStatement.class);
+        QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
 
         int nextIndex = cond.setValueToPstmt_and_returnNextIndex(11, pstmt);
         assertEquals(12, nextIndex);

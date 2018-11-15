@@ -1,7 +1,6 @@
 package zzz404.safesql;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import zzz404.safesql.sql.QuietConnection;
+import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.ResultSetAnalyzer;
 
 public abstract class SqlQuerier {
@@ -38,7 +39,7 @@ public abstract class SqlQuerier {
 
     protected abstract String buildSql_for_queryCount();
 
-    void setCondValueToPstmt(PreparedStatement pstmt) {
+    void setCondValueToPstmt(QuietPreparedStatement pstmt) {
         int i = 1;
         for (Condition cond : conditions) {
             i = cond.setValueToPstmt_and_returnNextIndex(i, pstmt);
@@ -49,8 +50,8 @@ public abstract class SqlQuerier {
 
     public <T> Optional<T> queryOne(Class<T> clazz) {
         String sql = buildSql();
-        Connection conn = ConnectionProvider.instance.getConnection();
-        try (PreparedStatement pstmt = prepareStatement(sql, conn)) {
+        QuietConnection conn = ConnectionProvider.instance.getQuietConnection();
+        try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondValueToPstmt(pstmt);
             ResultSet rs = pstmt.executeQuery();
             if (!rs.next()) {
@@ -62,11 +63,12 @@ public abstract class SqlQuerier {
             }
         }
         catch (Exception e) {
-            throw Utils.throwRuntime(e);
+            throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    private PreparedStatement prepareStatement(String sql, Connection conn) {
+    private QuietPreparedStatement prepareStatement(String sql,
+            QuietConnection conn) {
         try {
             if (offset > 0) {
                 return conn.prepareStatement(sql);
@@ -78,14 +80,14 @@ public abstract class SqlQuerier {
             }
         }
         catch (Exception e) {
-            throw Utils.throwRuntime(e);
+            throw CommonUtils.wrapToRuntime(e);
         }
     }
 
     public <T> List<T> queryList(Class<T> clazz) {
         String sql = buildSql();
-        Connection conn = ConnectionProvider.instance.getConnection();
-        try (PreparedStatement pstmt = prepareStatement(sql, conn)) {
+        QuietConnection conn = ConnectionProvider.instance.getQuietConnection();
+        try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondValueToPstmt(pstmt);
             ResultSet rs = pstmt.executeQuery();
             List<T> result = new ArrayList<>();
@@ -101,26 +103,26 @@ public abstract class SqlQuerier {
             return result;
         }
         catch (Exception e) {
-            throw Utils.throwRuntime(e);
+            throw CommonUtils.wrapToRuntime(e);
         }
     }
 
     public int queryCount() {
         String sql = buildSql_for_queryCount();
-        Connection conn = ConnectionProvider.instance.getConnection();
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        QuietConnection conn = ConnectionProvider.instance.getQuietConnection();
+        try (QuietPreparedStatement pstmt = conn.prepareStatement(sql)) {
             setCondValueToPstmt(pstmt);
             ResultSet rs = pstmt.executeQuery();
             rs.next();
             return rs.getInt(1);
         }
         catch (Exception e) {
-            throw Utils.throwRuntime(e);
+            throw CommonUtils.wrapToRuntime(e);
         }
     }
 
     public abstract Page<?> queryPage();
-    
+
     public <T> Page<T> queryPage(Class<T> clazz) {
         int totalCount = queryCount();
         List<T> result = queryList(clazz);

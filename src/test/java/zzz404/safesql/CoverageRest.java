@@ -8,7 +8,9 @@ public class CoverageRest {
         new OpCondition("", "", "").toString();
         new BetweenCondition("", "", "").toString();
         new InCondition("", "", "").toString();
-        
+        new OrCondition(new OpCondition("", "", ""),
+                new OpCondition("", "", "")).toString();
+
         new OrderBy("", false).toString();
     }
 }

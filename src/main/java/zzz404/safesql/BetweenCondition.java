@@ -1,7 +1,8 @@
 package zzz404.safesql;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import zzz404.safesql.sql.QuietPreparedStatement;
 
 public class BetweenCondition extends Condition {
 
@@ -27,20 +28,15 @@ public class BetweenCondition extends Condition {
 
     @Override
     protected int do_setValueToPstmt_and_returnNextIndex(int i,
-            PreparedStatement pstmt) {
-        try {
-            pstmt.setObject(i++, value1);
-            pstmt.setObject(i++, value2);
-        }
-        catch (SQLException e) {
-            throw Utils.throwRuntime(e);
-        }
+            QuietPreparedStatement pstmt) throws SQLException {
+        pstmt.setObject(i++, value1);
+        pstmt.setObject(i++, value2);
         return i;
     }
 
     @Override
     public boolean equals(Object that) {
-        return Utils.isEquals(this, that,
+        return CommonUtils.isEquals(this, that,
                 o -> new Object[] { o.columnName, o.value1, o.value2 });
     }
 

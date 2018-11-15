@@ -20,7 +20,7 @@ public final class OrderBy {
 
     @Override
     public boolean equals(Object that) {
-        return Utils.isEquals(this, that,
+        return CommonUtils.isEquals(this, that,
                 o -> new Object[] { o.field, o.isAsc });
     }
 

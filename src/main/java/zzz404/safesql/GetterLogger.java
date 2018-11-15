@@ -26,7 +26,7 @@ class GetterLogger<T> implements MethodInterceptor {
             return proxy.invokeSuper(obj, args);
         }
         catch (Throwable e) {
-            throw Utils.throwRuntime(e);
+            throw CommonUtils.wrapToRuntime(e);
         }
     }
 

@@ -1,7 +1,6 @@
 package zzz404.safesql;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import zzz404.safesql.sql.QuietPreparedStatement;
 
 public class OpCondition extends Condition {
 
@@ -16,7 +15,7 @@ public class OpCondition extends Condition {
 
     @Override
     public boolean equals(Object that) {
-        return Utils.isEquals(this, that,
+        return CommonUtils.isEquals(this, that,
                 o -> new Object[] { o.columnName, o.operator, o.value });
     }
 
@@ -33,13 +32,8 @@ public class OpCondition extends Condition {
 
     @Override
     protected int do_setValueToPstmt_and_returnNextIndex(int i,
-            PreparedStatement pstmt) {
-        try {
-            pstmt.setObject(i++, value);
-        }
-        catch (SQLException e) {
-            throw Utils.throwRuntime(e);
-        }
+            QuietPreparedStatement pstmt) {
+        pstmt.setObject(i++, value);
         return i;
     }
 

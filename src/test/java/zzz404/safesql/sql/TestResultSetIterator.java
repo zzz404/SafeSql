@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.Utils;
+import zzz404.safesql.CommonUtils;
 
 public class TestResultSetIterator {
 
@@ -171,7 +171,7 @@ public class TestResultSetIterator {
             return rs;
         }
         catch (SQLException e) {
-            throw Utils.throwRuntime(e);
+            throw CommonUtils.wrapToRuntime(e);
         }
     }
 

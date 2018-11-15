@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.Utils;
+import zzz404.safesql.CommonUtils;
 
 public class ResultSetIterator implements Iterator<ResultSet> {
     private ResultSet rs;
@@ -28,7 +28,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
                 this.rs.absolute(start);
             }
             catch (SQLException e) {
-                throw Utils.throwRuntime(e);
+                throw CommonUtils.wrapToRuntime(e);
             }
         }
         if (limit != null) {
@@ -55,7 +55,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
                 hasNext = rs.next();
             }
             catch (SQLException e) {
-                throw Utils.throwRuntime(e);
+                throw CommonUtils.wrapToRuntime(e);
             }
             if (hasNext) {
                 count_of_dataInput++;
@@ -83,7 +83,7 @@ public class ResultSetIterator implements Iterator<ResultSet> {
                 hasNext = rs.next();
             }
             catch (SQLException e) {
-                throw Utils.throwRuntime(e);
+                throw CommonUtils.wrapToRuntime(e);
             }
             if (!hasNext) {
                 throw new NoSuchElementException();

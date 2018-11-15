@@ -2,22 +2,21 @@ package zzz404.safesql;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-public final class Utils {
-    private Utils() {
+public final class CommonUtils {
+    private CommonUtils() {
     }
 
-    public static RuntimeException throwRuntime(Throwable e) {
-        Utils.<RuntimeException> _throwRuntime(e);
-        return null;
+    public static RuntimeException wrapToRuntime(Throwable e) {
+        if (e instanceof RuntimeException) {
+            return (RuntimeException) e;
+        }
+        else {
+            return new RuntimeException(e);
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <E extends Exception> void _throwRuntime(Throwable e)
-            throws E {
-        throw (E) e;
-    }
-
-    public static <T> boolean isEquals(T o1, Object o2, MainValueExtractor<T> valueExtractor) {
+    public static <T> boolean isEquals(T o1, Object o2,
+            MainValueExtractor<T> valueExtractor) {
         if (o1.getClass() != o2.getClass()) {
             return false;
         }

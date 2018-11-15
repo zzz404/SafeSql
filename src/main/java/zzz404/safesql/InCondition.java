@@ -1,10 +1,11 @@
 package zzz404.safesql;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
+
+import zzz404.safesql.sql.QuietPreparedStatement;
 
 public class InCondition extends Condition {
 
@@ -36,21 +37,16 @@ public class InCondition extends Condition {
 
     @Override
     protected int do_setValueToPstmt_and_returnNextIndex(int i,
-            PreparedStatement pstmt) {
-        try {
-            for (Object value : values) {
-                pstmt.setObject(i++, value);
-            }
-        }
-        catch (SQLException e) {
-            throw Utils.throwRuntime(e);
+            QuietPreparedStatement pstmt) throws SQLException {
+        for (Object value : values) {
+            pstmt.setObject(i++, value);
         }
         return i;
     }
 
     @Override
     public boolean equals(Object that) {
-        return Utils.isEquals(this, that, o -> o.values);
+        return CommonUtils.isEquals(this, that, o -> o.values);
     }
 
 }

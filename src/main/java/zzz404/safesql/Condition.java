@@ -2,10 +2,11 @@ package zzz404.safesql;
 
 import static zzz404.safesql.Sql.*;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.Validate;
+
+import zzz404.safesql.sql.QuietPreparedStatement;
 
 abstract class Condition {
 
@@ -42,17 +43,17 @@ abstract class Condition {
     public abstract String toClause();
 
     public final int setValueToPstmt_and_returnNextIndex(int i,
-            PreparedStatement pstmt) {
+            QuietPreparedStatement pstmt) {
 
         try {
             return do_setValueToPstmt_and_returnNextIndex(i, pstmt);
         }
         catch (SQLException e) {
-            throw Utils.throwRuntime(e);
+            throw CommonUtils.wrapToRuntime(e);
         }
     }
 
     protected abstract int do_setValueToPstmt_and_returnNextIndex(int i,
-            PreparedStatement pstmt) throws SQLException;
+            QuietPreparedStatement pstmt) throws SQLException;
 
 }
