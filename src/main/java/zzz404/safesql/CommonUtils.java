@@ -1,5 +1,11 @@
 package zzz404.safesql;
 
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 public final class CommonUtils {
@@ -39,4 +45,17 @@ public final class CommonUtils {
     public interface MainValueExtractor<T> {
         Object[] extract(T t);
     }
+    
+    public static <T> Stream<T> toStream(Iterator<T> iter) {
+        Spliterator<T> spliterator;
+        if (!iter.hasNext()) {
+            spliterator = Spliterators.emptySpliterator();
+        }
+        else {
+            spliterator = Spliterators.spliteratorUnknownSize(iter,
+                    Spliterator.IMMUTABLE);
+        }
+        return StreamSupport.stream(spliterator, false);
+    }
+
 }

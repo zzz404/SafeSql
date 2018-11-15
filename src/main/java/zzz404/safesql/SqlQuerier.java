@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.ResultSetAnalyzer;
+import zzz404.safesql.sql.QuietResultSet;
 
 public abstract class SqlQuerier {
 
@@ -68,18 +68,12 @@ public abstract class SqlQuerier {
 
     private QuietPreparedStatement prepareStatement(String sql,
             QuietConnection conn) {
-        try {
-            if (offset > 0) {
-                return conn.prepareStatement(sql);
-            }
-            else {
-                return conn.prepareStatement(sql,
-                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.CONCUR_READ_ONLY);
-            }
+        if (offset > 0) {
+            return conn.prepareStatement(sql);
         }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
+        else {
+            return conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
         }
     }
 
@@ -88,7 +82,7 @@ public abstract class SqlQuerier {
         QuietConnection conn = ConnectionProvider.instance.getQuietConnection();
         try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondValueToPstmt(pstmt);
-            ResultSet rs = pstmt.executeQuery();
+            QuietResultSet rs = pstmt.executeQuery();
             List<T> result = new ArrayList<>();
             ResultSetAnalyzer rsAnalyzer = new ResultSetAnalyzer(rs);
             int i = 0;
@@ -100,9 +94,6 @@ public abstract class SqlQuerier {
                 result.add(o);
             }
             return result;
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
         }
     }
 

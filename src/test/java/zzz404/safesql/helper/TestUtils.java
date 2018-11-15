@@ -1,8 +1,8 @@
 package zzz404.safesql.helper;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 public class TestUtils {
     public static void callAll(Object o) {
@@ -20,10 +20,25 @@ public class TestUtils {
                 try {
                     method.invoke(o, args);
                 }
-                catch (IllegalAccessException | IllegalArgumentException
-                        | InvocationTargetException e) {
+                catch (Exception ignored) {
                 }
             }
+        }
+    }
+
+    public static <T> void pass(Supplier<T> supplier) {
+        try {
+            supplier.get();
+        }
+        catch (Exception ignored) {
+        }
+    }
+
+    public static <T> void pass(Runnable runnable) {
+        try {
+            runnable.run();
+        }
+        catch (Exception ignored) {
         }
     }
 }

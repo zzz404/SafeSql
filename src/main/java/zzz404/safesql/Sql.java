@@ -5,6 +5,8 @@ public class Sql {
     public static final String BETWEEN = "between";
     public static final String IN = "in";
     public static final String LIKE = "like";
+    
+    private Sql() {}
 
     public static <T> SqlQuerier1<T> from(Class<T> class1) {
         QueryContext ctx = new QueryContext();

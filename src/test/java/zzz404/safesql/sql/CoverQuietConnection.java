@@ -2,20 +2,20 @@ package zzz404.safesql.sql;
 
 import static org.mockito.Mockito.*;
 
-import java.sql.ResultSet;
+import java.sql.Connection;
 
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.TestUtils;
 
-public class CoverageQuietResultSet {
+public class CoverQuietConnection {
 
     @Test
     public void coverage_all() throws Exception {
-        TestUtils.callAll(new QuietResultSet(null));
+        TestUtils.callAll(new QuietConnection(null));
 
-        ResultSet rs = mock(ResultSet.class);
-        QuietResultSet qrs = new QuietResultSet(rs);
+        Connection rs = mock(Connection.class);
+        QuietConnection qrs = new QuietConnection(rs);
         TestUtils.callAll(qrs);
     }
 

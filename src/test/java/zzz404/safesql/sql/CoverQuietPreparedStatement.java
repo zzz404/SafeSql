@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.TestUtils;
 
-public class CoverageQuietPreparedStatement {
+public class CoverQuietPreparedStatement {
 
     @Test
     public void coverage_all() throws Exception {

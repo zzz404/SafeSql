@@ -41,18 +41,18 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public ResultSet executeQuery(String sql) {
+    public QuietResultSet executeQuery(String sql) {
         try {
-            return pstmt.executeQuery(sql);
+            return new QuietResultSet(pstmt.executeQuery(sql));
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public ResultSet executeQuery() {
+    public QuietResultSet executeQuery() {
         try {
-            return pstmt.executeQuery();
+            return new QuietResultSet(pstmt.executeQuery());
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);

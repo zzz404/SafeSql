@@ -26,12 +26,7 @@ public class TestQuietResultSetIterator {
         QuietResultSet rs = data(new String[0]);
 
         QuietResultSetIterator iter = new QuietResultSetIterator(rs);
-        try {
-            iter.next();
-            fail();
-        }
-        catch (NoSuchElementException e) {
-        }
+        assertThrows(NoSuchElementException.class, () -> iter.next());
     }
 
     @Test
@@ -98,9 +93,12 @@ public class TestQuietResultSetIterator {
     public void test_hasNext_limited() {
         QuietResultSet rs = data(new String[] { "aaa", "bbb" });
 
-        QuietResultSetIterator iter = new QuietResultSetIterator(rs, 10, 2);
+        QuietResultSetIterator iter = new QuietResultSetIterator(rs, 0, 1);
 
+        assertTrue(iter.hasNext());
+        assertEquals("aaa", iter.next().getString(1));
         assertFalse(iter.hasNext());
+        assertThrows(NoSuchElementException.class, () -> iter.next());
     }
 
     @Test

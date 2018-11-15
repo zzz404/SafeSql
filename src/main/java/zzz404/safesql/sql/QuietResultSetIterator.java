@@ -39,10 +39,8 @@ public class QuietResultSetIterator implements Iterator<QuietResultSet> {
                 return false;
             }
             if (count_of_dataInput > count_of_dataOutput) {
-                Validate.isTrue(count_of_dataInput - count_of_dataOutput == 1);
                 return true;
             }
-            Validate.isTrue(count_of_dataInput == count_of_dataOutput);
             hasNext = rs.next();
             if (hasNext) {
                 count_of_dataInput++;
@@ -57,12 +55,10 @@ public class QuietResultSetIterator implements Iterator<QuietResultSet> {
             throw new NoSuchElementException();
         }
         if (count_of_dataInput > count_of_dataOutput) {
-            Validate.isTrue(count_of_dataInput - count_of_dataOutput == 1);
             count_of_dataOutput++;
             return rs;
         }
         else {
-            Validate.isTrue(count_of_dataInput == count_of_dataOutput);
             if (limit >= 0 && count_of_dataOutput >= limit) {
                 throw new NoSuchElementException();
             }
