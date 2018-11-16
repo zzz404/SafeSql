@@ -5,7 +5,7 @@ import static zzz404.safesql.Sql.*;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.helper.TestUtils;
+import zzz404.safesql.helper.UtilsForTest;
 
 class TestCondition {
 
@@ -23,8 +23,8 @@ class TestCondition {
 
     @Test
     void coverRest() {
-        TestUtils.pass(() -> Condition.of("z", "=", 1, 2));
-        TestUtils.pass(() -> Condition.of("z", BETWEEN, 1));
+        UtilsForTest.pass(() -> Condition.of("z", "=", 1, 2));
+        UtilsForTest.pass(() -> Condition.of("z", BETWEEN, 1));
     }
 
 }

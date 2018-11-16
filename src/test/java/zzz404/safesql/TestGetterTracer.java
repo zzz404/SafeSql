@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import net.sf.cglib.proxy.Enhancer;
-import zzz404.safesql.helper.TestUtils;
+import zzz404.safesql.helper.UtilsForTest;
 
 public class TestGetterTracer {
 
@@ -18,7 +18,7 @@ public class TestGetterTracer {
 
         Foo foo = (Foo) en.create();
         assertThrows(RuntimeException.class, () -> {
-            TestUtils.withQueryContext(() -> foo.getFoo());
+            UtilsForTest.underQueryContext(() -> foo.getFoo());
         });
     }
 

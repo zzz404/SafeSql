@@ -82,7 +82,7 @@ public class SqlQuerier1<T> extends SqlQuerier {
 
     public String buildSql_for_queryCount() {
         String tableName = ClassAnalyzer.get(clazz).getTableName();
-        String sql = "SELECT count(*) FROM "
+        String sql = "SELECT COUNT(*) FROM "
                 + tableName;
         if (!this.conditions.isEmpty()) {
             sql += " WHERE " + this.conditions.stream().map(Condition::toClause)

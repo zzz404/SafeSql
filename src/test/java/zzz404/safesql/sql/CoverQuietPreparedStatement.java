@@ -6,17 +6,17 @@ import java.sql.PreparedStatement;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.helper.TestUtils;
+import zzz404.safesql.helper.UtilsForTest;
 
 public class CoverQuietPreparedStatement {
 
     @Test
     public void coverage_all() throws Exception {
-        TestUtils.callAll(new QuietPreparedStatement(null));
+        UtilsForTest.callAll(new QuietPreparedStatement(null));
 
         PreparedStatement pstmt = mock(PreparedStatement.class);
         QuietPreparedStatement qpstmt = new QuietPreparedStatement(pstmt);
-        TestUtils.callAll(qpstmt);
+        UtilsForTest.callAll(qpstmt);
     }
 
 }

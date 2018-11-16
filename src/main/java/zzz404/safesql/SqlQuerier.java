@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.QuietResultSetAnalyzer;
 
 public abstract class SqlQuerier {
 
@@ -30,10 +31,6 @@ public abstract class SqlQuerier {
         return this;
     }
 
-    public final <E> Stream<E> queryStream() {
-        return null;
-    }
-
     protected abstract String buildSql();
 
     protected abstract String buildSql_for_queryCount();
@@ -52,12 +49,12 @@ public abstract class SqlQuerier {
         QuietConnection conn = ConnectionFactory.get().getQuietConnection();
         try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondValueToPstmt(pstmt);
-            ResultSet rs = pstmt.executeQuery();
+            QuietResultSet rs = pstmt.executeQuery();
             if (!rs.next()) {
                 return Optional.empty();
             }
             else {
-                T o = new ResultSetAnalyzer(rs).readToObject(clazz);
+                T o = new QuietResultSetAnalyzer(rs).readToObject(clazz);
                 return Optional.of(o);
             }
         }
@@ -84,7 +81,7 @@ public abstract class SqlQuerier {
             setCondValueToPstmt(pstmt);
             QuietResultSet rs = pstmt.executeQuery();
             List<T> result = new ArrayList<>();
-            ResultSetAnalyzer rsAnalyzer = new ResultSetAnalyzer(rs);
+            QuietResultSetAnalyzer rsAnalyzer = new QuietResultSetAnalyzer(rs);
             int i = 0;
             while (rs.next()) {
                 if (limit > 0 && ++i > limit) {

@@ -86,7 +86,8 @@ class TestSqlQuerier1 {
     @Test
     void test_where_or() {
         SqlQuerier1<Document> q = from(Document.class).where(d -> {
-            cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(), "=", 1);
+            cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(),
+                    "=", 1);
         });
         assertEquals(1, q.conditions.size());
         assertTrue(q.conditions.get(0) instanceof OrCondition);
@@ -110,6 +111,39 @@ class TestSqlQuerier1 {
         assertEquals(2, q.orderBys.size());
         assertEquals(new OrderBy("id", true), q.orderBys.get(0));
         assertEquals(new OrderBy("title", false), q.orderBys.get(1));
+    }
+
+    @Test
+    void test_buildSql() {
+        SqlQuerier1<Document> q = from(Document.class).select(d -> {
+            d.getId();
+            d.getTitle();
+        }).where(d -> {
+            cond(d.getId(), ">", 12).or(d.getOwnerId(), "=", 1);
+            cond(d.getTitle(), LIKE, "cc%");
+        }).orderBy(d -> {
+            asc(d.getId());
+            desc(d.getTitle());
+        });
+
+        String sql = "SELECT id, title FROM Document"
+                + " WHERE (id > ? OR ownerId = ?) AND title like ? ORDER BY id ASC, title DESC";
+        assertEquals(sql, q.buildSql());
+
+        sql = "SELECT COUNT(*) FROM Document"
+                + " WHERE (id > ? OR ownerId = ?) AND title like ?";
+        assertEquals(sql, q.buildSql_for_queryCount());
+    }
+
+    @Test
+    void test_buildSql_simple() {
+        SqlQuerier1<Document> q = from(Document.class);
+
+        String sql = "SELECT * FROM Document";
+        assertEquals("SELECT * FROM Document", q.buildSql());
+
+        sql = "SELECT COUNT(*) FROM Document";
+        assertEquals(sql, q.buildSql_for_queryCount());
     }
 
 }

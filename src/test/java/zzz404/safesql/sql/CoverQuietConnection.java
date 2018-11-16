@@ -6,17 +6,17 @@ import java.sql.Connection;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.helper.TestUtils;
+import zzz404.safesql.helper.UtilsForTest;
 
 public class CoverQuietConnection {
 
     @Test
     public void coverage_all() throws Exception {
-        TestUtils.callAll(new QuietConnection(null));
+        UtilsForTest.callAll(new QuietConnection(null));
 
         Connection rs = mock(Connection.class);
         QuietConnection qrs = new QuietConnection(rs);
-        TestUtils.callAll(qrs);
+        UtilsForTest.callAll(qrs);
     }
 
 }

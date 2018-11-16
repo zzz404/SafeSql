@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 
 import zzz404.safesql.QueryContext;
 
-public class TestUtils {
+public class UtilsForTest {
 
     public static void callAll(Object o) {
         Method[] methods = o.getClass().getMethods();
@@ -36,7 +36,7 @@ public class TestUtils {
         }
     }
 
-    public static void withQueryContext(Runnable runnable) {
+    public static void underQueryContext(Runnable runnable) {
         try {
             QueryContext.INSTANCE.set(new QueryContext());
             runnable.run();
