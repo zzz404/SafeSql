@@ -5,11 +5,11 @@ import java.lang.reflect.Method;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
-class GetterLogger<T> implements MethodInterceptor {
+class GetterTracer<T> implements MethodInterceptor {
 
     private ClassAnalyzer<T> classAnalyzer;
 
-    public GetterLogger(Class<T> clazz) {
+    public GetterTracer(Class<T> clazz) {
         this.classAnalyzer = ClassAnalyzer.get(clazz);
     }
 

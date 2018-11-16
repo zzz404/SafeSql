@@ -1,5 +1,6 @@
 package zzz404.safesql;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +13,8 @@ public class OrCondition extends Condition {
 
     protected OrCondition(Condition... subConditions) {
         super(null);
-        this.subConditions = Arrays.asList(subConditions);
+        this.subConditions = new ArrayList<>();
+        this.subConditions.addAll(Arrays.asList(subConditions));
     }
 
     public <T> OrCondition or(T field, String operator, Object... values) {

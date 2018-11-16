@@ -86,17 +86,18 @@ class TestSqlQuerier1 {
     @Test
     void test_where_or() {
         SqlQuerier1<Document> q = from(Document.class).where(d -> {
-            cond(d.getId(), "<", 2).or(d.getId(), ">", 10);
+            cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(), "=", 1);
         });
         assertEquals(1, q.conditions.size());
         assertTrue(q.conditions.get(0) instanceof OrCondition);
 
         OrCondition cond = (OrCondition) q.conditions.get(0);
         List<Condition> conds = cond.subConditions;
-        assertEquals(2, conds.size());
+        assertEquals(3, conds.size());
 
         assertEquals(new OpCondition("id", "<", 2), conds.get(0));
         assertEquals(new OpCondition("id", ">", 10), conds.get(1));
+        assertEquals(new OpCondition("ownerId", "=", 1), conds.get(2));
     }
 
     @Test

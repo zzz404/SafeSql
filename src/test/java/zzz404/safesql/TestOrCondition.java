@@ -37,7 +37,9 @@ class TestOrCondition {
 
     @Test
     void coverRest() {
-        new OrCondition(new OpCondition("", "", ""),
-                new OpCondition("", "", "")).toString();
+        OrCondition orCond = new OrCondition(new OpCondition("", "", ""),
+                new OpCondition("", "", ""));
+        orCond.toString();
+        orCond.equals(orCond);
     }
 }

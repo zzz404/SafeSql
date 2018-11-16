@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-class QueryContext {
+public class QueryContext {
 
-    static final ThreadLocal<QueryContext> INSTANCE = new ThreadLocal<>();
+    public static final ThreadLocal<QueryContext> INSTANCE = new ThreadLocal<>();
 
     private Queue<String> columnNames = new LinkedList<>();
     ArrayList<Condition> conditions = new ArrayList<>();

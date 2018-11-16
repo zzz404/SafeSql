@@ -1,21 +1,25 @@
 package zzz404.safesql;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import net.sf.cglib.proxy.Enhancer;
 import zzz404.safesql.helper.TestUtils;
 
-public class CoverGetterLogger {
-    
+public class TestGetterTracer {
+
     @Test
-    void coverRest() {
+    void testWrapException() {
         Enhancer en = new Enhancer();
         en.setSuperclass(Foo.class);
-        GetterLogger<Foo> getterLogger = new GetterLogger<>(Foo.class);
-        en.setCallback(getterLogger);
+        GetterTracer<Foo> getterTracer = new GetterTracer<>(Foo.class);
+        en.setCallback(getterTracer);
 
         Foo foo = (Foo) en.create();
-        TestUtils.pass(() -> foo.getFoo());
+        assertThrows(RuntimeException.class, () -> {
+            TestUtils.withQueryContext(() -> foo.getFoo());
+        });
     }
 
     public static class Foo {

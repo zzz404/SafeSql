@@ -49,7 +49,7 @@ public abstract class SqlQuerier {
 
     public <T> Optional<T> queryOne(Class<T> clazz) {
         String sql = buildSql();
-        QuietConnection conn = ConnectionProvider.instance.getQuietConnection();
+        QuietConnection conn = ConnectionFactory.get().getQuietConnection();
         try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondValueToPstmt(pstmt);
             ResultSet rs = pstmt.executeQuery();
@@ -79,7 +79,7 @@ public abstract class SqlQuerier {
 
     public <T> List<T> queryList(Class<T> clazz) {
         String sql = buildSql();
-        QuietConnection conn = ConnectionProvider.instance.getQuietConnection();
+        QuietConnection conn = ConnectionFactory.get().getQuietConnection();
         try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondValueToPstmt(pstmt);
             QuietResultSet rs = pstmt.executeQuery();
@@ -99,7 +99,7 @@ public abstract class SqlQuerier {
 
     public int queryCount() {
         String sql = buildSql_for_queryCount();
-        QuietConnection conn = ConnectionProvider.instance.getQuietConnection();
+        QuietConnection conn = ConnectionFactory.get().getQuietConnection();
         try (QuietPreparedStatement pstmt = conn.prepareStatement(sql)) {
             setCondValueToPstmt(pstmt);
             ResultSet rs = pstmt.executeQuery();

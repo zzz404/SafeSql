@@ -15,6 +15,7 @@ public class TestCommonUtils {
         assertTrue(CommonUtils.isEquals("", "", o -> null));
     }
 
+    @Test
     void coverRest() {
         CommonUtils.wrapToRuntime(new Exception());
     }

@@ -26,7 +26,7 @@ public class SqlQuerier1<T> extends SqlQuerier {
     private T createMockedObject() {
         Enhancer en = new Enhancer();
         en.setSuperclass(clazz);
-        GetterLogger<T> getterLogger = new GetterLogger<>(clazz);
+        GetterTracer<T> getterLogger = new GetterTracer<>(clazz);
         en.setCallback(getterLogger);
 
         @SuppressWarnings("unchecked")
