@@ -38,7 +38,7 @@ public class UtilsForTest {
 
     public static void underQueryContext(Runnable runnable) {
         try {
-            QueryContext.INSTANCE.set(new QueryContext());
+            QueryContext.INSTANCE.set(new QueryContext(""));
             runnable.run();
         }
         finally {

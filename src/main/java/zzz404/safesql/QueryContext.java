@@ -5,13 +5,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import zzz404.safesql.sql.QuietConnection;
+
 public class QueryContext {
 
     public static final ThreadLocal<QueryContext> INSTANCE = new ThreadLocal<>();
 
+    private ConnectionFactoryImpl connFactory;
+
     private Queue<String> columnNames = new LinkedList<>();
+
     ArrayList<Condition> conditions = new ArrayList<>();
     List<OrderBy> orderBys = new ArrayList<>();
+
+    public QueryContext(String name) {
+        this.connFactory = ConnectionFactory.get(name);
+    }
+
+    public QuietConnection getQuietConnection() {
+        return connFactory.getQuietConnection();
+    }
 
     public void addColumnName(String columnName) {
         columnNames.offer(columnName);
@@ -31,4 +44,9 @@ public class QueryContext {
         conditions.set(conditions.size() - 1, cond);
     }
 
+    public void clear() {
+        columnNames.clear();
+        conditions.clear();
+        orderBys.clear();
+    }
 }

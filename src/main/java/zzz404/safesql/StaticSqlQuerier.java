@@ -7,9 +7,8 @@ public class StaticSqlQuerier extends SqlQuerier {
     private String sql;
     private Object[] paramValues;
 
-    public StaticSqlQuerier sql(String sql) {
+    public StaticSqlQuerier(String sql) {
         this.sql = sql;
-        return this;
     }
 
     public StaticSqlQuerier paramValues(Object[] paramValues) {

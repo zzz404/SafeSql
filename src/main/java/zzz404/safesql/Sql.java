@@ -6,20 +6,26 @@ public class Sql {
     public static final String IN = "in";
     public static final String LIKE = "like";
     
+    private static QuerierFactory querierFactory = new QuerierFactory();
+    
     private Sql() {}
 
-    public static <T> EntityQuerier1<T> from(Class<T> class1) {
-        QueryContext ctx = new QueryContext();
+    public static  QuerierFactory use(String name) {
+        QueryContext ctx = new QueryContext(name);
         QueryContext.INSTANCE.set(ctx);
+        return querierFactory;
+    }
 
-        return new EntityQuerier1<>(class1);
+    public static  StaticSqlQuerier sql(String sql) {
+        return use("").sql(sql);
+    }
+
+    public static <T> EntityQuerier1<T> from(Class<T> clazz) {
+        return use("").from(clazz);
     }
 
     public static <T, U> EntityQuerier2<T, U> from(Class<T> class1, Class<U> class2) {
-        QueryContext ctx = new QueryContext();
-        QueryContext.INSTANCE.set(ctx);
-
-        return new EntityQuerier2<>(class1, class2);
+        return use("").from(class1, class2);
     }
 
     @SafeVarargs
