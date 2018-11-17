@@ -12,11 +12,11 @@ public class CoverQuietPreparedStatement {
 
     @Test
     public void coverage_all() throws Exception {
-        UtilsForTest.callAll(new QuietPreparedStatement(null));
+        UtilsForTest.coverAll(new QuietPreparedStatement(null));
 
         PreparedStatement pstmt = mock(PreparedStatement.class);
         QuietPreparedStatement qpstmt = new QuietPreparedStatement(pstmt);
-        UtilsForTest.callAll(qpstmt);
+        UtilsForTest.coverAll(qpstmt);
     }
 
 }

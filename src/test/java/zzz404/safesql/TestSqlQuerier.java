@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.Document;
 
-class TestSqlQuerier1 {
+class TestSqlQuerier {
 
     @Test
     void test_select_withAssignedFields() {

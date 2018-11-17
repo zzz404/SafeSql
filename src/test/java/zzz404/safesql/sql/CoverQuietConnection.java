@@ -12,11 +12,11 @@ public class CoverQuietConnection {
 
     @Test
     public void coverage_all() throws Exception {
-        UtilsForTest.callAll(new QuietConnection(null));
+        UtilsForTest.coverAll(new QuietConnection(null));
 
         Connection rs = mock(Connection.class);
         QuietConnection qrs = new QuietConnection(rs);
-        UtilsForTest.callAll(qrs);
+        UtilsForTest.coverAll(qrs);
     }
 
 }

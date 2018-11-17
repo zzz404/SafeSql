@@ -12,11 +12,11 @@ public class CoverQuietResultSet {
 
     @Test
     public void coverage_all() throws Exception {
-        UtilsForTest.callAll(new QuietResultSet(null));
+        UtilsForTest.coverAll(new QuietResultSet(null));
 
         ResultSet rs = mock(ResultSet.class);
         QuietResultSet qrs = new QuietResultSet(rs);
-        UtilsForTest.callAll(qrs);
+        UtilsForTest.coverAll(qrs);
     }
 
 }

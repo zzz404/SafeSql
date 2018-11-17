@@ -1,5 +1,8 @@
 package zzz404.safesql.helper;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
@@ -7,7 +10,7 @@ import zzz404.safesql.QueryContext;
 
 public class UtilsForTest {
 
-    public static void callAll(Object o) {
+    public static void coverAll(Object o) {
         Method[] methods = o.getClass().getMethods();
         for (Method method : methods) {
             if (method.getDeclaringClass() == o.getClass()) {
