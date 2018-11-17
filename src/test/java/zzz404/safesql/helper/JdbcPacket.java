@@ -3,60 +3,54 @@ package zzz404.safesql.helper;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import zzz404.safesql.CommonUtils;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.NoisyRunnable;
 
-public class ResultSetFactory {
+public class JdbcPacket {
+    private Connection conn;
+    private PreparedStatement pstmt;
+    private ResultSet rs;
 
     protected int row = -1;
-    protected Record[] records;
+    protected Record[] records = new Record[0];
 
-    public static ResultSetFactory singleColumn(int... values) {
-        return new ResultSetFactory().reset(values);
+    public JdbcPacket() {
+        NoisyRunnable.runQuiet(() -> {
+            conn = mock(Connection.class);
+            pstmt = mock(PreparedStatement.class);
+            when(conn.prepareStatement(anyString())).thenReturn(pstmt);
+            when(conn.prepareStatement(anyString(), anyInt(), anyInt()))
+                    .thenReturn(pstmt);
+            rs = mock(ResultSet.class);
+            when(pstmt.executeQuery()).thenReturn(rs);
+        });
     }
 
-    public static ResultSetFactory singleColumn(String... values) {
-        return new ResultSetFactory().reset(values);
+    public void reset() {
+        row = -1;
     }
 
-    public ResultSetFactory reset(int... values) {
-        this.row = -1;
+    public void bindData(int... values) {
+        row = -1;
         records = Record.singleColumn(values);
-        return this;
+        NoisyRunnable.runQuiet(() -> {
+            bindData_noisy();
+        });
     }
 
-    public ResultSetFactory reset(String... values) {
-        this.row = -1;
+    public void bindData(String... values) {
+        row = -1;
         records = Record.singleColumn(values);
-        return this;
+        NoisyRunnable.runQuiet(() -> {
+            bindData_noisy();
+        });
     }
 
-    public QuietResultSet createQuiet() {
-        QuietResultSet rs = mock(QuietResultSet.class);
-        try {
-            setup(rs);
-        }
-        catch (SQLException e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-        return rs;
-    }
-
-    public ResultSet createNormal() {
-        ResultSet rs = mock(ResultSet.class);
-        try {
-            setup(rs);
-        }
-        catch (SQLException e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-        return rs;
-    }
-
-    private void setup(ResultSet rs) throws SQLException {
+    private void bindData_noisy() throws SQLException {
         when(rs.next()).thenAnswer(i -> {
             row++;
             return (row < records.length);
@@ -85,4 +79,17 @@ public class ResultSetFactory {
             }
         });
     }
+
+    public Connection getConnection() {
+        return conn;
+    }
+
+    public PreparedStatement getPreparedStatement() {
+        return pstmt;
+    }
+
+    public ResultSet getResultSet() {
+        return rs;
+    }
+
 }

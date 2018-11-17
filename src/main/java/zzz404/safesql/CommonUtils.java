@@ -1,8 +1,11 @@
 package zzz404.safesql;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -45,7 +48,7 @@ public final class CommonUtils {
     public interface MainValueExtractor<T> {
         Object[] extract(T t);
     }
-    
+
     public static <T> Stream<T> iter_to_stream(Iterator<T> iter) {
         Spliterator<T> spliterator;
         if (!iter.hasNext()) {
@@ -56,6 +59,22 @@ public final class CommonUtils {
                     Spliterator.IMMUTABLE);
         }
         return StreamSupport.stream(spliterator, false);
+    }
+
+    public static <T, U, R> List<R> zip(Iterable<T> iter1, Iterable<U> iter2,
+            BiFunction<T, U, R> func) {
+        Iterator<T> itr1 = iter1.iterator();
+        Iterator<U> itr2 = iter2.iterator();
+
+        ArrayList<R> result = new ArrayList<>();
+        while (itr1.hasNext()) {
+            if (!itr2.hasNext()) {
+                break;
+            }
+            R r = func.apply(itr1.next(), itr2.next());
+            result.add(r);
+        }
+        return result;
     }
 
 }

@@ -3,12 +3,20 @@ package zzz404.safesql.helper;
 public class Record {
     private Object[] values;
 
-    public static Record singleColumn(int value) {
-        return new Record().setValues(value);
+    public static Record[] singleColumn(int... values) {
+        Record[] records = new Record[values.length];
+        for (int i = 0; i < values.length; i++) {
+            records[i] = new Record().setValues(values[i]);
+        }
+        return records;
     }
 
-    public static Record singleColumn(String value) {
-        return new Record().setValues(value);
+    public static Record[] singleColumn(String... values) {
+        Record[] records = new Record[values.length];
+        for (int i = 0; i < values.length; i++) {
+            records[i] = new Record().setValues(values[i]);
+        }
+        return records;
     }
 
     public Record setValues(Integer... values) {

@@ -1,149 +1,88 @@
 package zzz404.safesql;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static zzz404.safesql.Sql.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import org.apache.commons.collections4.ListUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.helper.Document;
+import zzz404.safesql.helper.JdbcPacket;
+import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestSqlQuerier {
 
-    @Test
-    void test_select_withAssignedFields() {
-        EntityQuerier1<Document> q = from(Document.class);
-        q.select(d -> {
-            d.getId();
-            d.getTitle();
-            d.setTitle("zzz");
-        });
-        List<String> fields = Arrays.asList("id", "title");
-        assertTrue(ListUtils.isEqualList(fields, q.columnNames));
+    private JdbcPacket packet;
+
+    @BeforeEach
+    void beforeEach() {
+        ConnectionFactory.create();
+        packet = new JdbcPacket();
+        ConnectionFactory.get()
+                .setConnectionPrivider(() -> packet.getConnection());
+    }
+
+    @AfterEach
+    void afterEach() {
+        ConnectionFactory.map.clear();
     }
 
     @Test
-    void test_select_notCalled_meansAllFields() {
-        EntityQuerier1<Document> q = from(Document.class);
-
-        assertEquals(1, q.columnNames.size());
-        assertEquals("*", q.columnNames.get(0));
+    void test_queryCount() {
+        packet.bindData(7);
+        SqlQuerier q = new MySqlQuerier();
+        assertEquals(7, q.queryCount());
     }
 
     @Test
-    void test_where_notCalled_meansNoCondition() {
-        EntityQuerier1<Document> q = from(Document.class);
-        assertEquals(0, q.conditions.size());
+    void test_queryOne_noData_returnNothing() {
+        SqlQuerier q = new MySqlQuerier();
+        Optional<Integer> result = q.queryOne(Integer.class);
+        assertFalse(result.isPresent());
     }
 
     @Test
-    void test_where_commonOperator() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
-            cond(d.getId(), "=", 3);
-        });
-
-        assertEquals(1, q.conditions.size());
-        assertEquals(new OpCondition("id", "=", 3), q.conditions.get(0));
+    void test_queryOne_twoData_returnFirst() {
+        packet.bindData(3, 6);
+        SqlQuerier q = new MySqlQuerier();
+        Optional<Integer> result = q.queryOne(Integer.class);
+        assertEquals(3, result.get().intValue());
     }
 
     @Test
-    void test_where_between() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
-            cond(d.getId(), BETWEEN, 1, 3);
-        });
-
-        assertEquals(1, q.conditions.size());
-        assertEquals(new BetweenCondition("id", 1, 3), q.conditions.get(0));
+    void test_queryOne_offset() {
+        packet.bindData(3, 1, 4, 1, 5, 9);
+        SqlQuerier q = new MySqlQuerier().offset(4);
+        Optional<Integer> result = q.queryOne(Integer.class);
+        assertEquals(5, result.get().intValue());
     }
 
     @Test
-    void test_where_in() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
-            cond(d.getId(), IN, 3, 1, 4, 1, 5, 9, 2, 6, 5, 3);
-        });
-
-        assertEquals(1, q.conditions.size());
-        assertEquals(new InCondition("id", 3, 1, 4, 1, 5, 9, 2, 6, 5, 3),
-                q.conditions.get(0));
+    void test_queryList() {
+        packet.bindData(7, 5);
+        MySqlQuerier q = new MySqlQuerier();
+        List<Integer> result = q.queryList(Integer.class);
+        assertTrue(UtilsForTest.isEquals(result, 7, 5));
     }
 
-    @Test
-    void test_where_multiCondition() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
-            cond(d.getId(), ">", 3);
-            cond(d.getTitle(), LIKE, "abc%");
-        });
-        assertEquals(2, q.conditions.size());
-        assertEquals(new OpCondition("id", ">", 3), q.conditions.get(0));
-        assertEquals(new OpCondition("title", "like", "abc%"),
-                q.conditions.get(1));
+    public static class MySqlQuerier extends SqlQuerier {
+
+        @Override
+        protected String buildSql() {
+            return "";
+        }
+
+        @Override
+        protected String buildSql_for_queryCount() {
+            return "";
+        }
+
+        @Override
+        protected void setCondValueToPstmt(QuietPreparedStatement pstmt) {
+        }
+
     }
-
-    @Test
-    void test_where_or() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
-            cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(),
-                    "=", 1);
-        });
-        assertEquals(1, q.conditions.size());
-        assertTrue(q.conditions.get(0) instanceof OrCondition);
-
-        OrCondition cond = (OrCondition) q.conditions.get(0);
-        List<Condition> conds = cond.subConditions;
-        assertEquals(3, conds.size());
-
-        assertEquals(new OpCondition("id", "<", 2), conds.get(0));
-        assertEquals(new OpCondition("id", ">", 10), conds.get(1));
-        assertEquals(new OpCondition("ownerId", "=", 1), conds.get(2));
-    }
-
-    @Test
-    void test_orderBy() {
-        EntityQuerier1<Document> q = from(Document.class).orderBy(d -> {
-            asc(d.getId());
-            desc(d.getTitle());
-        });
-
-        assertEquals(2, q.orderBys.size());
-        assertEquals(new OrderBy("id", true), q.orderBys.get(0));
-        assertEquals(new OrderBy("title", false), q.orderBys.get(1));
-    }
-
-    @Test
-    void test_buildSql() {
-        EntityQuerier1<Document> q = from(Document.class).select(d -> {
-            d.getId();
-            d.getTitle();
-        }).where(d -> {
-            cond(d.getId(), ">", 12).or(d.getOwnerId(), "=", 1);
-            cond(d.getTitle(), LIKE, "cc%");
-        }).orderBy(d -> {
-            asc(d.getId());
-            desc(d.getTitle());
-        });
-
-        String sql = "SELECT id, title FROM Document"
-                + " WHERE (id > ? OR ownerId = ?) AND title like ? ORDER BY id ASC, title DESC";
-        assertEquals(sql, q.buildSql());
-
-        sql = "SELECT COUNT(*) FROM Document"
-                + " WHERE (id > ? OR ownerId = ?) AND title like ?";
-        assertEquals(sql, q.buildSql_for_queryCount());
-    }
-
-    @Test
-    void test_buildSql_simple() {
-        EntityQuerier1<Document> q = from(Document.class);
-
-        String sql = "SELECT * FROM Document";
-        assertEquals("SELECT * FROM Document", q.buildSql());
-
-        sql = "SELECT COUNT(*) FROM Document";
-        assertEquals(sql, q.buildSql_for_queryCount());
-    }
-
 }

@@ -110,7 +110,7 @@ public class TestQuietResultSetIterator {
     }
 
     private QuietResultSet fakeRs(String... values) {
-        return ResultSetFactory.singleColumn(values).createMocked();
+        return ResultSetFactory.singleColumn(values).createQuiet();
     }
     
     @Test

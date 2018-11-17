@@ -9,7 +9,7 @@ public class TestConnectionFactory {
 
     @AfterEach
     public void tearDown() {
-        ConnectionFactory.clearAll();
+        ConnectionFactory.map.clear();
     }
 
     @Test

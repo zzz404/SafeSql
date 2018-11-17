@@ -8,7 +8,7 @@ import org.apache.commons.lang3.Validate;
 
 public abstract class ConnectionFactory {
 
-    private static Map<String, ConnectionFactoryImpl> map = Collections
+    static Map<String, ConnectionFactoryImpl> map = Collections
             .synchronizedMap(new HashMap<>());
 
     protected boolean tablePrefix;
@@ -55,7 +55,4 @@ public abstract class ConnectionFactory {
         return map.get(name);
     }
 
-    static void clearAll() {
-        map.clear();
-    }
 }

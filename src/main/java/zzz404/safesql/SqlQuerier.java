@@ -57,8 +57,11 @@ public abstract class SqlQuerier {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        // TODO
+        if (clazz == Integer.class) {
+            return (T) new Integer(rs.getInt(1));
+        }
         return null;
     }
 
