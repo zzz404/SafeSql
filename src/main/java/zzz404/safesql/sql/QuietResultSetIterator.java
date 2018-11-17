@@ -11,6 +11,10 @@ public class QuietResultSetIterator implements Iterator<QuietResultSet> {
     private int count_of_dataInput = 0;
     private int count_of_dataOutput = 0;
 
+    public QuietResultSetIterator(QuietResultSet rs) {
+        this(rs, 0, 0);
+    }
+
     public QuietResultSetIterator(QuietResultSet rs, int offset, int limit) {
         this.rs = rs;
         if (offset > 0) {
@@ -26,7 +30,7 @@ public class QuietResultSetIterator implements Iterator<QuietResultSet> {
             return false;
         }
         else {
-            if (limit >= 0 && this.count_of_dataOutput >= limit) {
+            if (hasLimit() && this.count_of_dataOutput >= limit) {
                 return false;
             }
             if (count_of_dataInput > count_of_dataOutput) {
@@ -40,6 +44,10 @@ public class QuietResultSetIterator implements Iterator<QuietResultSet> {
         }
     }
 
+    private boolean hasLimit() {
+        return limit > 0;
+    }
+
     @Override
     public QuietResultSet next() {
         if (!hasNext) {
@@ -50,7 +58,7 @@ public class QuietResultSetIterator implements Iterator<QuietResultSet> {
             return rs;
         }
         else {
-            if (limit >= 0 && count_of_dataOutput >= limit) {
+            if (hasLimit() && count_of_dataOutput >= limit) {
                 throw new NoSuchElementException();
             }
             hasNext = rs.next();

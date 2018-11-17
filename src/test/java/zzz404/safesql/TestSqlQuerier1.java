@@ -16,7 +16,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_select_withAssignedFields() {
-        SqlQuerier1<Document> q = from(Document.class);
+        EntityQuerier1<Document> q = from(Document.class);
         q.select(d -> {
             d.getId();
             d.getTitle();
@@ -28,7 +28,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_select_notCalled_meansAllFields() {
-        SqlQuerier1<Document> q = from(Document.class);
+        EntityQuerier1<Document> q = from(Document.class);
 
         assertEquals(1, q.columnNames.size());
         assertEquals("*", q.columnNames.get(0));
@@ -36,13 +36,13 @@ class TestSqlQuerier1 {
 
     @Test
     void test_where_notCalled_meansNoCondition() {
-        SqlQuerier1<Document> q = from(Document.class);
+        EntityQuerier1<Document> q = from(Document.class);
         assertEquals(0, q.conditions.size());
     }
 
     @Test
     void test_where_commonOperator() {
-        SqlQuerier1<Document> q = from(Document.class).where(d -> {
+        EntityQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), "=", 3);
         });
 
@@ -52,7 +52,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_where_between() {
-        SqlQuerier1<Document> q = from(Document.class).where(d -> {
+        EntityQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), BETWEEN, 1, 3);
         });
 
@@ -62,7 +62,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_where_in() {
-        SqlQuerier1<Document> q = from(Document.class).where(d -> {
+        EntityQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), IN, 3, 1, 4, 1, 5, 9, 2, 6, 5, 3);
         });
 
@@ -73,7 +73,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_where_multiCondition() {
-        SqlQuerier1<Document> q = from(Document.class).where(d -> {
+        EntityQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), ">", 3);
             cond(d.getTitle(), LIKE, "abc%");
         });
@@ -85,7 +85,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_where_or() {
-        SqlQuerier1<Document> q = from(Document.class).where(d -> {
+        EntityQuerier1<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(),
                     "=", 1);
         });
@@ -103,7 +103,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_orderBy() {
-        SqlQuerier1<Document> q = from(Document.class).orderBy(d -> {
+        EntityQuerier1<Document> q = from(Document.class).orderBy(d -> {
             asc(d.getId());
             desc(d.getTitle());
         });
@@ -115,7 +115,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_buildSql() {
-        SqlQuerier1<Document> q = from(Document.class).select(d -> {
+        EntityQuerier1<Document> q = from(Document.class).select(d -> {
             d.getId();
             d.getTitle();
         }).where(d -> {
@@ -137,7 +137,7 @@ class TestSqlQuerier1 {
 
     @Test
     void test_buildSql_simple() {
-        SqlQuerier1<Document> q = from(Document.class);
+        EntityQuerier1<Document> q = from(Document.class);
 
         String sql = "SELECT * FROM Document";
         assertEquals("SELECT * FROM Document", q.buildSql());

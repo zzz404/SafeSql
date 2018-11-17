@@ -12,45 +12,45 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class SqlQuerier1<T> extends SqlQuerier {
+public class EntityQuerier1<T> extends DynamicQuerier {
 
     private Class<T> clazz;
     private T mockedObject;
 
-    public SqlQuerier1(Class<T> clazz) {
+    public EntityQuerier1(Class<T> clazz) {
         this.clazz = clazz;
         this.mockedObject = createMockedObject(clazz);
         
         this.columnNames = Arrays.asList("*");
     }
 
-    public SqlQuerier1<T> select(Consumer<T> consumer) {
+    public EntityQuerier1<T> select(Consumer<T> consumer) {
         consumer.accept(mockedObject);
         this.columnNames = new ArrayList<>(new LinkedHashSet<>(
                 QueryContext.INSTANCE.get().takeAllColumnNames()));
         return this;
     }
 
-    public SqlQuerier1<T> where(Consumer<T> consumer) {
+    public EntityQuerier1<T> where(Consumer<T> consumer) {
         consumer.accept(mockedObject);
         this.conditions = QueryContext.INSTANCE.get().conditions;
         return this;
     }
 
-    public SqlQuerier1<T> orderBy(Consumer<T> consumer) {
+    public EntityQuerier1<T> orderBy(Consumer<T> consumer) {
         consumer.accept(mockedObject);
         this.orderBys = QueryContext.INSTANCE.get().orderBys;
         return this;
     }
 
     @Override
-    public SqlQuerier1<T> offset(int offset) {
+    public EntityQuerier1<T> offset(int offset) {
         super.offset(offset);
         return this;
     }
 
     @Override
-    public SqlQuerier1<T> limit(int limit) {
+    public EntityQuerier1<T> limit(int limit) {
         super.limit(limit);
         return this;
     }

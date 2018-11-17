@@ -9,14 +9,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class SqlQuerier2<T, U> extends SqlQuerier {
+public class EntityQuerier2<T, U> extends DynamicQuerier {
 
     private Class<T> class1;
     private Class<U> class2;
     private T mockedObject1;
     private U mockedObject2;
 
-    public SqlQuerier2(Class<T> class1, Class<U> class2) {
+    public EntityQuerier2(Class<T> class1, Class<U> class2) {
         this.class1 = class1;
         this.class2 = class2;
         this.mockedObject1 = createMockedObject(class1);
@@ -25,33 +25,33 @@ public class SqlQuerier2<T, U> extends SqlQuerier {
         this.columnNames = Arrays.asList("*");
     }
 
-    public SqlQuerier2<T, U> select(BiConsumer<T, U> consumer) {
+    public EntityQuerier2<T, U> select(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
         this.columnNames = new ArrayList<>(new LinkedHashSet<>(
                 QueryContext.INSTANCE.get().takeAllColumnNames()));
         return this;
     }
 
-    public SqlQuerier2<T, U> where(BiConsumer<T, U> consumer) {
+    public EntityQuerier2<T, U> where(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
         this.conditions = QueryContext.INSTANCE.get().conditions;
         return this;
     }
 
-    public SqlQuerier2<T, U> orderBy(BiConsumer<T, U> consumer) {
+    public EntityQuerier2<T, U> orderBy(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
         this.orderBys = QueryContext.INSTANCE.get().orderBys;
         return this;
     }
 
     @Override
-    public SqlQuerier2<T, U> offset(int offset) {
+    public EntityQuerier2<T, U> offset(int offset) {
         super.offset(offset);
         return this;
     }
 
     @Override
-    public SqlQuerier2<T, U> limit(int limit) {
+    public EntityQuerier2<T, U> limit(int limit) {
         super.limit(limit);
         return this;
     }

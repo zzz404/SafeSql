@@ -8,18 +8,18 @@ public class Sql {
     
     private Sql() {}
 
-    public static <T> SqlQuerier1<T> from(Class<T> class1) {
+    public static <T> EntityQuerier1<T> from(Class<T> class1) {
         QueryContext ctx = new QueryContext();
         QueryContext.INSTANCE.set(ctx);
 
-        return new SqlQuerier1<>(class1);
+        return new EntityQuerier1<>(class1);
     }
 
-    public static <T, U> SqlQuerier2<T, U> from(Class<T> class1, Class<U> class2) {
+    public static <T, U> EntityQuerier2<T, U> from(Class<T> class1, Class<U> class2) {
         QueryContext ctx = new QueryContext();
         QueryContext.INSTANCE.set(ctx);
 
-        return new SqlQuerier2<>(class1, class2);
+        return new EntityQuerier2<>(class1, class2);
     }
 
     @SafeVarargs
