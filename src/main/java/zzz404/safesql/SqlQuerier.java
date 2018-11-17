@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
+import net.sf.cglib.proxy.Enhancer;
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.sql.QuietResultSetAnalyzer;
+import zzz404.safesql.sql.QuietResultSetIterator;
 
 public abstract class SqlQuerier {
 
@@ -31,6 +34,17 @@ public abstract class SqlQuerier {
         return this;
     }
 
+    protected <T> T createMockedObject(Class<T> clazz) {
+        Enhancer en = new Enhancer();
+        en.setSuperclass(clazz);
+        GetterTracer<T> getterLogger = new GetterTracer<>(clazz);
+        en.setCallback(getterLogger);
+
+        @SuppressWarnings("unchecked")
+        T mockedObject = (T) en.create();
+        return mockedObject;
+    }
+
     protected abstract String buildSql();
 
     protected abstract String buildSql_for_queryCount();
@@ -42,77 +56,113 @@ public abstract class SqlQuerier {
         }
     }
 
-    public abstract Object queryOne();
-
-    public <T> Optional<T> queryOne(Class<T> clazz) {
-        String sql = buildSql();
-        QuietConnection conn = ConnectionFactory.get().getQuietConnection();
-        try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
-            setCondValueToPstmt(pstmt);
-            QuietResultSet rs = pstmt.executeQuery();
-            if (!rs.next()) {
-                return Optional.empty();
-            }
-            else {
-                T o = new QuietResultSetAnalyzer(rs).readToObject(clazz);
-                return Optional.of(o);
-            }
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
     private QuietPreparedStatement prepareStatement(String sql,
             QuietConnection conn) {
         if (offset > 0) {
-            return conn.prepareStatement(sql);
-        }
-        else {
             return conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_READ_ONLY);
         }
-    }
-
-    public <T> List<T> queryList(Class<T> clazz) {
-        String sql = buildSql();
-        QuietConnection conn = ConnectionFactory.get().getQuietConnection();
-        try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
-            setCondValueToPstmt(pstmt);
-            QuietResultSet rs = pstmt.executeQuery();
-            List<T> result = new ArrayList<>();
-            QuietResultSetAnalyzer rsAnalyzer = new QuietResultSetAnalyzer(rs);
-            int i = 0;
-            while (rs.next()) {
-                if (limit > 0 && ++i > limit) {
-                    break;
-                }
-                T o = rsAnalyzer.readToObject(clazz);
-                result.add(o);
-            }
-            return result;
+        else {
+            return conn.prepareStatement(sql);
         }
     }
 
-    public int queryCount() {
-        String sql = buildSql_for_queryCount();
-        QuietConnection conn = ConnectionFactory.get().getQuietConnection();
-        try (QuietPreparedStatement pstmt = conn.prepareStatement(sql)) {
+    private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
+        String sql = buildSql();
+
+        try (QuietConnection conn = ConnectionFactory.get()
+                .getQuietConnection();
+                QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondValueToPstmt(pstmt);
-            ResultSet rs = pstmt.executeQuery();
+            QuietResultSet rs = pstmt.executeQuery();
+            return func.apply(rs);
+        }
+    }
+
+    protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
+        // TODO
+        return null;
+    }
+
+    public final int queryCount() {
+        String sql = buildSql_for_queryCount();
+
+        try (QuietConnection conn = ConnectionFactory.get()
+                .getQuietConnection();
+                QuietPreparedStatement pstmt = conn.prepareStatement(sql)) {
+            setCondValueToPstmt(pstmt);
+            QuietResultSet rs = pstmt.executeQuery();
             rs.next();
             return rs.getInt(1);
         }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
     }
 
-    public abstract Page<?> queryPage();
+    public final <T> Optional<T> queryOne(Function<QuietResultSet, T> func) {
+        return query_then_mapAll(rs -> {
+            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset,
+                    1);
+            if (iter.hasNext()) {
+                T t = func.apply(iter.next());
+                return Optional.ofNullable(t);
+            }
+            else {
+                return Optional.empty();
+            }
+        });
+    }
 
-    public <T> Page<T> queryPage(Class<T> clazz) {
+    public final <T> Optional<T> queryOne(Class<T> clazz) {
+        return queryOne(rs -> rsToObject(rs, clazz));
+    }
+
+    public abstract Object queryOne();
+
+    public final void query_then_consumeEach(
+            Consumer<QuietResultSet> consumer) {
+        query_then_mapAll(rs -> {
+            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset,
+                    limit);
+            while (iter.hasNext()) {
+                consumer.accept(rs);
+            }
+            return null;
+        });
+    }
+
+    public final <T> List<T> queryList(Class<T> clazz) {
+        ArrayList<T> result = new ArrayList<>();
+        query_then_consumeEach(rs -> {
+            result.add(rsToObject(rs, clazz));
+        });
+        return result;
+    }
+
+    public abstract List<?> queryList();
+
+    public final <T> Page<T> queryPage(Class<T> clazz) {
         int totalCount = queryCount();
         List<T> result = queryList(clazz);
         return new Page<>(totalCount, result);
     }
+
+    public abstract Page<?> queryPage();
+
+    public final <T> T queryRsStream(
+            Function<Stream<QuietResultSet>, T> rsStreamReader) {
+        return query_then_mapAll(rs -> {
+            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset,
+                    limit);
+            Stream<QuietResultSet> stream = CommonUtils.iter_to_stream(iter);
+            return rsStreamReader.apply(stream);
+        });
+    }
+
+    public final <T, E> T queryStream(Class<E> clazz,
+            Function<Stream<E>, T> objStreamReader) {
+        return queryRsStream(rsStream -> {
+            Stream<E> objStream = rsStream.map(rs -> rsToObject(rs, clazz));
+            return objStreamReader.apply(objStream);
+        });
+    }
+
 }

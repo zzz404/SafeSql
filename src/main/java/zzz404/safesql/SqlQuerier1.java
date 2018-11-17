@@ -3,13 +3,14 @@ package zzz404.safesql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-
-import net.sf.cglib.proxy.Enhancer;
 
 public class SqlQuerier1<T> extends SqlQuerier {
 
@@ -18,20 +19,9 @@ public class SqlQuerier1<T> extends SqlQuerier {
 
     public SqlQuerier1(Class<T> clazz) {
         this.clazz = clazz;
-        this.mockedObject = createMockedObject();
+        this.mockedObject = createMockedObject(clazz);
         
         this.columnNames = Arrays.asList("*");
-    }
-
-    private T createMockedObject() {
-        Enhancer en = new Enhancer();
-        en.setSuperclass(clazz);
-        GetterTracer<T> getterLogger = new GetterTracer<>(clazz);
-        en.setCallback(getterLogger);
-
-        @SuppressWarnings("unchecked")
-        T mockedObject = (T) en.create();
-        return mockedObject;
     }
 
     public SqlQuerier1<T> select(Consumer<T> consumer) {
@@ -97,7 +87,17 @@ public class SqlQuerier1<T> extends SqlQuerier {
     }
 
     @Override
+    public List<T> queryList() {
+        return queryList(clazz);
+    }
+    
+    @Override
     public Page<T> queryPage() {
         return queryPage(clazz);
     }
+
+    public <E> E queryStream(Function<Stream<T>, E> streamReader) {
+        return queryStream(clazz, streamReader);
+    }
+
 }

@@ -15,6 +15,13 @@ public class Sql {
         return new SqlQuerier1<>(class1);
     }
 
+    public static <T, U> SqlQuerier2<T, U> from(Class<T> class1, Class<U> class2) {
+        QueryContext ctx = new QueryContext();
+        QueryContext.INSTANCE.set(ctx);
+
+        return new SqlQuerier2<>(class1, class2);
+    }
+
     @SafeVarargs
     public static <T> Condition cond(T field, String operator, T... values) {
         QueryContext ctx = QueryContext.INSTANCE.get();

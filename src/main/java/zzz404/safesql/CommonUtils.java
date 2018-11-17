@@ -46,7 +46,7 @@ public final class CommonUtils {
         Object[] extract(T t);
     }
     
-    public static <T> Stream<T> toStream(Iterator<T> iter) {
+    public static <T> Stream<T> iter_to_stream(Iterator<T> iter) {
         Spliterator<T> spliterator;
         if (!iter.hasNext()) {
             spliterator = Spliterators.emptySpliterator();

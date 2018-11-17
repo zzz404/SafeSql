@@ -3,29 +3,20 @@ package zzz404.safesql.sql;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.lang3.Validate;
-
 public class QuietResultSetIterator implements Iterator<QuietResultSet> {
     private QuietResultSet rs;
-    private int limit = -1;
+    private int limit = 0;
 
     private boolean hasNext = true;
     private int count_of_dataInput = 0;
     private int count_of_dataOutput = 0;
 
-    public QuietResultSetIterator(QuietResultSet rs) {
-        this(rs, null, null);
-    }
-
-    public QuietResultSetIterator(QuietResultSet rs, Integer start,
-            Integer limit) {
+    public QuietResultSetIterator(QuietResultSet rs, int offset, int limit) {
         this.rs = rs;
-        if (start != null) {
-            this.rs.absolute(start);
+        if (offset > 0) {
+            this.rs.absolute(offset);
         }
-        if (limit != null) {
-            this.limit = limit;
-        }
+        this.limit = limit;
         this.hasNext();
     }
 

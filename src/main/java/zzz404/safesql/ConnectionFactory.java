@@ -11,7 +11,7 @@ public abstract class ConnectionFactory {
     private static Map<String, ConnectionFactoryImpl> map = Collections
             .synchronizedMap(new HashMap<>());
 
-    protected String tablePrefix;
+    protected boolean tablePrefix;
     protected boolean snakeFormCompatable;
     protected ConnectionProvider connectionProvider;
 
@@ -30,7 +30,7 @@ public abstract class ConnectionFactory {
         return factory;
     }
 
-    public ConnectionFactory setTablePrefix(String tablePrefix) {
+    public ConnectionFactory setTablePrefix(boolean tablePrefix) {
         this.tablePrefix = tablePrefix;
         return this;
     }
