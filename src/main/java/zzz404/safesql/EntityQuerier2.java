@@ -107,7 +107,7 @@ public class EntityQuerier2<T, U> extends DynamicQuerier {
         return null;
     }
 
-    public <E> E queryStream(Function<Stream<Tuple2<T, U>>, E> streamReader) {
+    public <E> E queryEntitiesStream(Function<Stream<Tuple2<T, U>>, E> streamReader) {
         // TODO
         return null;
     }

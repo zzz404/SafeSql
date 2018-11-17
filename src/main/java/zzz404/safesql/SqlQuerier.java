@@ -119,7 +119,7 @@ public abstract class SqlQuerier {
         return new Page<>(totalCount, result);
     }
 
-    public final <T> T queryRsStream(
+    public final <T> T queryStream(
             Function<Stream<QuietResultSet>, T> rsStreamReader) {
         return query_then_mapAll(rs -> {
             QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset,
@@ -131,7 +131,7 @@ public abstract class SqlQuerier {
 
     public final <T, E> T queryStream(Class<E> clazz,
             Function<Stream<E>, T> objStreamReader) {
-        return queryRsStream(rsStream -> {
+        return queryStream(rsStream -> {
             Stream<E> objStream = rsStream.map(rs -> rsToObject(rs, clazz));
             return objStreamReader.apply(objStream);
         });

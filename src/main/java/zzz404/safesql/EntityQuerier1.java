@@ -96,7 +96,7 @@ public class EntityQuerier1<T> extends DynamicQuerier {
         return queryPage(clazz);
     }
 
-    public <E> E queryStream(Function<Stream<T>, E> streamReader) {
+    public <E> E queryEntityStream(Function<Stream<T>, E> streamReader) {
         return queryStream(clazz, streamReader);
     }
 
