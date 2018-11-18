@@ -9,18 +9,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.helper.JdbcPacket;
+import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestSqlQuerier {
 
-    private JdbcPacket packet;
+    private FakeDatabase packet;
 
     @BeforeEach
     void beforeEach() {
         ConnectionFactory.create();
-        packet = new JdbcPacket();
+        packet = new FakeDatabase();
         ConnectionFactory.get()
                 .setConnectionPrivider(() -> packet.getConnection());
     }
@@ -32,7 +32,7 @@ class TestSqlQuerier {
 
     @Test
     void test_queryCount() {
-        packet.bindData(7);
+        packet.pushData(7);
         SqlQuerier q = new MySqlQuerier();
         assertEquals(7, q.queryCount());
     }
@@ -46,7 +46,7 @@ class TestSqlQuerier {
 
     @Test
     void test_queryOne_twoData_returnFirst() {
-        packet.bindData(3, 6);
+        packet.pushData(3, 6);
         SqlQuerier q = new MySqlQuerier();
         Optional<Integer> result = q.queryOne(Integer.class);
         assertEquals(3, result.get().intValue());
@@ -54,7 +54,7 @@ class TestSqlQuerier {
 
     @Test
     void test_queryOne_offset() {
-        packet.bindData(3, 1, 4, 1, 5, 9);
+        packet.pushData(3, 1, 4, 1, 5, 9);
         SqlQuerier q = new MySqlQuerier().offset(4);
         Optional<Integer> result = q.queryOne(Integer.class);
         assertEquals(5, result.get().intValue());
@@ -62,10 +62,28 @@ class TestSqlQuerier {
 
     @Test
     void test_queryList() {
-        packet.bindData(7, 5);
-        MySqlQuerier q = new MySqlQuerier();
+        packet.pushData(7, 5);
+        SqlQuerier q = new MySqlQuerier();
         List<Integer> result = q.queryList(Integer.class);
         assertTrue(UtilsForTest.isEquals(result, 7, 5));
+    }
+
+    @Test
+    void test_queryList_offset() {
+        packet.pushData(3, 1, 4, 1, 5, 9);
+        SqlQuerier q = new MySqlQuerier().offset(4).limit(5);
+        List<Integer> result = q.queryList(Integer.class);
+        assertTrue(UtilsForTest.isEquals(result, 5, 9));
+    }
+
+    @Test
+    void test_queryPage() {
+        packet.pushData(6);
+        packet.pushData(3, 1, 4, 1, 5, 9);
+        SqlQuerier q = new MySqlQuerier().offset(2).limit(3);
+        Page<Integer> page = q.queryPage(Integer.class);
+        assertEquals(6, page.getTotalCount());
+        assertTrue(UtilsForTest.isEquals(page.getResult(), 4, 1, 5));
     }
 
     public static class MySqlQuerier extends SqlQuerier {

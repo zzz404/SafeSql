@@ -102,7 +102,7 @@ public abstract class SqlQuerier {
             QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset,
                     limit);
             while (iter.hasNext()) {
-                consumer.accept(rs);
+                consumer.accept(iter.next());
             }
             return null;
         });
