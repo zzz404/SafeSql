@@ -12,6 +12,7 @@ import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.QuietResultSetIterator;
+import zzz404.safesql.sql.ResultSetAnalyzer;
 
 public abstract class SqlQuerier {
 
@@ -34,11 +35,9 @@ public abstract class SqlQuerier {
 
     protected abstract void setCondValueToPstmt(QuietPreparedStatement pstmt);
 
-    private QuietPreparedStatement prepareStatement(String sql,
-            QuietConnection conn) {
+    private QuietPreparedStatement prepareStatement(String sql, QuietConnection conn) {
         if (offset > 0) {
-            return conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+            return conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         }
         else {
             return conn.prepareStatement(sql);
@@ -48,8 +47,7 @@ public abstract class SqlQuerier {
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
         String sql = buildSql();
 
-        try (QuietConnection conn = ConnectionFactory.get()
-                .getQuietConnection();
+        try (QuietConnection conn = QueryContext.get().getQuietConnection();
                 QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondValueToPstmt(pstmt);
             QuietResultSet rs = pstmt.executeQuery();
@@ -57,19 +55,14 @@ public abstract class SqlQuerier {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        if (clazz == Integer.class) {
-            return (T) new Integer(rs.getInt(1));
-        }
-        return null;
+        return new ResultSetAnalyzer(rs).mapRsToObject(clazz);
     }
 
     public final int queryCount() {
         String sql = buildSql_for_queryCount();
 
-        try (QuietConnection conn = ConnectionFactory.get()
-                .getQuietConnection();
+        try (QuietConnection conn = QueryContext.get().getQuietConnection();
                 QuietPreparedStatement pstmt = conn.prepareStatement(sql)) {
             setCondValueToPstmt(pstmt);
             QuietResultSet rs = pstmt.executeQuery();
@@ -80,8 +73,7 @@ public abstract class SqlQuerier {
 
     public final <T> Optional<T> queryOne(Function<QuietResultSet, T> func) {
         return query_then_mapAll(rs -> {
-            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset,
-                    1);
+            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset, 1);
             if (iter.hasNext()) {
                 T t = func.apply(iter.next());
                 return Optional.ofNullable(t);
@@ -96,11 +88,9 @@ public abstract class SqlQuerier {
         return queryOne(rs -> rsToObject(rs, clazz));
     }
 
-    public final void query_then_consumeEach(
-            Consumer<QuietResultSet> consumer) {
+    public final void query_then_consumeEach(Consumer<QuietResultSet> consumer) {
         query_then_mapAll(rs -> {
-            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset,
-                    limit);
+            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset, limit);
             while (iter.hasNext()) {
                 consumer.accept(iter.next());
             }
@@ -122,18 +112,15 @@ public abstract class SqlQuerier {
         return new Page<>(totalCount, result);
     }
 
-    public final <T> T queryStream(
-            Function<Stream<QuietResultSet>, T> rsStreamReader) {
+    public final <T> T queryStream(Function<Stream<QuietResultSet>, T> rsStreamReader) {
         return query_then_mapAll(rs -> {
-            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset,
-                    limit);
+            QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset, limit);
             Stream<QuietResultSet> stream = CommonUtils.iter_to_stream(iter);
             return rsStreamReader.apply(stream);
         });
     }
 
-    public final <T, E> T queryStream(Class<E> clazz,
-            Function<Stream<E>, T> objStreamReader) {
+    public final <T, E> T queryStream(Class<E> clazz, Function<Stream<E>, T> objStreamReader) {
         return queryStream(rsStream -> {
             Stream<E> objStream = rsStream.map(rs -> rsToObject(rs, clazz));
             return objStreamReader.apply(objStream);

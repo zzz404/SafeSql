@@ -30,7 +30,7 @@ public class ResultSetFactory {
 
     public ResultSetFactory reset(String... values) {
         this.row = -1;
-        records = Record.singleColumn(values);
+        records = Record.singleColumn((Object[]) values);
         return this;
     }
 

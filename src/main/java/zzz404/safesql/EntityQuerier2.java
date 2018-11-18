@@ -27,20 +27,19 @@ public class EntityQuerier2<T, U> extends DynamicQuerier {
 
     public EntityQuerier2<T, U> select(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
-        this.columnNames = new ArrayList<>(new LinkedHashSet<>(
-                QueryContext.INSTANCE.get().takeAllColumnNames()));
+        this.columnNames = new ArrayList<>(new LinkedHashSet<>(QueryContext.get().takeAllColumnNames()));
         return this;
     }
 
     public EntityQuerier2<T, U> where(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
-        this.conditions = QueryContext.INSTANCE.get().conditions;
+        this.conditions = QueryContext.get().conditions;
         return this;
     }
 
     public EntityQuerier2<T, U> orderBy(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
-        this.orderBys = QueryContext.INSTANCE.get().orderBys;
+        this.orderBys = QueryContext.get().orderBys;
         return this;
     }
 

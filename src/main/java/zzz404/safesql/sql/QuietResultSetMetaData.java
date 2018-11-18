@@ -1,7 +1,6 @@
 package zzz404.safesql.sql;
 
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 
 import zzz404.safesql.CommonUtils;
 
@@ -16,7 +15,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.unwrap(iface);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -25,7 +24,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getColumnCount();
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -34,7 +33,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isAutoIncrement(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -43,7 +42,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isCaseSensitive(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -52,7 +51,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isSearchable(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -61,7 +60,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isWrapperFor(iface);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -70,7 +69,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isCurrency(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -79,7 +78,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isNullable(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -88,7 +87,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isSigned(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -97,7 +96,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getColumnDisplaySize(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -106,7 +105,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getColumnLabel(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -115,7 +114,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getColumnName(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -124,7 +123,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getSchemaName(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -133,7 +132,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getPrecision(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -142,7 +141,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getScale(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -151,7 +150,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getTableName(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -160,7 +159,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getCatalogName(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -169,7 +168,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getColumnType(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -178,7 +177,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getColumnTypeName(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -187,7 +186,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isReadOnly(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -196,7 +195,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isWritable(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -205,7 +204,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.isDefinitelyWritable(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
@@ -214,7 +213,7 @@ public class QuietResultSetMetaData implements ResultSetMetaData {
         try {
             return meta.getColumnClassName(column);
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }

@@ -24,8 +24,7 @@ public class FakeDatabase {
             conn = mock(Connection.class);
             pstmt = mock(PreparedStatement.class);
             when(conn.prepareStatement(anyString())).thenReturn(pstmt);
-            when(conn.prepareStatement(anyString(), anyInt(), anyInt()))
-                    .thenReturn(pstmt);
+            when(conn.prepareStatement(anyString(), anyInt(), anyInt())).thenReturn(pstmt);
             when(pstmt.executeQuery()).then(info -> {
                 rs = mock(ResultSet.class);
                 Record[] records = data.poll();

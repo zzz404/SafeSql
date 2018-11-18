@@ -5,18 +5,22 @@ public class Sql {
     public static final String BETWEEN = "between";
     public static final String IN = "in";
     public static final String LIKE = "like";
-    
-    private static QuerierFactory querierFactory = new QuerierFactory();
-    
-    private Sql() {}
 
-    public static  QuerierFactory use(String name) {
-        QueryContext ctx = new QueryContext(name);
-        QueryContext.INSTANCE.set(ctx);
+    private static QuerierFactory querierFactory = new QuerierFactory();
+
+    private Sql() {
+    }
+
+    public static QuerierFactory use() {
+        return use("");
+    }
+
+    public static QuerierFactory use(String name) {
+        QueryContext.create(name);
         return querierFactory;
     }
 
-    public static  StaticSqlQuerier sql(String sql) {
+    public static StaticSqlQuerier sql(String sql) {
         return use("").sql(sql);
     }
 
@@ -30,7 +34,7 @@ public class Sql {
 
     @SafeVarargs
     public static <T> Condition cond(T field, String operator, T... values) {
-        QueryContext ctx = QueryContext.INSTANCE.get();
+        QueryContext ctx = QueryContext.get();
         Condition cond = Condition.of(ctx.takeColumnName(), operator, values);
         ctx.conditions.add(cond);
         return cond;
@@ -41,10 +45,10 @@ public class Sql {
     }
 
     private static void addOrderByToContext(boolean isAsc) {
-        QueryContext ctx = QueryContext.INSTANCE.get();
+        QueryContext ctx = QueryContext.get();
         ctx.orderBys.add(new OrderBy(ctx.takeColumnName(), isAsc));
     }
-    
+
     public static void desc(Object o) {
         addOrderByToContext(false);
     }

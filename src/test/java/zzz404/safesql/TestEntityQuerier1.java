@@ -8,11 +8,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.ListUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.Document;
 
 class TestEntityQuerier1 {
+
+    @AfterEach
+    void afterEach() {
+        QueryContext.clear();
+    }
 
     @Test
     void test_select_withAssignedFields() {
@@ -67,8 +73,7 @@ class TestEntityQuerier1 {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new InCondition("id", 3, 1, 4, 1, 5, 9, 2, 6, 5, 3),
-                q.conditions.get(0));
+        assertEquals(new InCondition("id", 3, 1, 4, 1, 5, 9, 2, 6, 5, 3), q.conditions.get(0));
     }
 
     @Test
@@ -79,15 +84,13 @@ class TestEntityQuerier1 {
         });
         assertEquals(2, q.conditions.size());
         assertEquals(new OpCondition("id", ">", 3), q.conditions.get(0));
-        assertEquals(new OpCondition("title", "like", "abc%"),
-                q.conditions.get(1));
+        assertEquals(new OpCondition("title", "like", "abc%"), q.conditions.get(1));
     }
 
     @Test
     void test_where_or() {
         EntityQuerier1<Document> q = from(Document.class).where(d -> {
-            cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(),
-                    "=", 1);
+            cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(), "=", 1);
         });
         assertEquals(1, q.conditions.size());
         assertTrue(q.conditions.get(0) instanceof OrCondition);
@@ -130,8 +133,7 @@ class TestEntityQuerier1 {
                 + " WHERE (id > ? OR ownerId = ?) AND title like ? ORDER BY id ASC, title DESC";
         assertEquals(sql, q.buildSql());
 
-        sql = "SELECT COUNT(*) FROM Document"
-                + " WHERE (id > ? OR ownerId = ?) AND title like ?";
+        sql = "SELECT COUNT(*) FROM Document" + " WHERE (id > ? OR ownerId = ?) AND title like ?";
         assertEquals(sql, q.buildSql_for_queryCount());
     }
 
@@ -146,4 +148,7 @@ class TestEntityQuerier1 {
         assertEquals(sql, q.buildSql_for_queryCount());
     }
 
+    void coverRest() {
+        from(Document.class).offset(1).limit(1);
+    }
 }

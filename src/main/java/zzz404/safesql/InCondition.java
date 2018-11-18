@@ -17,8 +17,7 @@ public class InCondition extends Condition {
 
     @Override
     public String toString() {
-        return "InCondition [field=" + columnName + ", values="
-                + Arrays.toString(values) + "]";
+        return "InCondition [field=" + columnName + ", values=" + Arrays.toString(values) + "]";
     }
 
     @Override
@@ -28,15 +27,12 @@ public class InCondition extends Condition {
         }
         else {
             return columnName + " IN ("
-                    + Collections.nCopies(values.length, "?").stream()
-                            .collect(Collectors.joining(", "))
-                    + ")";
+                    + Collections.nCopies(values.length, "?").stream().collect(Collectors.joining(", ")) + ")";
         }
     }
 
     @Override
-    protected int setValueToPstmt_and_returnNextIndex(int i,
-            QuietPreparedStatement pstmt) {
+    protected int setValueToPstmt_and_returnNextIndex(int i, QuietPreparedStatement pstmt) {
         for (Object value : values) {
             pstmt.setObject(i++, value);
         }

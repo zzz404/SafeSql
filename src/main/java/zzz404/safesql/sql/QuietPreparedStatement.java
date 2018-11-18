@@ -330,8 +330,7 @@ public class QuietPreparedStatement implements PreparedStatement {
     }
 
     @SuppressWarnings("deprecation")
-    public void setUnicodeStream(int parameterIndex, InputStream x,
-            int length) {
+    public void setUnicodeStream(int parameterIndex, InputStream x, int length) {
         try {
             pstmt.setUnicodeStream(parameterIndex, x, length);
         }
@@ -493,8 +492,7 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public void setCharacterStream(int parameterIndex, Reader reader,
-            int length) {
+    public void setCharacterStream(int parameterIndex, Reader reader, int length) {
         try {
             pstmt.setCharacterStream(parameterIndex, reader, length);
         }
@@ -692,8 +690,7 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public void setNCharacterStream(int parameterIndex, Reader value,
-            long length) {
+    public void setNCharacterStream(int parameterIndex, Reader value, long length) {
         try {
             pstmt.setNCharacterStream(parameterIndex, value, length);
         }
@@ -738,8 +735,7 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public void setBlob(int parameterIndex, InputStream inputStream,
-            long length) {
+    public void setBlob(int parameterIndex, InputStream inputStream, long length) {
         try {
             pstmt.setBlob(parameterIndex, inputStream, length);
         }
@@ -775,8 +771,7 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public void setObject(int parameterIndex, Object x, int targetSqlType,
-            int scaleOrLength) {
+    public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) {
         try {
             pstmt.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
         }
@@ -839,8 +834,7 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public void setBinaryStream(int parameterIndex, InputStream x,
-            long length) {
+    public void setBinaryStream(int parameterIndex, InputStream x, long length) {
         try {
             pstmt.setBinaryStream(parameterIndex, x, length);
         }
@@ -858,8 +852,7 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public void setCharacterStream(int parameterIndex, Reader reader,
-            long length) {
+    public void setCharacterStream(int parameterIndex, Reader reader, long length) {
         try {
             pstmt.setCharacterStream(parameterIndex, reader, length);
         }
@@ -994,8 +987,7 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public void setObject(int parameterIndex, Object x, SQLType targetSqlType,
-            int scaleOrLength) {
+    public void setObject(int parameterIndex, Object x, SQLType targetSqlType, int scaleOrLength) {
         try {
             pstmt.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
         }

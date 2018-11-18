@@ -14,20 +14,14 @@ class GetterTracer<T> implements MethodInterceptor {
     }
 
     @Override
-    public Object intercept(Object obj, Method method, Object[] args,
-            MethodProxy proxy) {
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) {
 
         MethodAnalyzer m = classAnalyzer.getMethodAnalyzer(method);
         if (m.isGetter()) {
-            QueryContext ctx = QueryContext.INSTANCE.get();
+            QueryContext ctx = QueryContext.get();
             ctx.addColumnName(m.getColumnName());
         }
-        try {
-            return proxy.invokeSuper(obj, args);
-        }
-        catch (Throwable e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
+        return NoisySupplier.getQuiet(() -> proxy.invokeSuper(obj, args));
     }
 
 }

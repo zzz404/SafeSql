@@ -15,8 +15,7 @@ public class BetweenCondition extends Condition {
 
     @Override
     public String toString() {
-        return "BetweenCondition [field=" + columnName + ", value1=" + value1
-                + ", value2=" + value2 + "]";
+        return "BetweenCondition [field=" + columnName + ", value1=" + value1 + ", value2=" + value2 + "]";
     }
 
     @Override
@@ -25,8 +24,7 @@ public class BetweenCondition extends Condition {
     }
 
     @Override
-    protected int setValueToPstmt_and_returnNextIndex(int i,
-            QuietPreparedStatement pstmt) {
+    protected int setValueToPstmt_and_returnNextIndex(int i, QuietPreparedStatement pstmt) {
         pstmt.setObject(i++, value1);
         pstmt.setObject(i++, value2);
         return i;
@@ -34,8 +32,7 @@ public class BetweenCondition extends Condition {
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that,
-                o -> new Object[] { o.columnName, o.value1, o.value2 });
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.columnName, o.value1, o.value2 });
     }
 
 }

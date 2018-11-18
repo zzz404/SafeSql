@@ -18,7 +18,7 @@ public class OrCondition extends Condition {
     }
 
     public <T> OrCondition or(T field, String operator, Object... values) {
-        QueryContext ctx = QueryContext.INSTANCE.get();
+        QueryContext ctx = QueryContext.get();
         Condition cond = Condition.of(ctx.takeColumnName(), operator, values);
         subConditions.add(cond);
         return this;
@@ -26,13 +26,11 @@ public class OrCondition extends Condition {
 
     @Override
     public String toClause() {
-        return "(" + subConditions.stream().map(c -> c.toClause())
-                .collect(Collectors.joining(" OR ")) + ")";
+        return "(" + subConditions.stream().map(c -> c.toClause()).collect(Collectors.joining(" OR ")) + ")";
     }
 
     @Override
-    protected int setValueToPstmt_and_returnNextIndex(int i,
-            QuietPreparedStatement pstmt) {
+    protected int setValueToPstmt_and_returnNextIndex(int i, QuietPreparedStatement pstmt) {
         for (Condition cond : subConditions) {
             i = cond.setValueToPstmt_and_returnNextIndex(i, pstmt);
         }

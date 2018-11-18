@@ -14,8 +14,7 @@ abstract class Condition {
         this.columnName = columnName;
     }
 
-    public static <T> Condition of(String columnName, String operator,
-            Object... values) {
+    public static <T> Condition of(String columnName, String operator, Object... values) {
         if (operator.equals(BETWEEN)) {
             Validate.isTrue(values.length == 2);
             return new BetweenCondition(columnName, values[0], values[1]);
@@ -30,7 +29,7 @@ abstract class Condition {
     }
 
     public <T> Condition or(T field, String operator, Object... values) {
-        QueryContext ctx = QueryContext.INSTANCE.get();
+        QueryContext ctx = QueryContext.get();
         Condition cond = Condition.of(ctx.takeColumnName(), operator, values);
         cond = new OrCondition(this, cond);
 
@@ -40,7 +39,6 @@ abstract class Condition {
 
     public abstract String toClause();
 
-    protected abstract int setValueToPstmt_and_returnNextIndex(int i,
-            QuietPreparedStatement pstmt);
+    protected abstract int setValueToPstmt_and_returnNextIndex(int i, QuietPreparedStatement pstmt);
 
 }

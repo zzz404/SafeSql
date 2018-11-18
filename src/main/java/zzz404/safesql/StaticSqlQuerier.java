@@ -1,5 +1,7 @@
 package zzz404.safesql;
 
+import org.apache.commons.lang3.Validate;
+
 import zzz404.safesql.sql.QuietPreparedStatement;
 
 public class StaticSqlQuerier extends SqlQuerier {
@@ -11,7 +13,7 @@ public class StaticSqlQuerier extends SqlQuerier {
         this.sql = sql;
     }
 
-    public StaticSqlQuerier paramValues(Object[] paramValues) {
+    public StaticSqlQuerier paramValues(Object... paramValues) {
         this.paramValues = paramValues;
         return this;
     }
@@ -33,8 +35,17 @@ public class StaticSqlQuerier extends SqlQuerier {
     };
 
     protected String buildSql_for_queryCount() {
-        // TODO
-        return null;
+        String lowerSql = sql.toLowerCase();
+        Validate.isTrue(lowerSql.startsWith("select "));
+
+        String resultSql = sql;
+        int pos = lowerSql.lastIndexOf(" order ");
+        if (pos > 0) {
+            resultSql = resultSql.substring(0, pos);
+        }
+        pos = lowerSql.indexOf(" from ");
+        resultSql = "SELECT COUNT(*) FROM " + resultSql.substring(pos + 6);
+        return resultSql;
     };
 
     @Override

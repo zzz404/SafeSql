@@ -112,7 +112,7 @@ public class TestQuietResultSetIterator {
     private QuietResultSet fakeRs(String... values) {
         return ResultSetFactory.singleColumn(values).createQuiet();
     }
-    
+
     @Test
     public void test_hasNext_next_limited_normalOrder() throws SQLException {
         QuietResultSet rs = fakeRs("aaa", "bbb", "ccc", "ddd");

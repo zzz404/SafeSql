@@ -45,8 +45,7 @@ public class Record {
         return values[index - 1];
     }
 
-    public static void bindData(ResultSet rs, Record[] recs)
-            throws SQLException {
+    public static void bindData(ResultSet rs, Record[] recs) throws SQLException {
         Record[] records = (recs != null) ? recs : new Record[0];
         Mockito.reset(rs);
         int[] row = new int[] { -1 };

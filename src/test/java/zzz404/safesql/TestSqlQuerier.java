@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,14 +20,14 @@ class TestSqlQuerier {
 
     @BeforeEach
     void beforeEach() {
-        ConnectionFactory.create();
+        ConnectionFactory.create().setConnectionPrivider(() -> packet.getConnection());
+        QueryContext.create("");
         packet = new FakeDatabase();
-        ConnectionFactory.get()
-                .setConnectionPrivider(() -> packet.getConnection());
     }
 
     @AfterEach
     void afterEach() {
+        QueryContext.clear();
         ConnectionFactory.map.clear();
     }
 
@@ -84,6 +85,22 @@ class TestSqlQuerier {
         Page<Integer> page = q.queryPage(Integer.class);
         assertEquals(6, page.getTotalCount());
         assertTrue(UtilsForTest.isEquals(page.getResult(), 4, 1, 5));
+    }
+
+    @Test
+    void test_queryStream_of_ResultSet() {
+        packet.pushData("a", "b", "c");
+        SqlQuerier q = new MySqlQuerier();
+        String text = q.queryStream(stream -> stream.map(rs -> rs.getString(1)).collect(Collectors.joining(",")));
+        assertEquals("a,b,c", text);
+    }
+
+    @Test
+    void test_queryStream_of_Object() {
+        packet.pushData("a", "b", "c");
+        SqlQuerier q = new MySqlQuerier();
+        String text = q.queryStream(String.class, stream -> stream.collect(Collectors.joining(",")));
+        assertEquals("a,b,c", text);
     }
 
     public static class MySqlQuerier extends SqlQuerier {

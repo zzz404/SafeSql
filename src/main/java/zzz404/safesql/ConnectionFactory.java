@@ -8,8 +8,7 @@ import org.apache.commons.lang3.Validate;
 
 public abstract class ConnectionFactory {
 
-    static Map<String, ConnectionFactoryImpl> map = Collections
-            .synchronizedMap(new HashMap<>());
+    static Map<String, ConnectionFactoryImpl> map = Collections.synchronizedMap(new HashMap<>());
 
     protected boolean tablePrefix;
     protected boolean snakeFormCompatable;
@@ -22,8 +21,7 @@ public abstract class ConnectionFactory {
     public static synchronized ConnectionFactory create(String name) {
         Validate.notNull(name);
         if (map.containsKey(name)) {
-            throw new ConfigException(
-                    "ConnectionFactory name:" + name + " conflict!");
+            throw new ConfigException("ConnectionFactory name:" + name + " conflict!");
         }
         ConnectionFactoryImpl factory = new ConnectionFactoryImpl();
         map.put(name, factory);
@@ -35,21 +33,19 @@ public abstract class ConnectionFactory {
         return this;
     }
 
-    public ConnectionFactory setSnakeFormCompatable(
-            boolean snakeFormCompatable) {
+    public ConnectionFactory setSnakeFormCompatable(boolean snakeFormCompatable) {
         this.snakeFormCompatable = snakeFormCompatable;
         return this;
     }
 
-    public ConnectionFactory setConnectionPrivider(
-            ConnectionProvider connectionProvider) {
+    public ConnectionFactory setConnectionPrivider(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;
         return this;
     }
 
-    protected static ConnectionFactoryImpl get() {
-        return get("");
-    }
+    // protected static ConnectionFactoryImpl get() {
+    // return get("");
+    // }
 
     protected static ConnectionFactoryImpl get(String name) {
         return map.get(name);

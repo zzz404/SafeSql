@@ -27,8 +27,7 @@ public class TestConnectionFactory {
     @Test
     public void test_create_nameConflict_throwException() {
         ConnectionFactory.create("ds1");
-        ConfigException ex = assertThrows(ConfigException.class,
-                () -> ConnectionFactory.create("ds1"));
+        ConfigException ex = assertThrows(ConfigException.class, () -> ConnectionFactory.create("ds1"));
         assertTrue(ex.getMessage().contains("conflict"));
         assertTrue(ex.getMessage().contains("ds1"));
     }

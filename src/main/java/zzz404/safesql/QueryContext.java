@@ -9,8 +9,9 @@ import zzz404.safesql.sql.QuietConnection;
 
 public class QueryContext {
 
-    public static final ThreadLocal<QueryContext> INSTANCE = new ThreadLocal<>();
+    private static final ThreadLocal<QueryContext> container = new ThreadLocal<>();
 
+    private String name;
     private ConnectionFactoryImpl connFactory;
 
     private Queue<String> columnNames = new LinkedList<>();
@@ -19,6 +20,7 @@ public class QueryContext {
     List<OrderBy> orderBys = new ArrayList<>();
 
     public QueryContext(String name) {
+        this.name = name;
         this.connFactory = ConnectionFactory.get(name);
     }
 
@@ -44,9 +46,25 @@ public class QueryContext {
         conditions.set(conditions.size() - 1, cond);
     }
 
-    public void clear() {
-        columnNames.clear();
-        conditions.clear();
-        orderBys.clear();
+    public String getName() {
+        return name;
+    }
+
+    public static QueryContext create(String name) {
+        QueryContext ctx = new QueryContext(name);
+        container.set(ctx);
+        return ctx;
+    }
+
+    public static QueryContext get() {
+        QueryContext ctx = container.get();
+        if(ctx==null) {
+            throw new NoQueryContextException();
+        }
+        return ctx;
+    }
+
+    public static void clear() {
+        container.set(null);
     }
 }

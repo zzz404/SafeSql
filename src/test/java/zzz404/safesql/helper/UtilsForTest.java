@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
+import zzz404.safesql.NoisyRunnable;
 import zzz404.safesql.QueryContext;
 
 public class UtilsForTest {
@@ -29,7 +30,7 @@ public class UtilsForTest {
         }
     }
 
-    public static <T> void pass(Runnable runnable) {
+    public static <T> void pass(NoisyRunnable runnable) {
         try {
             runnable.run();
         }
@@ -39,11 +40,11 @@ public class UtilsForTest {
 
     public static void underQueryContext(Runnable runnable) {
         try {
-            QueryContext.INSTANCE.set(new QueryContext(""));
+            QueryContext.create("");
             runnable.run();
         }
         finally {
-            QueryContext.INSTANCE.set(null);
+            QueryContext.clear();
         }
     }
 

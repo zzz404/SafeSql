@@ -37,8 +37,7 @@ class MethodAnalyzer {
 
     private boolean matchGetterName_and_evaluateColumnName(String prefix) {
         String methodName = method.getName();
-        if (!methodName.startsWith(prefix)
-                || methodName.length() <= prefix.length()) {
+        if (!methodName.startsWith(prefix) || methodName.length() <= prefix.length()) {
             return false;
         }
         char firstLetterAfterPrefix = methodName.toCharArray()[prefix.length()];
@@ -46,8 +45,7 @@ class MethodAnalyzer {
         boolean isGetter = Character.isUpperCase(firstLetterAfterPrefix);
         if (isGetter) {
             // TODO support JPA annotation
-            this.columnName = Character.toLowerCase(firstLetterAfterPrefix)
-                    + methodName.substring(prefix.length() + 1);
+            this.columnName = Character.toLowerCase(firstLetterAfterPrefix) + methodName.substring(prefix.length() + 1);
         }
         return isGetter;
     }

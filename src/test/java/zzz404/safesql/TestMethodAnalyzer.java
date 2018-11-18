@@ -9,10 +9,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 class TestMethodAnalyzer {
 
     // @ParameterizedTest
-    @ValueSource(strings = { "title", "gettitle", "get", "getTitle_returnVoid",
-            "getTitle_withParameter", "isTitle",
-            "isEnabled_returnObjectBoolean",
-            "getDisabled_returnPrimitiveBooolean" })
+    @ValueSource(strings = { "title", "gettitle", "get", "getTitle_returnVoid", "getTitle_withParameter", "isTitle",
+            "isEnabled_returnObjectBoolean", "getDisabled_returnPrimitiveBooolean" })
     void test_isGetter_return_false(String methodName) {
         Method method = getMyMethod(methodName);
         assertFalse(new MethodAnalyzer(method).isGetter());

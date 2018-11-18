@@ -953,8 +953,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateAsciiStream(String columnLabel, InputStream x,
-            int length) {
+    public void updateAsciiStream(String columnLabel, InputStream x, int length) {
         try {
             rs.updateAsciiStream(columnLabel, x, length);
         }
@@ -963,8 +962,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateBinaryStream(String columnLabel, InputStream x,
-            int length) {
+    public void updateBinaryStream(String columnLabel, InputStream x, int length) {
         try {
             rs.updateBinaryStream(columnLabel, x, length);
         }
@@ -973,8 +971,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateCharacterStream(String columnLabel, Reader reader,
-            int length) {
+    public void updateCharacterStream(String columnLabel, Reader reader, int length) {
         try {
             rs.updateCharacterStream(columnLabel, reader, length);
         }
@@ -1496,8 +1493,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateNCharacterStream(String columnLabel, Reader reader,
-            long length) {
+    public void updateNCharacterStream(String columnLabel, Reader reader, long length) {
         try {
             rs.updateNCharacterStream(columnLabel, reader, length);
         }
@@ -1515,8 +1511,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateBinaryStream(int columnIndex, InputStream x,
-            long length) {
+    public void updateBinaryStream(int columnIndex, InputStream x, long length) {
         try {
             rs.updateBinaryStream(columnIndex, x, length);
         }
@@ -1534,8 +1529,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateAsciiStream(String columnLabel, InputStream x,
-            long length) {
+    public void updateAsciiStream(String columnLabel, InputStream x, long length) {
         try {
             rs.updateAsciiStream(columnLabel, x, length);
         }
@@ -1544,8 +1538,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateBinaryStream(String columnLabel, InputStream x,
-            long length) {
+    public void updateBinaryStream(String columnLabel, InputStream x, long length) {
         try {
             rs.updateBinaryStream(columnLabel, x, length);
         }
@@ -1554,8 +1547,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateCharacterStream(String columnLabel, Reader reader,
-            long length) {
+    public void updateCharacterStream(String columnLabel, Reader reader, long length) {
         try {
             rs.updateCharacterStream(columnLabel, reader, length);
         }
@@ -1564,8 +1556,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateBlob(int columnIndex, InputStream inputStream,
-            long length) {
+    public void updateBlob(int columnIndex, InputStream inputStream, long length) {
         try {
             rs.updateBlob(columnIndex, inputStream, length);
         }
@@ -1574,8 +1565,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateBlob(String columnLabel, InputStream inputStream,
-            long length) {
+    public void updateBlob(String columnLabel, InputStream inputStream, long length) {
         try {
             rs.updateBlob(columnLabel, inputStream, length);
         }
@@ -1764,8 +1754,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateObject(int columnIndex, Object x, SQLType targetSqlType,
-            int scaleOrLength) {
+    public void updateObject(int columnIndex, Object x, SQLType targetSqlType, int scaleOrLength) {
         try {
             rs.updateObject(columnIndex, x, targetSqlType, scaleOrLength);
         }
@@ -1774,8 +1763,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateObject(String columnLabel, Object x,
-            SQLType targetSqlType, int scaleOrLength) {
+    public void updateObject(String columnLabel, Object x, SQLType targetSqlType, int scaleOrLength) {
         try {
             rs.updateObject(columnLabel, x, targetSqlType, scaleOrLength);
         }
@@ -1793,8 +1781,7 @@ public class QuietResultSet implements ResultSet {
         }
     }
 
-    public void updateObject(String columnLabel, Object x,
-            SQLType targetSqlType) {
+    public void updateObject(String columnLabel, Object x, SQLType targetSqlType) {
         try {
             rs.updateObject(columnLabel, x, targetSqlType);
         }

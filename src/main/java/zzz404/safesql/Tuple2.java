@@ -8,7 +8,7 @@ public class Tuple2<T, U> {
         this.first = t;
         this.second = u;
     }
-    
+
     public T getFirst() {
         return first;
     }
