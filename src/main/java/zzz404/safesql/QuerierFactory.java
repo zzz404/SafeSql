@@ -5,11 +5,11 @@ public class QuerierFactory {
         return new StaticSqlQuerier(sql);
     }
 
-    public <T> EntityQuerier1<T> from(Class<T> clazz) {
-        return new EntityQuerier1<>(clazz);
+    public <T> OneTableQuerier<T> from(Class<T> clazz) {
+        return new OneTableQuerier<>(clazz);
     }
 
-    public <T, U> EntityQuerier2<T, U> from(Class<T> class1, Class<U> class2) {
-        return new EntityQuerier2<>(class1, class2);
+    public <T, U> TwoTableQuerier<T, U> from(Class<T> class1, Class<U> class2) {
+        return new TwoTableQuerier<>(class1, class2);
     }
 }

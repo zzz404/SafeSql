@@ -9,14 +9,14 @@ import java.util.stream.Stream;
 
 import zzz404.safesql.util.Tuple2;
 
-public class EntityQuerier2<T, U> extends DynamicQuerier {
+public class TwoTableQuerier<T, U> extends DynamicQuerier {
 
     private Class<T> class1;
     private Class<U> class2;
     private T mockedObject1;
     private U mockedObject2;
 
-    public EntityQuerier2(Class<T> class1, Class<U> class2) {
+    public TwoTableQuerier(Class<T> class1, Class<U> class2) {
         this.class1 = class1;
         this.class2 = class2;
         this.mockedObject1 = createMockedObject(class1, 1);
@@ -25,65 +25,34 @@ public class EntityQuerier2<T, U> extends DynamicQuerier {
         this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
     }
 
-    public EntityQuerier2<T, U> select(BiConsumer<T, U> consumer) {
+    public TwoTableQuerier<T, U> select(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
-        //this.columnNames = new ArrayList<>(new LinkedHashSet<>(QueryContext.get().takeAllTableColumns()));
+        this.tableColumns = QueryContext.get().takeAllTableColumns();
         return this;
     }
 
-    public EntityQuerier2<T, U> where(BiConsumer<T, U> consumer) {
+    public TwoTableQuerier<T, U> where(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
         this.conditions = QueryContext.get().conditions;
         return this;
     }
 
-    public EntityQuerier2<T, U> orderBy(BiConsumer<T, U> consumer) {
+    public TwoTableQuerier<T, U> orderBy(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
         this.orderBys = QueryContext.get().orderBys;
         return this;
     }
 
     @Override
-    public EntityQuerier2<T, U> offset(int offset) {
+    public TwoTableQuerier<T, U> offset(int offset) {
         super.offset(offset);
         return this;
     }
 
     @Override
-    public EntityQuerier2<T, U> limit(int limit) {
+    public TwoTableQuerier<T, U> limit(int limit) {
         super.limit(limit);
         return this;
-    }
-
-    public String buildSql() {
-        // String tableName = ClassAnalyzer.get(class1, class2).getTableName();
-        // String sql = "SELECT " + StringUtils.join(columnNames, ", ") + " FROM
-        // "
-        // + tableName;
-        // if (!this.conditions.isEmpty()) {
-        // sql += " WHERE " + this.conditions.stream().map(Condition::toClause)
-        // .collect(Collectors.joining(" AND "));
-        // }
-        // if (!this.orderBys.isEmpty()) {
-        // sql += " ORDER BY " + this.orderBys.stream().map(OrderBy::toClause)
-        // .collect(Collectors.joining(", "));
-        // }
-        // return sql;
-        // TODO
-        return null;
-    }
-
-    public String buildSql_for_queryCount() {
-        // String tableName = ClassAnalyzer.get(class1, class2).getTableName();
-        // String sql = "SELECT COUNT(*) FROM "
-        // + tableName;
-        // if (!this.conditions.isEmpty()) {
-        // sql += " WHERE " + this.conditions.stream().map(Condition::toClause)
-        // .collect(Collectors.joining(" AND "));
-        // }
-        // return sql;
-        // TODO
-        return null;
     }
 
     @Override
@@ -109,5 +78,10 @@ public class EntityQuerier2<T, U> extends DynamicQuerier {
     public <E> E queryEntitiesStream(Function<Stream<Tuple2<T, U>>, E> streamReader) {
         // TODO
         return null;
+    }
+
+    @Override
+    protected String getTablesClause() {
+        return ClassAnalyzer.get(class1).getTableName() + " t1, " + ClassAnalyzer.get(class2).getTableName() + " t2";
     }
 }

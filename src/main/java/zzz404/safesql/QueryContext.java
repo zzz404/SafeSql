@@ -1,6 +1,7 @@
 package zzz404.safesql;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -37,9 +38,13 @@ public class QueryContext {
     }
 
     public List<TableColumn> takeAllTableColumns() {
-        ArrayList<TableColumn> result = new ArrayList<>(tableColumns);
+        ArrayList<TableColumn> result = new ArrayList<>(new LinkedHashSet<>(tableColumns));
         tableColumns.clear();
         return result;
+    }
+
+    public boolean hasMoreColumn() {
+        return !tableColumns.isEmpty();
     }
 
     public void replaceLastCondition(Condition cond) {
@@ -58,7 +63,7 @@ public class QueryContext {
 
     public static QueryContext get() {
         QueryContext ctx = container.get();
-        if(ctx==null) {
+        if (ctx == null) {
             throw new NoQueryContextException();
         }
         return ctx;

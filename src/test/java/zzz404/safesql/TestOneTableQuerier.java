@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.Document;
 
-class TestEntityQuerier1 {
+class TestOneTableQuerier {
 
     @AfterEach
     void afterEach() {
@@ -20,7 +20,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_select_withAssignedFields() {
-        EntityQuerier1<Document> q = from(Document.class);
+        OneTableQuerier<Document> q = from(Document.class);
         q.select(d -> {
             d.getId();
             d.getTitle();
@@ -31,7 +31,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_select_notCalled_meansAllFields() {
-        EntityQuerier1<Document> q = from(Document.class);
+        OneTableQuerier<Document> q = from(Document.class);
 
         assertEquals(1, q.tableColumns.size());
         assertEquals("*", q.getColumnsClause());
@@ -39,13 +39,13 @@ class TestEntityQuerier1 {
 
     @Test
     void test_where_notCalled_meansNoCondition() {
-        EntityQuerier1<Document> q = from(Document.class);
+        OneTableQuerier<Document> q = from(Document.class);
         assertEquals(0, q.conditions.size());
     }
 
     @Test
     void test_where_commonOperator() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
+        OneTableQuerier<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), "=", 3);
         });
 
@@ -55,7 +55,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_where_between() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
+        OneTableQuerier<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), BETWEEN, 1, 3);
         });
 
@@ -65,7 +65,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_where_in() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
+        OneTableQuerier<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), IN, 3, 1, 4, 1, 5, 9, 2, 6, 5, 3);
         });
 
@@ -75,7 +75,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_where_multiCondition() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
+        OneTableQuerier<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), ">", 3);
             cond(d.getTitle(), LIKE, "abc%");
         });
@@ -86,7 +86,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_where_or() {
-        EntityQuerier1<Document> q = from(Document.class).where(d -> {
+        OneTableQuerier<Document> q = from(Document.class).where(d -> {
             cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(), "=", 1);
         });
         assertEquals(1, q.conditions.size());
@@ -103,7 +103,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_orderBy() {
-        EntityQuerier1<Document> q = from(Document.class).orderBy(d -> {
+        OneTableQuerier<Document> q = from(Document.class).orderBy(d -> {
             asc(d.getId());
             desc(d.getTitle());
         });
@@ -115,7 +115,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_buildSql() {
-        EntityQuerier1<Document> q = from(Document.class).select(d -> {
+        OneTableQuerier<Document> q = from(Document.class).select(d -> {
             d.getId();
             d.getTitle();
         }).where(d -> {
@@ -136,7 +136,7 @@ class TestEntityQuerier1 {
 
     @Test
     void test_buildSql_simple() {
-        EntityQuerier1<Document> q = from(Document.class);
+        OneTableQuerier<Document> q = from(Document.class);
 
         String sql = "SELECT * FROM Document";
         assertEquals("SELECT * FROM Document", q.buildSql());
