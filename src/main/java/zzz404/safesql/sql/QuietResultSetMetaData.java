@@ -2,7 +2,7 @@ package zzz404.safesql.sql;
 
 import java.sql.ResultSetMetaData;
 
-import zzz404.safesql.CommonUtils;
+import zzz404.safesql.util.CommonUtils;
 
 public class QuietResultSetMetaData implements ResultSetMetaData {
     private ResultSetMetaData meta;

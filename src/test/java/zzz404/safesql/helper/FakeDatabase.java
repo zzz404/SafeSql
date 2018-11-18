@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import zzz404.safesql.NoisyRunnable;
+import zzz404.safesql.util.NoisyRunnable;
 
 public class FakeDatabase {
     private Connection conn;

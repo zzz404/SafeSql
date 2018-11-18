@@ -14,13 +14,13 @@ class TestBetweenCondition {
 
     @Test
     void test_toClause() {
-        BetweenCondition cond = new BetweenCondition("zzz", 123, 456);
+        BetweenCondition cond = new BetweenCondition(new TableColumn(0, "zzz"), 123, 456);
         assertEquals("zzz BETWEEN ? AND ?", cond.toClause());
     }
 
     @Test
     void test__setValueToPstmt_and_returnNextIndex() throws SQLException {
-        BetweenCondition cond = new BetweenCondition("zzz", 123, 456);
+        BetweenCondition cond = new BetweenCondition(new TableColumn(0, "zzz"), 123, 456);
         QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
 
         int nextIndex = cond.setValueToPstmt_and_returnNextIndex(1, pstmt);
@@ -34,6 +34,6 @@ class TestBetweenCondition {
 
     @Test
     void coverRest() {
-        new BetweenCondition("", "", "").toString();
+        new BetweenCondition(new TableColumn(0, "zzz"), 123, 456).toString();
     }
 }

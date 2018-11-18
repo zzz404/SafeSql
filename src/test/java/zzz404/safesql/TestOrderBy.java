@@ -7,15 +7,15 @@ import org.junit.jupiter.api.Test;
 public class TestOrderBy {
     @Test
     void test_toClause_asc() {
-        OrderBy orderBy = new OrderBy("aa", true);
+        OrderBy orderBy = new OrderBy(new TableColumn(0, "aa"), true);
         assertEquals("aa ASC", orderBy.toClause());
 
-        orderBy = new OrderBy("bb", false);
+        orderBy = new OrderBy(new TableColumn(0, "bb"), false);
         assertEquals("bb DESC", orderBy.toClause());
     }
 
     @Test
     void coverRest() {
-        new OrderBy("", false).toString();
+        new OrderBy(new TableColumn(0, ""), false).toString();
     }
 }

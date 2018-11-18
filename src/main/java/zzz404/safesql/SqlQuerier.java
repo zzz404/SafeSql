@@ -12,6 +12,7 @@ import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.QuietResultSetIterator;
+import zzz404.safesql.util.CommonUtils;
 import zzz404.safesql.sql.QuietResultSetAnalyzer;
 
 public abstract class SqlQuerier {

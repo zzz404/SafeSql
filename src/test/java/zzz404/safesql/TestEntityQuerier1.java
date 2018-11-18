@@ -4,10 +4,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static zzz404.safesql.Sql.*;
 
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections4.ListUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,16 +26,15 @@ class TestEntityQuerier1 {
             d.getTitle();
             d.setTitle("zzz");
         });
-        List<String> fields = Arrays.asList("id", "title");
-        assertTrue(ListUtils.isEqualList(fields, q.columnNames));
+        assertEquals("id, title", q.getColumnsClause());
     }
 
     @Test
     void test_select_notCalled_meansAllFields() {
         EntityQuerier1<Document> q = from(Document.class);
 
-        assertEquals(1, q.columnNames.size());
-        assertEquals("*", q.columnNames.get(0));
+        assertEquals(1, q.tableColumns.size());
+        assertEquals("*", q.getColumnsClause());
     }
 
     @Test
@@ -53,7 +50,7 @@ class TestEntityQuerier1 {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new OpCondition("id", "=", 3), q.conditions.get(0));
+        assertEquals(new OpCondition(new TableColumn(0, "id"), "=", 3), q.conditions.get(0));
     }
 
     @Test
@@ -63,7 +60,7 @@ class TestEntityQuerier1 {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new BetweenCondition("id", 1, 3), q.conditions.get(0));
+        assertEquals(new BetweenCondition(new TableColumn(0, "id"), 1, 3), q.conditions.get(0));
     }
 
     @Test
@@ -73,7 +70,7 @@ class TestEntityQuerier1 {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new InCondition("id", 3, 1, 4, 1, 5, 9, 2, 6, 5, 3), q.conditions.get(0));
+        assertEquals(new InCondition(new TableColumn(0, "id"), 3, 1, 4, 1, 5, 9, 2, 6, 5, 3), q.conditions.get(0));
     }
 
     @Test
@@ -83,8 +80,8 @@ class TestEntityQuerier1 {
             cond(d.getTitle(), LIKE, "abc%");
         });
         assertEquals(2, q.conditions.size());
-        assertEquals(new OpCondition("id", ">", 3), q.conditions.get(0));
-        assertEquals(new OpCondition("title", "like", "abc%"), q.conditions.get(1));
+        assertEquals(new OpCondition(new TableColumn(0, "id"), ">", 3), q.conditions.get(0));
+        assertEquals(new OpCondition(new TableColumn(0, "title"), "like", "abc%"), q.conditions.get(1));
     }
 
     @Test
@@ -99,9 +96,9 @@ class TestEntityQuerier1 {
         List<Condition> conds = cond.subConditions;
         assertEquals(3, conds.size());
 
-        assertEquals(new OpCondition("id", "<", 2), conds.get(0));
-        assertEquals(new OpCondition("id", ">", 10), conds.get(1));
-        assertEquals(new OpCondition("ownerId", "=", 1), conds.get(2));
+        assertEquals(new OpCondition(new TableColumn(0, "id"), "<", 2), conds.get(0));
+        assertEquals(new OpCondition(new TableColumn(0, "id"), ">", 10), conds.get(1));
+        assertEquals(new OpCondition(new TableColumn(0, "ownerId"), "=", 1), conds.get(2));
     }
 
     @Test
@@ -112,8 +109,8 @@ class TestEntityQuerier1 {
         });
 
         assertEquals(2, q.orderBys.size());
-        assertEquals(new OrderBy("id", true), q.orderBys.get(0));
-        assertEquals(new OrderBy("title", false), q.orderBys.get(1));
+        assertEquals(new OrderBy(new TableColumn(0, "id"), true), q.orderBys.get(0));
+        assertEquals(new OrderBy(new TableColumn(0, "title"), false), q.orderBys.get(1));
     }
 
     @Test

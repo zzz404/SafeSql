@@ -1,16 +1,18 @@
 package zzz404.safesql;
 
+import zzz404.safesql.util.CommonUtils;
+
 public final class OrderBy {
-    public String field;
+    public TableColumn tableColumn;
     public boolean isAsc;
 
-    public OrderBy(String field, boolean isAsc) {
-        this.field = field;
+    public OrderBy(TableColumn tableColumn, boolean isAsc) {
+        this.tableColumn = tableColumn;
         this.isAsc = isAsc;
     }
 
     public String toClause() {
-        return field + " " + (isAsc ? "ASC" : "DESC");
+        return tableColumn + " " + (isAsc ? "ASC" : "DESC");
     }
 
     @Override
@@ -20,7 +22,7 @@ public final class OrderBy {
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> new Object[] { o.field, o.isAsc });
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableColumn, o.isAsc });
     }
 
 }

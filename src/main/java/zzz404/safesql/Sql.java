@@ -35,7 +35,7 @@ public class Sql {
     @SafeVarargs
     public static <T> Condition cond(T field, String operator, T... values) {
         QueryContext ctx = QueryContext.get();
-        Condition cond = Condition.of(ctx.takeColumnName(), operator, values);
+        Condition cond = Condition.of(ctx.takeTableColumn(), operator, values);
         ctx.conditions.add(cond);
         return cond;
     }
@@ -46,7 +46,7 @@ public class Sql {
 
     private static void addOrderByToContext(boolean isAsc) {
         QueryContext ctx = QueryContext.get();
-        ctx.orderBys.add(new OrderBy(ctx.takeColumnName(), isAsc));
+        ctx.orderBys.add(new OrderBy(ctx.takeTableColumn(), isAsc));
     }
 
     public static void desc(Object o) {

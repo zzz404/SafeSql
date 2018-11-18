@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.util;
 
 public interface NoisyRunnable {
     public void run() throws Exception;

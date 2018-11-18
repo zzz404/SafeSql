@@ -11,15 +11,17 @@ import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestOpCondition {
 
+    private static final TableColumn column_zzz = new TableColumn(0, "zzz");
+
     @Test
     void test_toClause() {
-        OpCondition cond = new OpCondition("zzz", "=", 123);
+        OpCondition cond = new OpCondition(column_zzz, "=", 123);
         assertEquals("zzz = ?", cond.toClause());
     }
 
     @Test
     void test__do_setValueToPstmt_and_returnNextIndex() throws SQLException {
-        OpCondition cond = new OpCondition("zzz", "=", 123);
+        OpCondition cond = new OpCondition(column_zzz, "=", 123);
         QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
 
         int nextIndex = cond.setValueToPstmt_and_returnNextIndex(11, pstmt);
@@ -29,6 +31,6 @@ class TestOpCondition {
 
     @Test
     void coverRest() {
-        new OpCondition("", "", "").toString();
+        new OpCondition(column_zzz, "", "").toString();
     }
 }

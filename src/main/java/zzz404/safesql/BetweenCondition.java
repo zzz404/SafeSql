@@ -1,26 +1,27 @@
 package zzz404.safesql;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
+import zzz404.safesql.util.CommonUtils;
 
 public class BetweenCondition extends Condition {
 
     private Object value1;
     private Object value2;
 
-    public BetweenCondition(String columnName, Object value1, Object value2) {
-        super(columnName);
+    public BetweenCondition(TableColumn tableColumn, Object value1, Object value2) {
+        super(tableColumn);
         this.value1 = value1;
         this.value2 = value2;
     }
 
     @Override
     public String toString() {
-        return "BetweenCondition [field=" + columnName + ", value1=" + value1 + ", value2=" + value2 + "]";
+        return "BetweenCondition [field=" + tableColumn + ", value1=" + value1 + ", value2=" + value2 + "]";
     }
 
     @Override
     public String toClause() {
-        return columnName + " BETWEEN ? AND ?";
+        return tableColumn + " BETWEEN ? AND ?";
     }
 
     @Override
@@ -32,7 +33,7 @@ public class BetweenCondition extends Condition {
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> new Object[] { o.columnName, o.value1, o.value2 });
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableColumn, o.value1, o.value2 });
     }
 
 }

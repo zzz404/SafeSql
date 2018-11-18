@@ -1,5 +1,6 @@
 package zzz404.safesql;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -8,14 +9,18 @@ import zzz404.safesql.sql.QuietPreparedStatement;
 
 public abstract class DynamicQuerier extends SqlQuerier {
 
-    protected List<String> columnNames = Collections.emptyList();
+    protected List<TableColumn> tableColumns = Collections.emptyList();
     protected List<Condition> conditions = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
-    protected <T> T createMockedObject(Class<T> clazz) {
+    public DynamicQuerier() {
+        this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
+    }
+
+    protected <T> T createMockedObject(Class<T> clazz, int tableIndex) {
         Enhancer en = new Enhancer();
         en.setSuperclass(clazz);
-        GetterTracer<T> getterLogger = new GetterTracer<>(clazz);
+        GetterTracer<T> getterLogger = new GetterTracer<>(clazz, tableIndex);
         en.setCallback(getterLogger);
 
         @SuppressWarnings("unchecked")

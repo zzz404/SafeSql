@@ -1,31 +1,32 @@
 package zzz404.safesql;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
+import zzz404.safesql.util.CommonUtils;
 
 public class OpCondition extends Condition {
 
     private String operator;
     private Object value;
 
-    public OpCondition(String columnName, String operator, Object value) {
-        super(columnName);
+    public OpCondition(TableColumn tableColumn, String operator, Object value) {
+        super(tableColumn);
         this.operator = operator;
         this.value = value;
     }
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> new Object[] { o.columnName, o.operator, o.value });
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableColumn, o.operator, o.value });
     }
 
     @Override
     public String toString() {
-        return "OpCondition [field=" + columnName + ", operator=" + operator + ", value=" + value + "]";
+        return "OpCondition [field=" + tableColumn + ", operator=" + operator + ", value=" + value + "]";
     }
 
     @Override
     public String toClause() {
-        return columnName + " " + operator + " ?";
+        return tableColumn + " " + operator + " ?";
     }
 
     @Override

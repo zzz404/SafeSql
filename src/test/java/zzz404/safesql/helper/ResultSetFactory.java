@@ -6,8 +6,8 @@ import static org.mockito.Mockito.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import zzz404.safesql.CommonUtils;
 import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.util.CommonUtils;
 
 public class ResultSetFactory {
 

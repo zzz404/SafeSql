@@ -1,13 +1,13 @@
 package zzz404.safesql;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import zzz404.safesql.util.Tuple2;
 
 public class EntityQuerier2<T, U> extends DynamicQuerier {
 
@@ -19,15 +19,15 @@ public class EntityQuerier2<T, U> extends DynamicQuerier {
     public EntityQuerier2(Class<T> class1, Class<U> class2) {
         this.class1 = class1;
         this.class2 = class2;
-        this.mockedObject1 = createMockedObject(class1);
-        this.mockedObject2 = createMockedObject(class2);
+        this.mockedObject1 = createMockedObject(class1, 1);
+        this.mockedObject2 = createMockedObject(class2, 2);
 
-        this.columnNames = Arrays.asList("*");
+        this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
     }
 
     public EntityQuerier2<T, U> select(BiConsumer<T, U> consumer) {
         consumer.accept(mockedObject1, mockedObject2);
-        this.columnNames = new ArrayList<>(new LinkedHashSet<>(QueryContext.get().takeAllColumnNames()));
+        //this.columnNames = new ArrayList<>(new LinkedHashSet<>(QueryContext.get().takeAllTableColumns()));
         return this;
     }
 

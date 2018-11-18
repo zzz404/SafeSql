@@ -4,8 +4,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
-import zzz404.safesql.NoisyRunnable;
 import zzz404.safesql.QueryContext;
+import zzz404.safesql.util.NoisyRunnable;
 
 public class UtilsForTest {
 

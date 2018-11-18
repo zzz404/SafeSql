@@ -1,8 +1,10 @@
-package zzz404.safesql;
+package zzz404.safesql.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import zzz404.safesql.util.NoisySupplier;
 
 public class TestNoisySupplier {
 

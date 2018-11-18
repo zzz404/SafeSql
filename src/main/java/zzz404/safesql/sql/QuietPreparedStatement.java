@@ -23,7 +23,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import zzz404.safesql.CommonUtils;
+import zzz404.safesql.util.CommonUtils;
 
 public class QuietPreparedStatement implements PreparedStatement {
     private PreparedStatement pstmt;

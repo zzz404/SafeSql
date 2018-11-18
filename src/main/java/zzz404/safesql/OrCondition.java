@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
+import zzz404.safesql.util.CommonUtils;
 
 public class OrCondition extends Condition {
 
@@ -19,7 +20,7 @@ public class OrCondition extends Condition {
 
     public <T> OrCondition or(T field, String operator, Object... values) {
         QueryContext ctx = QueryContext.get();
-        Condition cond = Condition.of(ctx.takeColumnName(), operator, values);
+        Condition cond = Condition.of(ctx.takeTableColumn(), operator, values);
         subConditions.add(cond);
         return this;
     }

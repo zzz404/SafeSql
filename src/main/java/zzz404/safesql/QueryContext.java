@@ -14,7 +14,7 @@ public class QueryContext {
     private String name;
     private ConnectionFactoryImpl connFactory;
 
-    private Queue<String> columnNames = new LinkedList<>();
+    private Queue<TableColumn> tableColumns = new LinkedList<>();
 
     ArrayList<Condition> conditions = new ArrayList<>();
     List<OrderBy> orderBys = new ArrayList<>();
@@ -28,17 +28,17 @@ public class QueryContext {
         return connFactory.getQuietConnection();
     }
 
-    public void addColumnName(String columnName) {
-        columnNames.offer(columnName);
+    public void addTableColumn(int tableIndex, String columnName) {
+        tableColumns.offer(new TableColumn(tableIndex, columnName));
     }
 
-    public String takeColumnName() {
-        return columnNames.poll();
+    public TableColumn takeTableColumn() {
+        return tableColumns.poll();
     }
 
-    public List<String> takeAllColumnNames() {
-        ArrayList<String> result = new ArrayList<>(columnNames);
-        columnNames.clear();
+    public List<TableColumn> takeAllTableColumns() {
+        ArrayList<TableColumn> result = new ArrayList<>(tableColumns);
+        tableColumns.clear();
         return result;
     }
 

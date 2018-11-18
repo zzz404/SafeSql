@@ -5,19 +5,20 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
+import zzz404.safesql.util.CommonUtils;
 
 public class InCondition extends Condition {
 
     private Object[] values = null;
 
-    public InCondition(String columnName, Object... values) {
-        super(columnName);
+    public InCondition(TableColumn tableColumn, Object... values) {
+        super(tableColumn);
         this.values = values;
     }
 
     @Override
     public String toString() {
-        return "InCondition [field=" + columnName + ", values=" + Arrays.toString(values) + "]";
+        return "InCondition [field=" + tableColumn + ", values=" + Arrays.toString(values) + "]";
     }
 
     @Override
@@ -26,7 +27,7 @@ public class InCondition extends Condition {
             return "0<>0";
         }
         else {
-            return columnName + " IN ("
+            return tableColumn + " IN ("
                     + Collections.nCopies(values.length, "?").stream().collect(Collectors.joining(", ")) + ")";
         }
     }

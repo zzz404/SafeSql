@@ -1,8 +1,11 @@
-package zzz404.safesql;
+package zzz404.safesql.util;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -40,11 +43,6 @@ public final class CommonUtils {
         }
     }
 
-    @FunctionalInterface
-    public interface MainValueExtractor<T> {
-        Object[] extract(T t);
-    }
-
     public static <T> Stream<T> iter_to_stream(Iterator<T> iter) {
         Spliterator<T> spliterator;
         if (!iter.hasNext()) {
@@ -54,6 +52,10 @@ public final class CommonUtils {
             spliterator = Spliterators.spliteratorUnknownSize(iter, Spliterator.IMMUTABLE);
         }
         return StreamSupport.stream(spliterator, false);
+    }
+
+    public static <T> String join(Collection<T> c, String separator, Function<T, String> converter) {
+        return c.stream().map(converter).collect(Collectors.joining(separator));
     }
 
     // public static <T, U, R> List<R> zip(Iterable<T> iter1, Iterable<U> iter2,

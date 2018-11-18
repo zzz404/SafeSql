@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import zzz404.safesql.helper.FakeDatabase;
 
-class TestEntityQuerier2_Query {
+class TestEntityQuerier2 {
 
     private FakeDatabase packet;
     

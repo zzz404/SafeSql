@@ -22,7 +22,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
-import zzz404.safesql.CommonUtils;
+import zzz404.safesql.util.CommonUtils;
 
 public class QuietResultSet implements ResultSet {
     private ResultSet rs = null;

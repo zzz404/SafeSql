@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-import zzz404.safesql.CommonUtils;
+import zzz404.safesql.util.CommonUtils;
 
 public class QuietConnection implements Connection {
     private Connection conn;

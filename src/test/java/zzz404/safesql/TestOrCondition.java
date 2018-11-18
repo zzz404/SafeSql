@@ -12,8 +12,8 @@ import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestOrCondition {
 
-    private static OpCondition cond1 = new OpCondition("a", "=", 2);
-    private static OpCondition cond2 = new OpCondition("b", "<>", "4");
+    private static OpCondition cond1 = new OpCondition(new TableColumn(0, "a"), "=", 2);
+    private static OpCondition cond2 = new OpCondition(new TableColumn(0, "b"), "<>", "4");
 
     @Test
     void test_toClause() {
@@ -37,7 +37,7 @@ class TestOrCondition {
 
     @Test
     void coverRest() {
-        OrCondition orCond = new OrCondition(new OpCondition("", "", ""), new OpCondition("", "", ""));
+        OrCondition orCond = new OrCondition(cond1, cond2);
         orCond.toString();
         orCond.equals(orCond);
     }

@@ -1,7 +1,6 @@
 package zzz404.safesql;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -10,23 +9,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
+import zzz404.safesql.util.CommonUtils;
 
 public class EntityQuerier1<T> extends DynamicQuerier {
 
     private Class<T> clazz;
     private T mockedObject;
-    
+
     public EntityQuerier1(Class<T> clazz) {
         this.clazz = clazz;
-        this.mockedObject = createMockedObject(clazz);
-
-        this.columnNames = Arrays.asList("*");
+        this.mockedObject = createMockedObject(clazz, 0);
     }
 
     public EntityQuerier1<T> select(Consumer<T> consumer) {
         consumer.accept(mockedObject);
-        this.columnNames = new ArrayList<>(new LinkedHashSet<>(QueryContext.get().takeAllColumnNames()));
+        this.tableColumns = new ArrayList<>(new LinkedHashSet<>(QueryContext.get().takeAllTableColumns()));
         return this;
     }
 
@@ -56,7 +53,7 @@ public class EntityQuerier1<T> extends DynamicQuerier {
 
     public String buildSql() {
         String tableName = ClassAnalyzer.get(clazz).getTableName();
-        String sql = "SELECT " + StringUtils.join(columnNames, ", ") + " FROM " + tableName;
+        String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;
         if (!this.conditions.isEmpty()) {
             sql += " WHERE " + this.conditions.stream().map(Condition::toClause).collect(Collectors.joining(" AND "));
         }
@@ -64,6 +61,10 @@ public class EntityQuerier1<T> extends DynamicQuerier {
             sql += " ORDER BY " + this.orderBys.stream().map(OrderBy::toClause).collect(Collectors.joining(", "));
         }
         return sql;
+    }
+
+    String getColumnsClause() {
+        return CommonUtils.join(tableColumns, ", ", TableColumn::getColumnName);
     }
 
     public String buildSql_for_queryCount() {
