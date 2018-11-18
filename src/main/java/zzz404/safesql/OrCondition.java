@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.util.CommonUtils;
 
 public class OrCondition extends Condition {
@@ -31,16 +30,15 @@ public class OrCondition extends Condition {
     }
 
     @Override
-    protected int setValueToPstmt_and_returnNextIndex(int i, QuietPreparedStatement pstmt) {
-        for (Condition cond : subConditions) {
-            i = cond.setValueToPstmt_and_returnNextIndex(i, pstmt);
-        }
-        return i;
+    public boolean equals(Object that) {
+        return CommonUtils.isEquals(this, that, o -> subConditions.toArray());
     }
 
     @Override
-    public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> subConditions.toArray());
+    protected void appendValuesTo(List<Object> paramValues) {
+        for (Condition cond : subConditions) {
+            cond.appendValuesTo(paramValues);
+        }
     }
 
 }

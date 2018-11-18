@@ -2,7 +2,7 @@ package zzz404.safesql;
 
 public class QuerierFactory {
     public StaticSqlQuerier sql(String sql) {
-        return new StaticSqlQuerier(sql);
+        return new StaticSqlQuerier().sql(sql);
     }
 
     public <T> OneTableQuerier<T> from(Class<T> clazz) {

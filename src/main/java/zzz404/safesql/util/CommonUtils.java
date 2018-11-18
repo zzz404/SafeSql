@@ -1,9 +1,12 @@
 package zzz404.safesql.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,20 +61,31 @@ public final class CommonUtils {
         return c.stream().map(converter).collect(Collectors.joining(separator));
     }
 
-    // public static <T, U, R> List<R> zip(Iterable<T> iter1, Iterable<U> iter2,
-    // BiFunction<T, U, R> func) {
-    // Iterator<T> itr1 = iter1.iterator();
-    // Iterator<U> itr2 = iter2.iterator();
-    //
-    // ArrayList<R> result = new ArrayList<>();
-    // while (itr1.hasNext()) {
-    // if (!itr2.hasNext()) {
-    // break;
-    // }
-    // R r = func.apply(itr1.next(), itr2.next());
-    // result.add(r);
-    // }
-    // return result;
-    // }
+    public static <T, U> List<Tuple2<T, U>> zip(List<T> list, U[] array) {
+        ArrayList<Tuple2<T, U>> result = new ArrayList<>();
+
+        Iterator<T> iter = list.iterator();
+        for (U u : array) {
+            if (!iter.hasNext()) {
+                break;
+            }
+            result.add(new Tuple2<T, U>(iter.next(), u));
+        }
+        return result;
+    }
+
+    public static <T, U, R> List<R> zip(List<T> list, U[] array, BiFunction<T, U, R> func) {
+        ArrayList<R> result = new ArrayList<>();
+
+        Iterator<T> iter = list.iterator();
+        for (U u : array) {
+            if (!iter.hasNext()) {
+                break;
+            }
+            R r = func.apply(iter.next(), u);
+            result.add(r);
+        }
+        return result;
+    }
 
 }

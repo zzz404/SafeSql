@@ -1,13 +1,11 @@
 package zzz404.safesql;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-
-import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestOpCondition {
 
@@ -20,13 +18,13 @@ class TestOpCondition {
     }
 
     @Test
-    void test__do_setValueToPstmt_and_returnNextIndex() throws SQLException {
+    void test_appendValuesTo() {
         OpCondition cond = new OpCondition(column_zzz, "=", 123);
-        QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
+        
+        ArrayList<Object> values = new ArrayList<>();
+        cond.appendValuesTo(values);
 
-        int nextIndex = cond.setValueToPstmt_and_returnNextIndex(11, pstmt);
-        assertEquals(12, nextIndex);
-        verify(pstmt, times(1)).setObject(11, 123);
+        assertEquals(Arrays.asList(123), values);
     }
 
     @Test

@@ -2,14 +2,14 @@ package zzz404.safesql;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.util.CommonUtils;
 
 public class InCondition extends Condition {
 
-    private Object[] values = null;
+    private Object[] values = new Object[0];
 
     public InCondition(TableColumn tableColumn, Object... values) {
         super(tableColumn);
@@ -33,16 +33,15 @@ public class InCondition extends Condition {
     }
 
     @Override
-    protected int setValueToPstmt_and_returnNextIndex(int i, QuietPreparedStatement pstmt) {
-        for (Object value : values) {
-            pstmt.setObject(i++, value);
-        }
-        return i;
+    public boolean equals(Object that) {
+        return CommonUtils.isEquals(this, that, o -> o.values);
     }
 
     @Override
-    public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> o.values);
+    protected void appendValuesTo(List<Object> paramValues) {
+        for (Object value : values) {
+            paramValues.add(value);
+        }
     }
 
 }

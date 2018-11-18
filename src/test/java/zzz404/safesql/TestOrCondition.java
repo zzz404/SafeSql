@@ -1,19 +1,17 @@
 package zzz404.safesql;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
-
-import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestOrCondition {
 
-    private static OpCondition cond1 = new OpCondition(new TableColumn(0, "a"), "=", 2);
-    private static OpCondition cond2 = new OpCondition(new TableColumn(0, "b"), "<>", "4");
+    private static OpCondition cond1 = new OpCondition(new TableColumn(0, "a"), "=", "aaa");
+    private static OpCondition cond2 = new OpCondition(new TableColumn(0, "b"), "<>", 11);
 
     @Test
     void test_toClause() {
@@ -22,17 +20,13 @@ class TestOrCondition {
     }
 
     @Test
-    void test__setValueToPstmt_and_returnNextIndex() throws SQLException {
+    void test_appendValuesTo() throws SQLException {
         OrCondition cond = new OrCondition(cond1, cond2);
 
-        QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
-        InOrder inOrder = inOrder(pstmt);
+        ArrayList<Object> values = new ArrayList<>();
+        cond.appendValuesTo(values);
 
-        int nextIndex = cond.setValueToPstmt_and_returnNextIndex(1, pstmt);
-        assertEquals(3, nextIndex);
-
-        inOrder.verify(pstmt, times(1)).setObject(1, 2);
-        inOrder.verify(pstmt, times(1)).setObject(2, "4");
+        assertEquals(Arrays.asList("aaa", 11), values);
     }
 
     @Test

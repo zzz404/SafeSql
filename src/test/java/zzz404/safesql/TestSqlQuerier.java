@@ -2,6 +2,7 @@ package zzz404.safesql;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,8 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.FakeDatabase;
-import zzz404.safesql.helper.UtilsForTest;
-import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestSqlQuerier {
 
@@ -66,7 +65,7 @@ class TestSqlQuerier {
         packet.pushData(7, 5);
         SqlQuerier q = new MySqlQuerier();
         List<Integer> result = q.queryList(Integer.class);
-        assertTrue(UtilsForTest.isEquals(result, 7, 5));
+        assertEquals(Arrays.asList(7, 5), result);
     }
 
     @Test
@@ -74,7 +73,7 @@ class TestSqlQuerier {
         packet.pushData(3, 1, 4, 1, 5, 9);
         SqlQuerier q = new MySqlQuerier().offset(4).limit(5);
         List<Integer> result = q.queryList(Integer.class);
-        assertTrue(UtilsForTest.isEquals(result, 5, 9));
+        assertEquals(Arrays.asList(5, 9), result);
     }
 
     @Test
@@ -84,7 +83,8 @@ class TestSqlQuerier {
         SqlQuerier q = new MySqlQuerier().offset(2).limit(3);
         Page<Integer> page = q.queryPage(Integer.class);
         assertEquals(6, page.getTotalCount());
-        assertTrue(UtilsForTest.isEquals(page.getResult(), 4, 1, 5));
+
+        assertEquals(Arrays.asList(4, 1, 5), page.getResult());
     }
 
     @Test
@@ -106,17 +106,18 @@ class TestSqlQuerier {
     public static class MySqlQuerier extends SqlQuerier {
 
         @Override
-        protected String buildSql() {
+        protected String sql() {
             return "";
         }
 
         @Override
-        protected String buildSql_for_queryCount() {
+        protected String sql_for_queryCount() {
             return "";
         }
 
         @Override
-        protected void setCondValueToPstmt(QuietPreparedStatement pstmt) {
+        protected Object[] paramValues() {
+            return new Object[0];
         }
 
     }

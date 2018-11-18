@@ -1,6 +1,7 @@
 package zzz404.safesql;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
+import java.util.List;
+
 import zzz404.safesql.util.CommonUtils;
 
 public class MutualCondition extends Condition {
@@ -30,8 +31,7 @@ public class MutualCondition extends Condition {
     }
 
     @Override
-    protected int setValueToPstmt_and_returnNextIndex(int i, QuietPreparedStatement pstmt) {
-        return i;
+    protected void appendValuesTo(List<Object> paramValues) {
     }
 
 }

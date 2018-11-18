@@ -128,10 +128,10 @@ class TestOneTableQuerier {
 
         String sql = "SELECT id, title FROM Document"
                 + " WHERE (id > ? OR ownerId = ?) AND title like ? ORDER BY id ASC, title DESC";
-        assertEquals(sql, q.buildSql());
+        assertEquals(sql, q.sql());
 
         sql = "SELECT COUNT(*) FROM Document" + " WHERE (id > ? OR ownerId = ?) AND title like ?";
-        assertEquals(sql, q.buildSql_for_queryCount());
+        assertEquals(sql, q.sql_for_queryCount());
     }
 
     @Test
@@ -139,10 +139,10 @@ class TestOneTableQuerier {
         OneTableQuerier<Document> q = from(Document.class);
 
         String sql = "SELECT * FROM Document";
-        assertEquals("SELECT * FROM Document", q.buildSql());
+        assertEquals("SELECT * FROM Document", q.sql());
 
         sql = "SELECT COUNT(*) FROM Document";
-        assertEquals(sql, q.buildSql_for_queryCount());
+        assertEquals(sql, q.sql_for_queryCount());
     }
 
     void coverRest() {

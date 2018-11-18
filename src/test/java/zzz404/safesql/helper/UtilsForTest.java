@@ -2,7 +2,6 @@ package zzz404.safesql.helper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.Iterator;
 
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.util.NoisyRunnable;
@@ -48,19 +47,4 @@ public class UtilsForTest {
         }
     }
 
-    public static boolean isEquals(Iterable<? extends Object> iter, Object... values) {
-        Iterator<? extends Object> itr = iter.iterator();
-        for (Object value : values) {
-            if (!itr.hasNext()) {
-                return false;
-            }
-            if (!itr.next().equals(value)) {
-                return false;
-            }
-        }
-        if (itr.hasNext()) {
-            return false;
-        }
-        return true;
-    }
 }

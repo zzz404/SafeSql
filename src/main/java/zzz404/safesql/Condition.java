@@ -2,9 +2,9 @@ package zzz404.safesql;
 
 import static zzz404.safesql.Sql.*;
 
-import org.apache.commons.lang3.Validate;
+import java.util.List;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
+import org.apache.commons.lang3.Validate;
 
 abstract class Condition {
 
@@ -39,6 +39,6 @@ abstract class Condition {
 
     public abstract String toClause();
 
-    protected abstract int setValueToPstmt_and_returnNextIndex(int i, QuietPreparedStatement pstmt);
+    protected abstract void appendValuesTo(List<Object> paramValues);
 
 }

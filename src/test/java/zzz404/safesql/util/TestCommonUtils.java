@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.util.CommonUtils;
-
 public class TestCommonUtils {
     @Test
     void test_isEquals_differentClass_return_false() {

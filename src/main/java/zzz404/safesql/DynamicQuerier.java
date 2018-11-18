@@ -1,12 +1,12 @@
 package zzz404.safesql;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import net.sf.cglib.proxy.Enhancer;
-import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class DynamicQuerier extends SqlQuerier {
@@ -30,17 +30,9 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return mockedObject;
     }
 
-    @Override
-    protected void setCondValueToPstmt(QuietPreparedStatement pstmt) {
-        int i = 1;
-        for (Condition cond : conditions) {
-            i = cond.setValueToPstmt_and_returnNextIndex(i, pstmt);
-        }
-    }
-
     protected abstract String getTablesClause();
 
-    public String buildSql() {
+    public String sql() {
         String tableName = getTablesClause();
         String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;
         if (!this.conditions.isEmpty()) {
@@ -60,13 +52,22 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return CommonUtils.join(tableColumns, ", ", TableColumn::getPrefixedColumnName);
     }
 
-    public String buildSql_for_queryCount() {
+    public String sql_for_queryCount() {
         String tableName = getTablesClause();
         String sql = "SELECT COUNT(*) FROM " + tableName;
         if (!this.conditions.isEmpty()) {
             sql += " WHERE " + this.conditions.stream().map(Condition::toClause).collect(Collectors.joining(" AND "));
         }
         return sql;
+    }
+
+    @Override
+    protected Object[] paramValues() {
+        ArrayList<Object> paramValues = new ArrayList<>();
+        conditions.forEach(cond->{
+            cond.appendValuesTo(paramValues);
+        });
+        return paramValues.toArray();
     }
 
     public abstract Object queryOne();

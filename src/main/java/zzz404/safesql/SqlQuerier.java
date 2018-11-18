@@ -11,9 +11,10 @@ import java.util.stream.Stream;
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.sql.QuietResultSetIterator;
-import zzz404.safesql.util.CommonUtils;
 import zzz404.safesql.sql.QuietResultSetAnalyzer;
+import zzz404.safesql.sql.QuietResultSetIterator;
+import zzz404.safesql.type.ValueType;
+import zzz404.safesql.util.CommonUtils;
 
 public abstract class SqlQuerier {
 
@@ -30,11 +31,25 @@ public abstract class SqlQuerier {
         return this;
     }
 
-    protected abstract String buildSql();
+    protected abstract String sql();
 
-    protected abstract String buildSql_for_queryCount();
+    protected abstract String sql_for_queryCount();
 
-    protected abstract void setCondValueToPstmt(QuietPreparedStatement pstmt);
+    protected abstract Object[] paramValues();
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected final void setCondsValueToPstmt(QuietPreparedStatement pstmt) {
+        int i = 1;
+        for (Object paramValue : paramValues()) {
+            ValueType valueType = ValueType.get(paramValue.getClass());
+            if (valueType != null) {
+                valueType.setToPstmt(pstmt, i++, paramValue);
+            }
+            else {
+                pstmt.setObject(i++, paramValue);
+            }
+        }
+    }
 
     private QuietPreparedStatement prepareStatement(String sql, QuietConnection conn) {
         if (offset > 0) {
@@ -46,11 +61,11 @@ public abstract class SqlQuerier {
     }
 
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
-        String sql = buildSql();
+        String sql = sql();
 
         try (QuietConnection conn = QueryContext.get().getQuietConnection();
                 QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
-            setCondValueToPstmt(pstmt);
+            setCondsValueToPstmt(pstmt);
             QuietResultSet rs = pstmt.executeQuery();
             return func.apply(rs);
         }
@@ -61,11 +76,11 @@ public abstract class SqlQuerier {
     }
 
     public final int queryCount() {
-        String sql = buildSql_for_queryCount();
+        String sql = sql_for_queryCount();
 
         try (QuietConnection conn = QueryContext.get().getQuietConnection();
                 QuietPreparedStatement pstmt = conn.prepareStatement(sql)) {
-            setCondValueToPstmt(pstmt);
+            setCondsValueToPstmt(pstmt);
             QuietResultSet rs = pstmt.executeQuery();
             rs.next();
             return rs.getInt(1);

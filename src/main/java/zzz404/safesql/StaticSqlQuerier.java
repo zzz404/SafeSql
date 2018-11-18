@@ -2,20 +2,24 @@ package zzz404.safesql;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
-
 public class StaticSqlQuerier extends SqlQuerier {
 
     private String sql;
     private Object[] paramValues;
 
-    public StaticSqlQuerier(String sql) {
+    public StaticSqlQuerier sql(String sql) {
         this.sql = sql;
+        return this;
     }
 
     public StaticSqlQuerier paramValues(Object... paramValues) {
         this.paramValues = paramValues;
         return this;
+    }
+
+    @Override
+    public Object[] paramValues() {
+        return this.paramValues;
     }
 
     @Override
@@ -30,11 +34,11 @@ public class StaticSqlQuerier extends SqlQuerier {
         return this;
     }
 
-    protected String buildSql() {
+    protected String sql() {
         return sql;
     };
 
-    protected String buildSql_for_queryCount() {
+    protected String sql_for_queryCount() {
         String lowerSql = sql.toLowerCase();
         Validate.isTrue(lowerSql.startsWith("select "));
 
@@ -47,13 +51,5 @@ public class StaticSqlQuerier extends SqlQuerier {
         resultSql = "SELECT COUNT(*) FROM " + resultSql.substring(pos + 6);
         return resultSql;
     };
-
-    @Override
-    protected void setCondValueToPstmt(QuietPreparedStatement pstmt) {
-        int i = 1;
-        for (Object paramValue : paramValues) {
-            pstmt.setObject(i++, paramValue);
-        }
-    }
 
 }
