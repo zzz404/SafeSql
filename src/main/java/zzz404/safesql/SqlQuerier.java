@@ -12,7 +12,7 @@ import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.QuietResultSetIterator;
-import zzz404.safesql.sql.ResultSetAnalyzer;
+import zzz404.safesql.sql.QuietResultSetAnalyzer;
 
 public abstract class SqlQuerier {
 
@@ -56,7 +56,7 @@ public abstract class SqlQuerier {
     }
 
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        return new ResultSetAnalyzer(rs).mapRsToObject(clazz);
+        return new QuietResultSetAnalyzer(rs).mapRsToObject(clazz);
     }
 
     public final int queryCount() {

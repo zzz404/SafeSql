@@ -12,18 +12,6 @@ public abstract class DynamicQuerier extends SqlQuerier {
     protected List<Condition> conditions = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
-    @Override
-    public DynamicQuerier offset(int offset) {
-        this.offset = offset;
-        return this;
-    }
-
-    @Override
-    public DynamicQuerier limit(int limit) {
-        this.limit = limit;
-        return this;
-    }
-
     protected <T> T createMockedObject(Class<T> clazz) {
         Enhancer en = new Enhancer();
         en.setSuperclass(clazz);
