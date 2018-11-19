@@ -37,17 +37,10 @@ public abstract class SqlQuerier {
 
     protected abstract Object[] paramValues();
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected final void setCondsValueToPstmt(QuietPreparedStatement pstmt) {
         int i = 1;
         for (Object paramValue : paramValues()) {
-            ValueType valueType = ValueType.get(paramValue.getClass());
-            if (valueType != null) {
-                valueType.setToPstmt(pstmt, i++, paramValue);
-            }
-            else {
-                pstmt.setObject(i++, paramValue);
-            }
+            ValueType.setValueToPstmt(pstmt, i++, paramValue);
         }
     }
 

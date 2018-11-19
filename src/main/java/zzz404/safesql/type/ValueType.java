@@ -39,11 +39,26 @@ public abstract class ValueType<T> {
         map.put(java.util.Date.class, new UtilDateType());
         map.put(Instant.class, new InstantType());
     }
-    
+
     public abstract T readFromRs(QuietResultSet rs, int index);
 
     public T readFirstFromRs(QuietResultSet rs) {
         return readFromRs(rs, 1);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static void setValueToPstmt(QuietPreparedStatement pstmt, int index, Object value) {
+        if (value == null) {
+            pstmt.setObject(index, null);
+            return;
+        }
+        ValueType valueType = ValueType.get(value.getClass());
+        if (valueType != null) {
+            valueType.setToPstmt(pstmt, index, value);
+        }
+        else {
+            pstmt.setObject(index, value);
+        }
     }
 
     public abstract void setToPstmt(QuietPreparedStatement pstmt, int index, T value);
