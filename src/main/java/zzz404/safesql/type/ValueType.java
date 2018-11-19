@@ -40,12 +40,6 @@ public abstract class ValueType<T> {
         map.put(Instant.class, new InstantType());
     }
 
-    public abstract T readFromRs(QuietResultSet rs, int index);
-
-    public T readFirstFromRs(QuietResultSet rs) {
-        return readFromRs(rs, 1);
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void setValueToPstmt(QuietPreparedStatement pstmt, int index, Object value) {
         if (value == null) {
@@ -61,8 +55,6 @@ public abstract class ValueType<T> {
         }
     }
 
-    public abstract void setToPstmt(QuietPreparedStatement pstmt, int index, T value);
-
     @SuppressWarnings({ "unchecked" })
     public static <E> ValueType<E> get(Class<E> clazz) {
         if (map.containsKey(clazz)) {
@@ -70,6 +62,32 @@ public abstract class ValueType<T> {
         }
         else {
             return null;
+        }
+    }
+
+    public abstract T readFromRs(QuietResultSet rs, int index);
+
+    public T readFirstFromRs(QuietResultSet rs) {
+        return readFromRs(rs, 1);
+    }
+
+    public abstract void setToPstmt(QuietPreparedStatement pstmt, int index, T value);
+
+    public String toString(T value) {
+        return value.toString();
+    }
+
+    public static <T> String valueToString(T value) {
+        if (value == null) {
+            return "null";
+        }
+        @SuppressWarnings("unchecked")
+        ValueType<T> valueType = (ValueType<T>) get(value.getClass());
+        if (valueType == null) {
+            return value.toString();
+        }
+        else {
+            return valueType.toString(value);
         }
     }
 
