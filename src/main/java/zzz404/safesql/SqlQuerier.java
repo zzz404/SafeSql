@@ -59,7 +59,13 @@ public abstract class SqlQuerier {
         try (QuietConnection conn = QueryContext.get().getQuietConnection();
                 QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondsValueToPstmt(pstmt);
-            QuietResultSet rs = pstmt.executeQuery();
+            QuietResultSet rs;
+            try {
+                rs = pstmt.executeQuery();
+            }
+            catch (Exception e) {
+                throw new SqlQueryException(sql(), paramValues(), e);
+            }
             return func.apply(rs);
         }
     }
@@ -74,7 +80,13 @@ public abstract class SqlQuerier {
         try (QuietConnection conn = QueryContext.get().getQuietConnection();
                 QuietPreparedStatement pstmt = conn.prepareStatement(sql)) {
             setCondsValueToPstmt(pstmt);
-            QuietResultSet rs = pstmt.executeQuery();
+            QuietResultSet rs = null;
+            try {
+                rs = pstmt.executeQuery();
+            }
+            catch (Exception e) {
+                throw new SqlQueryException(sql(), paramValues(), e);
+            }
             rs.next();
             return rs.getInt(1);
         }
