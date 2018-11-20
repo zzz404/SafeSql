@@ -1,12 +1,19 @@
 package zzz404.safesql;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.QuietResultSetAnalyzer;
 import zzz404.safesql.util.Tuple2;
 
 public class TwoTableQuerier<T, U> extends DynamicQuerier {
@@ -57,31 +64,72 @@ public class TwoTableQuerier<T, U> extends DynamicQuerier {
 
     @Override
     public Optional<Tuple2<T, U>> queryOne() {
-        // return queryOne(class1, class2);
-        // TODO
-        return null;
+        return queryOne(rs -> rsToTuple(rs));
+    }
+
+    @Override
+    public List<Tuple2<T, U>> queryList() {
+        return queryList(rs -> rsToTuple(rs));
     }
 
     @Override
     public Page<Tuple2<T, U>> queryPage() {
-        // return queryPage(class1, class2);
-        // TODO
-        return null;
+        return queryPage(rs -> rsToTuple(rs));
     }
 
-    @Override
-    public List<?> queryList() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public <E> E queryEntitiesStream(Function<Stream<Tuple2<T, U>>, E> streamReader) {
-        // TODO
-        return null;
+    public <E> E queryEntitiesStream(Function<Stream<Tuple2<T, U>>, E> tupleStreamReader) {
+        return queryStream(rsStream -> {
+            Stream<Tuple2<T, U>> tupleStream = rsStream.map(rs -> rsToTuple(rs));
+            return tupleStreamReader.apply(tupleStream);
+        });
     }
 
     @Override
     protected String getTablesClause() {
         return ClassAnalyzer.get(class1).getTableName() + " t1, " + ClassAnalyzer.get(class2).getTableName() + " t2";
+    }
+
+    private Tuple2<T, U> rsToTuple(QuietResultSet rs) {
+        TableColumnSeparater separater = new TableColumnSeparater(this.tableColumns);
+        Set<String> columns1 = separater.getColumnsOfTable(1);
+        Set<String> columns2 = separater.getColumnsOfTable(2);
+        QuietResultSetAnalyzer analyzer = new QuietResultSetAnalyzer(rs);
+        T t = analyzer.mapRsToObject(class1, columns1);
+        U u = analyzer.mapRsToObject(class2, columns2);
+        return new Tuple2<>(t, u);
+    }
+
+    public static class TableColumnSeparater {
+        private List<TableColumn> tableColumns;
+        private Set<Integer> tableIds_that_selectAll;
+        private Map<Integer, List<TableColumn>> table_columns_map;
+
+        public TableColumnSeparater(List<TableColumn> tableColumns) {
+            this.tableColumns = tableColumns;
+            Map<Boolean, List<TableColumn>> map = this.tableColumns.stream()
+                    .collect(groupingBy(c -> c.getColumnName().equals("*")));
+            this.tableIds_that_selectAll = map.get(true).stream().map(TableColumn::getTableIndex).collect(toSet());
+            this.table_columns_map = map.get(false).stream().collect(groupingBy(TableColumn::getTableIndex));
+        }
+
+        /**
+         * return columnNames of the table. 
+         * if return null -> means all columns.
+         * if return empty set -> means no column.
+         */
+        public Set<String> getColumnsOfTable(int tableIndex) {
+            if (tableIds_that_selectAll.contains(tableIndex)) {
+                return null;
+            }
+            else {
+                List<TableColumn> columns = table_columns_map.get(tableIndex);
+                if (columns == null) {
+                    return Collections.emptySet();
+                }
+                else {
+                    return columns.stream().map(TableColumn::getColumnName).collect(toSet());
+                }
+            }
+        }
     }
 }

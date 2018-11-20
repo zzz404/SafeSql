@@ -71,7 +71,7 @@ public abstract class SqlQuerier {
     }
 
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        return new QuietResultSetAnalyzer(rs).mapRsToObject(clazz);
+        return new QuietResultSetAnalyzer(rs).mapRsToObject(clazz, null);
     }
 
     public final int queryCount() {
@@ -92,11 +92,11 @@ public abstract class SqlQuerier {
         }
     }
 
-    public final <T> Optional<T> queryOne(Function<QuietResultSet, T> func) {
+    public final <T> Optional<T> queryOne(Function<QuietResultSet, T> mapper) {
         return query_then_mapAll(rs -> {
             QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset, 1);
             if (iter.hasNext()) {
-                T t = func.apply(iter.next());
+                T t = mapper.apply(iter.next());
                 return Optional.ofNullable(t);
             }
             else {
@@ -119,18 +119,26 @@ public abstract class SqlQuerier {
         });
     }
 
-    public final <T> List<T> queryList(Class<T> clazz) {
+    public final <T> List<T> queryList(Function<QuietResultSet, T> mapper) {
         ArrayList<T> result = new ArrayList<>();
         query_then_consumeEach(rs -> {
-            result.add(rsToObject(rs, clazz));
+            result.add(mapper.apply(rs));
         });
         return result;
     }
 
-    public final <T> Page<T> queryPage(Class<T> clazz) {
+    public final <T> List<T> queryList(Class<T> clazz) {
+        return queryList(rs -> rsToObject(rs, clazz));
+    }
+
+    public final <T> Page<T> queryPage(Function<QuietResultSet, T> mapper) {
         int totalCount = queryCount();
-        List<T> result = queryList(clazz);
+        List<T> result = queryList(mapper);
         return new Page<>(totalCount, result);
+    }
+
+    public final <T> Page<T> queryPage(Class<T> clazz) {
+        return queryPage(rs -> rsToObject(rs, clazz));
     }
 
     public final <T> T queryStream(Function<Stream<QuietResultSet>, T> rsStreamReader) {
@@ -141,9 +149,9 @@ public abstract class SqlQuerier {
         });
     }
 
-    public final <T, E> T queryStream(Class<E> clazz, Function<Stream<E>, T> objStreamReader) {
+    public final <T, R> R queryStream(Class<T> clazz, Function<Stream<T>, R> objStreamReader) {
         return queryStream(rsStream -> {
-            Stream<E> objStream = rsStream.map(rs -> rsToObject(rs, clazz));
+            Stream<T> objStream = rsStream.map(rs -> rsToObject(rs, clazz));
             return objStreamReader.apply(objStream);
         });
     }
