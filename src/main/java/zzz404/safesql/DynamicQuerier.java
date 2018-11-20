@@ -13,6 +13,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
 
     protected List<TableColumn> tableColumns = Collections.emptyList();
     protected List<Condition> conditions = Collections.emptyList();
+    protected List<TableColumn> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
     public DynamicQuerier() {
@@ -30,6 +31,46 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return mockedObject;
     }
 
+    protected void onSelectScope(Runnable collectColumns) {
+        QueryContext ctx = QueryContext.get();
+        ctx.scope = Scope.select;
+
+        collectColumns.run();
+
+        this.tableColumns = ctx.takeAllTableColumns();
+        ctx.scope = null;
+    }
+    
+    protected void onWhereScope(Runnable collectConditions) {
+        QueryContext ctx = QueryContext.get();
+        ctx.scope = Scope.where;
+
+        collectConditions.run();
+
+        this.conditions = QueryContext.get().conditions;
+        ctx.scope = null;
+    }
+    
+    protected void onGroupByScope(Runnable collectColumns) {
+        QueryContext ctx = QueryContext.get();
+        ctx.scope = Scope.groupBy;
+
+        collectColumns.run();
+
+        this.groupBys = ctx.takeAllTableColumns();
+        ctx.scope = null;
+    }
+    
+    protected void onOrderByScope(Runnable collectColumns) {
+        QueryContext ctx = QueryContext.get();
+        ctx.scope = Scope.orderBy;
+
+        collectColumns.run();
+
+        this.orderBys = QueryContext.get().orderBys;
+        ctx.scope = null;
+    }
+    
     protected abstract String getTablesClause();
 
     public String sql() {

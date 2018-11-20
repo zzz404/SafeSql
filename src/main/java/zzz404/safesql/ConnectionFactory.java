@@ -3,8 +3,11 @@ package zzz404.safesql;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.Validate;
+
+import zzz404.safesql.util.NoisySupplier;
 
 public abstract class ConnectionFactory {
 
@@ -13,6 +16,7 @@ public abstract class ConnectionFactory {
     protected boolean tablePrefix;
     protected boolean snakeFormCompatable;
     protected ConnectionProvider connectionProvider;
+    protected Supplier<Boolean> closeConnAfterQuery = (()->true);
 
     public static synchronized ConnectionFactory create() {
         return create("");
@@ -28,12 +32,12 @@ public abstract class ConnectionFactory {
         return factory;
     }
 
-    public ConnectionFactory setTablePrefix(boolean tablePrefix) {
+    public ConnectionFactory withTablePrefix(boolean tablePrefix) {
         this.tablePrefix = tablePrefix;
         return this;
     }
 
-    public ConnectionFactory setSnakeFormCompatable(boolean snakeFormCompatable) {
+    public ConnectionFactory snakeFormCompatable(boolean snakeFormCompatable) {
         this.snakeFormCompatable = snakeFormCompatable;
         return this;
     }
@@ -43,9 +47,10 @@ public abstract class ConnectionFactory {
         return this;
     }
 
-    // protected static ConnectionFactoryImpl get() {
-    // return get("");
-    // }
+    public ConnectionFactory willCloseConnAfterQuery(NoisySupplier<Boolean> closeConnAfterQuery) {
+        this.closeConnAfterQuery = NoisySupplier.shutUp( closeConnAfterQuery);
+        return this;
+    }
 
     protected static ConnectionFactoryImpl get(String name) {
         return map.get(name);

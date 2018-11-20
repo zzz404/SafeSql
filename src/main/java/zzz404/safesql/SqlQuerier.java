@@ -53,11 +53,19 @@ public abstract class SqlQuerier {
         }
     }
 
+    protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
+        return new QuietResultSetAnalyzer(rs).mapRsToObject(clazz, null);
+    }
+
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
         String sql = sql();
+        return query_then_mapAll(sql, func);
+    }
 
-        try (QuietConnection conn = QueryContext.get().getQuietConnection();
-                QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
+    private <T> T query_then_mapAll(String sql, Function<QuietResultSet, T> func) {
+        QueryContext ctx = QueryContext.get();
+        QuietConnection conn = ctx.getQuietConnection();
+        try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondsValueToPstmt(pstmt);
             QuietResultSet rs;
             try {
@@ -68,28 +76,18 @@ public abstract class SqlQuerier {
             }
             return func.apply(rs);
         }
-    }
-
-    protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        return new QuietResultSetAnalyzer(rs).mapRsToObject(clazz, null);
+        finally {
+            ctx.closeConnection(conn);
+        }
     }
 
     public final int queryCount() {
         String sql = sql_for_queryCount();
-
-        try (QuietConnection conn = QueryContext.get().getQuietConnection();
-                QuietPreparedStatement pstmt = conn.prepareStatement(sql)) {
-            setCondsValueToPstmt(pstmt);
-            QuietResultSet rs = null;
-            try {
-                rs = pstmt.executeQuery();
-            }
-            catch (Exception e) {
-                throw new SqlQueryException(sql(), paramValues(), e);
-            }
+        int count = query_then_mapAll(sql, rs -> {
             rs.next();
             return rs.getInt(1);
-        }
+        });
+        return count;
     }
 
     public final <T> Optional<T> queryOne(Function<QuietResultSet, T> mapper) {

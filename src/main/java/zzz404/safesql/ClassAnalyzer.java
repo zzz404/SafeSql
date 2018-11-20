@@ -36,7 +36,6 @@ public class ClassAnalyzer<T> {
     }
 
     public String getTableName() {
-        // TODO support JPA annotation
         return clazz.getSimpleName();
     }
 

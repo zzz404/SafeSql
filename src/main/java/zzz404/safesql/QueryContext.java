@@ -15,8 +15,8 @@ public class QueryContext {
     private String name;
     private ConnectionFactoryImpl connFactory;
 
+    Scope scope;
     private Queue<TableColumn> tableColumns = new LinkedList<>();
-
     ArrayList<Condition> conditions = new ArrayList<>();
     List<OrderBy> orderBys = new ArrayList<>();
 
@@ -27,6 +27,12 @@ public class QueryContext {
 
     public QuietConnection getQuietConnection() {
         return connFactory.getQuietConnection();
+    }
+
+    public void closeConnection(QuietConnection conn) {
+        if (connFactory.closeConnAfterQuery.get()) {
+            conn.close();
+        }
     }
 
     public void addTableColumn(int tableIndex, String columnName) {

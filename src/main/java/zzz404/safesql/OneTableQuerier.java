@@ -16,21 +16,31 @@ public class OneTableQuerier<T> extends DynamicQuerier {
         this.mockedObject = createMockedObject(clazz, 0);
     }
 
-    public OneTableQuerier<T> select(Consumer<T> consumer) {
-        consumer.accept(mockedObject);
-        this.tableColumns = QueryContext.get().takeAllTableColumns();
+    public OneTableQuerier<T> select(Consumer<T> columnsCollector) {
+        onSelectScope(() -> {
+            columnsCollector.accept(mockedObject);
+        });
         return this;
     }
 
-    public OneTableQuerier<T> where(Consumer<T> consumer) {
-        consumer.accept(mockedObject);
-        this.conditions = QueryContext.get().conditions;
+    public OneTableQuerier<T> where(Consumer<T> conditionsCollector) {
+        onWhereScope(() -> {
+            conditionsCollector.accept(mockedObject);
+        });
         return this;
     }
 
-    public OneTableQuerier<T> orderBy(Consumer<T> consumer) {
-        consumer.accept(mockedObject);
-        this.orderBys = QueryContext.get().orderBys;
+    public OneTableQuerier<T> groupBy(Consumer<T> columnsCollector) {
+        onGroupByScope(() -> {
+            columnsCollector.accept(mockedObject);
+        });
+        return this;
+    }
+
+    public OneTableQuerier<T> orderBy(Consumer<T> columnsCollector) {
+        onOrderByScope(() -> {
+            columnsCollector.accept(mockedObject);
+        });
         return this;
     }
 

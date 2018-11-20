@@ -32,21 +32,31 @@ public class TwoTableQuerier<T, U> extends DynamicQuerier {
         this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
     }
 
-    public TwoTableQuerier<T, U> select(BiConsumer<T, U> consumer) {
-        consumer.accept(mockedObject1, mockedObject2);
-        this.tableColumns = QueryContext.get().takeAllTableColumns();
+    public TwoTableQuerier<T, U> select(BiConsumer<T, U> columnsCollector) {
+        onSelectScope(() -> {
+            columnsCollector.accept(mockedObject1, mockedObject2);
+        });
         return this;
     }
 
-    public TwoTableQuerier<T, U> where(BiConsumer<T, U> consumer) {
-        consumer.accept(mockedObject1, mockedObject2);
-        this.conditions = QueryContext.get().conditions;
+    public TwoTableQuerier<T, U> where(BiConsumer<T, U> columnsCollector) {
+        onWhereScope(() -> {
+            columnsCollector.accept(mockedObject1, mockedObject2);
+        });
         return this;
     }
 
-    public TwoTableQuerier<T, U> orderBy(BiConsumer<T, U> consumer) {
-        consumer.accept(mockedObject1, mockedObject2);
-        this.orderBys = QueryContext.get().orderBys;
+    public TwoTableQuerier<T, U> groupBy(BiConsumer<T, U> columnsCollector) {
+        onGroupByScope(() -> {
+            columnsCollector.accept(mockedObject1, mockedObject2);
+        });
+        return this;
+    }
+
+    public TwoTableQuerier<T, U> orderBy(BiConsumer<T, U> columnsCollector) {
+        onOrderByScope(() -> {
+            columnsCollector.accept(mockedObject1, mockedObject2);
+        });
         return this;
     }
 
@@ -99,7 +109,7 @@ public class TwoTableQuerier<T, U> extends DynamicQuerier {
         return new Tuple2<>(t, u);
     }
 
-    public static class TableColumnSeparater {
+    static class TableColumnSeparater {
         private List<TableColumn> tableColumns;
         private Set<Integer> tableIds_that_selectAll;
         private Map<Integer, List<TableColumn>> table_columns_map;
