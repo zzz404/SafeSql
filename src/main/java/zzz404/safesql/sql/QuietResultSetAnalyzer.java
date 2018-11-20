@@ -16,7 +16,7 @@ public class QuietResultSetAnalyzer {
     public <T> T mapRsToObject(Class<T> clazz, Set<String> columns) {
         ValueType<T> valueType = ValueType.get(clazz);
         if (valueType != null) {
-            Validate.isTrue(columns.size() <= 1);
+            Validate.isTrue(columns == null || columns.size() <= 1);
             return valueType.readFirstFromRs(rs);
         }
         if (columns == null) {
