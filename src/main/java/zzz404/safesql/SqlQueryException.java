@@ -26,7 +26,7 @@ public final class SqlQueryException extends RuntimeException {
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (char c : sql.toCharArray()) {
-            if (c != '?') {
+            if (c != '?' || i >= paramValues.length) {
                 sb.append(c);
             }
             else {
