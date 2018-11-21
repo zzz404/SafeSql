@@ -16,7 +16,7 @@ public class TestValueType {
     private static final String DATE_STR = "2018-11-19";
     private static final String TIME_STR = "21:18:05";
     private static final String DATE_TIME_STR = DATE_STR + " " + TIME_STR;
-    private static final java.util.Date DATE_TIME = NoisySupplier.getQuiet(() -> {
+    private static final java.util.Date DATE_TIME = NoisySupplier.getQuietly(() -> {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(DATE_TIME_STR);
     });
 

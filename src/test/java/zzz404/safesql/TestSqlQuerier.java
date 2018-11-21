@@ -19,7 +19,7 @@ class TestSqlQuerier {
 
     @BeforeEach
     void beforeEach() {
-        ConnectionFactory.create().setConnectionPrivider(() -> packet.getConnection());
+        ConnectionFactory.create(() -> packet.getConnection());
         QueryContext.create("");
         packet = new FakeDatabase();
     }

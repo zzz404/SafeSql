@@ -1,4 +1,4 @@
-package zzz404.safesql.sql;
+package zzz404.safesql.sql.type;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -11,98 +11,99 @@ import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestQuietResultSetAnalyzer {
+import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.type.ValueType;
+
+public class TestValueType {
 
     private QuietResultSet rs;
-    private QuietResultSetAnalyzer analyzer;
 
     @BeforeEach
     void beforeEach() {
         rs = mock(QuietResultSet.class);
-        analyzer = new QuietResultSetAnalyzer(rs);
     }
 
     @Test
-    void test_mapRsToObject_Integer() {
+    void test_mapRsRowToObject_Integer() {
         when(rs.getInt(1)).thenReturn(3);
-        assertEquals(new Integer(3), analyzer.mapRsToObject(Integer.class, null));
-        assertEquals(new Integer(3), analyzer.mapRsToObject(int.class, null));
+        assertEquals(new Integer(3), ValueType.mapRsRowToObject(rs, Integer.class));
+        assertEquals(new Integer(3), ValueType.mapRsRowToObject(rs, int.class));
     }
 
     @Test
     void test_mapRsToObject_String() {
         when(rs.getString(1)).thenReturn("zxc");
-        assertEquals("zxc", analyzer.mapRsToObject(String.class, null));
+        assertEquals("zxc", ValueType.mapRsRowToObject(rs, String.class));
     }
 
     @Test
     void test_mapRsToObject_Boolean() {
         when(rs.getBoolean(1)).thenReturn(true);
-        assertEquals(Boolean.TRUE, analyzer.mapRsToObject(Boolean.class, null));
-        assertEquals(Boolean.TRUE, analyzer.mapRsToObject(boolean.class, null));
+        assertEquals(Boolean.TRUE, ValueType.mapRsRowToObject(rs, Boolean.class));
+        assertEquals(Boolean.TRUE, ValueType.mapRsRowToObject(rs, boolean.class));
     }
 
     @Test
     void test_mapRsToObject_Date() {
         Date date = new Date(System.currentTimeMillis());
         when(rs.getDate(1)).thenReturn(date);
-        assertEquals(date, analyzer.mapRsToObject(Date.class, null));
+        assertEquals(date, ValueType.mapRsRowToObject(rs, Date.class));
     }
 
     @Test
     void test_mapRsToObject_Double() {
         when(rs.getDouble(1)).thenReturn(1.2);
-        assertEquals(new Double(1.2), analyzer.mapRsToObject(Double.class, null));
-        assertEquals(new Double(1.2), analyzer.mapRsToObject(double.class, null));
+        assertEquals(new Double(1.2), ValueType.mapRsRowToObject(rs, Double.class));
+        assertEquals(new Double(1.2), ValueType.mapRsRowToObject(rs, double.class));
     }
 
     @Test
     void test_mapRsToObject_Float() {
         when(rs.getFloat(1)).thenReturn(1.2f);
-        assertEquals(new Float(1.2f), analyzer.mapRsToObject(Float.class, null));
-        assertEquals(new Float(1.2f), analyzer.mapRsToObject(float.class, null));
+        assertEquals(new Float(1.2f), ValueType.mapRsRowToObject(rs, Float.class));
+        assertEquals(new Float(1.2f), ValueType.mapRsRowToObject(rs, float.class));
     }
 
     @Test
     void test_mapRsToObject_Long() {
         when(rs.getLong(1)).thenReturn(3L);
-        assertEquals(new Long(3), analyzer.mapRsToObject(Long.class, null));
-        assertEquals(new Long(3), analyzer.mapRsToObject(long.class, null));
+        assertEquals(new Long(3), ValueType.mapRsRowToObject(rs, Long.class));
+        assertEquals(new Long(3), ValueType.mapRsRowToObject(rs, long.class));
     }
 
     @Test
     void test_mapRsToObject_Short() {
         when(rs.getShort(1)).thenReturn((short) 3);
-        assertEquals(new Short((short) 3), analyzer.mapRsToObject(Short.class, null));
-        assertEquals(new Short((short) 3), analyzer.mapRsToObject(short.class, null));
+        assertEquals(new Short((short) 3), ValueType.mapRsRowToObject(rs, Short.class));
+        assertEquals(new Short((short) 3), ValueType.mapRsRowToObject(rs, short.class));
     }
 
     @Test
     void test_mapRsToObject_Time() {
         Time time = new Time(System.currentTimeMillis());
         when(rs.getTime(1)).thenReturn(time);
-        assertEquals(time, analyzer.mapRsToObject(Time.class, null));
+        assertEquals(time, ValueType.mapRsRowToObject(rs, Time.class));
     }
 
     @Test
     void test_mapRsToObject_Timestamp() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         when(rs.getTimestamp(1)).thenReturn(timestamp);
-        assertEquals(timestamp, analyzer.mapRsToObject(Timestamp.class, null));
+        assertEquals(timestamp, ValueType.mapRsRowToObject(rs, Timestamp.class));
     }
 
     @Test
     void test_mapRsToObject_utilDate() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         when(rs.getTimestamp(1)).thenReturn(timestamp);
-        assertEquals(timestamp, analyzer.mapRsToObject(java.util.Date.class, null));
+        assertEquals(timestamp, ValueType.mapRsRowToObject(rs, java.util.Date.class));
     }
 
     @Test
     void test_mapRsToObject_Instant() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         when(rs.getTimestamp(1)).thenReturn(timestamp);
-        assertEquals(timestamp.toInstant(), analyzer.mapRsToObject(Instant.class, null));
+        assertEquals(timestamp.toInstant(), ValueType.mapRsRowToObject(rs, Instant.class));
     }
 
 }

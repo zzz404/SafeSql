@@ -2,6 +2,7 @@ package zzz404.safesql;
 
 import static java.util.stream.Collectors.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -12,8 +13,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
+import zzz404.safesql.reflection.ClassAnalyzer;
 import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.sql.QuietResultSetAnalyzer;
+import zzz404.safesql.type.ValueType;
 import zzz404.safesql.util.Tuple2;
 
 public class TwoTableQuerier<T, U> extends DynamicQuerier {
@@ -96,16 +100,24 @@ public class TwoTableQuerier<T, U> extends DynamicQuerier {
 
     @Override
     protected String getTablesClause() {
-        return ClassAnalyzer.get(class1).getTableName() + " t1, " + ClassAnalyzer.get(class2).getTableName() + " t2";
+        Set<Integer> allUsedTableIndexes = getAllUsedTableIndexes();
+        ArrayList<String> tables = new ArrayList<>(2);
+        if (allUsedTableIndexes.contains(1)) {
+            tables.add(ClassAnalyzer.get(class1).getTableName() + " t1");
+        }
+        if (allUsedTableIndexes.contains(2)) {
+            tables.add(ClassAnalyzer.get(class2).getTableName() + " t2");
+        }
+        return StringUtils.join(tables, ", ");
     }
 
     private Tuple2<T, U> rsToTuple(QuietResultSet rs) {
         TableColumnSeparater separater = new TableColumnSeparater(this.tableColumns);
         Set<String> columns1 = separater.getColumnsOfTable(1);
         Set<String> columns2 = separater.getColumnsOfTable(2);
-        QuietResultSetAnalyzer analyzer = new QuietResultSetAnalyzer(rs);
-        T t = analyzer.mapRsToObject(class1, columns1);
-        U u = analyzer.mapRsToObject(class2, columns2);
+
+        T t = ValueType.mapRsRowToObject(rs, class1, columns1);
+        U u = ValueType.mapRsRowToObject(rs, class2, columns2);
         return new Tuple2<>(t, u);
     }
 

@@ -9,31 +9,45 @@ import org.apache.commons.lang3.Validate;
 
 import zzz404.safesql.util.NoisySupplier;
 
+/**
+ * for Spring :
+ * ConnectionFactory.create(name).setConnectionPrivider(()->{
+ *   return DataSourceUtils.getConnection(dataSource);
+ * }).willCloseConnAfterQuery(()->{
+ *   return !TransactionSynchronizationManager.isActualTransactionActive();
+ * });
+ */
 public abstract class ConnectionFactory {
 
     static Map<String, ConnectionFactoryImpl> map = Collections.synchronizedMap(new HashMap<>());
 
-    protected boolean tablePrefix;
+    protected boolean useTablePrefix;
     protected boolean snakeFormCompatable;
     protected ConnectionProvider connectionProvider;
-    protected Supplier<Boolean> closeConnAfterQuery = (()->true);
+    protected Supplier<Boolean> willCloseConnAfterQuery = (() -> true);
 
-    public static synchronized ConnectionFactory create() {
-        return create("");
+    public static synchronized ConnectionFactory create(ConnectionProvider connectionProvider) {
+        return create("", connectionProvider);
     }
 
-    public static synchronized ConnectionFactory create(String name) {
+    public static synchronized ConnectionFactory create(String name, ConnectionProvider connectionProvider) {
         Validate.notNull(name);
+        Validate.notNull(connectionProvider);
         if (map.containsKey(name)) {
             throw new ConfigException("ConnectionFactory name:" + name + " conflict!");
         }
         ConnectionFactoryImpl factory = new ConnectionFactoryImpl();
         map.put(name, factory);
+        factory.connectionProvider = connectionProvider;
         return factory;
     }
 
+    public ConnectionFactory setConnectionPrivider() {
+        return this;
+    }
+
     public ConnectionFactory withTablePrefix(boolean tablePrefix) {
-        this.tablePrefix = tablePrefix;
+        this.useTablePrefix = tablePrefix;
         return this;
     }
 
@@ -42,13 +56,8 @@ public abstract class ConnectionFactory {
         return this;
     }
 
-    public ConnectionFactory setConnectionPrivider(ConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
-        return this;
-    }
-
     public ConnectionFactory willCloseConnAfterQuery(NoisySupplier<Boolean> closeConnAfterQuery) {
-        this.closeConnAfterQuery = NoisySupplier.shutUp( closeConnAfterQuery);
+        this.willCloseConnAfterQuery = NoisySupplier.shutUp(closeConnAfterQuery);
         return this;
     }
 

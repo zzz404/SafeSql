@@ -9,7 +9,7 @@ public class TestNoisySupplier {
     @Test
     void test_getQuiet() {
         assertThrows(RuntimeException.class, () -> {
-            NoisySupplier.getQuiet(() -> {
+            NoisySupplier.getQuietly(() -> {
                 throw new Exception();
             });
         });

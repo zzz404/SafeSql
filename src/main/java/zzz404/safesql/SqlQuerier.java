@@ -8,11 +8,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import zzz404.safesql.sql.QuietResultSetIterator;
+import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.sql.QuietResultSetAnalyzer;
-import zzz404.safesql.sql.QuietResultSetIterator;
 import zzz404.safesql.type.ValueType;
 import zzz404.safesql.util.CommonUtils;
 
@@ -54,7 +53,7 @@ public abstract class SqlQuerier {
     }
 
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        return new QuietResultSetAnalyzer(rs).mapRsToObject(clazz, null);
+        return ValueType.mapRsRowToObject(rs, clazz);
     }
 
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
@@ -69,7 +68,7 @@ public abstract class SqlQuerier {
             setCondsValueToPstmt(pstmt);
             QuietResultSet rs;
             try {
-                rs = pstmt.executeQuery();
+                rs = new QuietResultSet(pstmt.executeQuery());
             }
             catch (Exception e) {
                 throw new SqlQueryException(sql(), paramValues(), e);

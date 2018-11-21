@@ -6,10 +6,15 @@ import zzz404.safesql.sql.QuietResultSet;
 public class LongType extends ValueType<Long> {
 
     public Long readFromRs(QuietResultSet rs, int index) {
-        return rs.getLong(index);
+        return primitiveToObject(rs.getLong(index), rs);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Long value) {
+    @Override
+    public Long readFromRs(QuietResultSet rs, String columnName) {
+        return primitiveToObject(rs.getLong(columnName), rs);
+    }
+
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Long value)  {
         pstmt.setLong(index, value);
     }
 

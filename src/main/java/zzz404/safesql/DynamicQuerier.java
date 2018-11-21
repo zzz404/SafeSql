@@ -3,10 +3,13 @@ package zzz404.safesql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.sf.cglib.proxy.Enhancer;
+import zzz404.safesql.reflection.GetterTracer;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class DynamicQuerier extends SqlQuerier {
@@ -18,6 +21,20 @@ public abstract class DynamicQuerier extends SqlQuerier {
 
     public DynamicQuerier() {
         this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
+    }
+
+    protected Set<Integer> getAllUsedTableIndexes() {
+        HashSet<Integer> tableIndexes = new HashSet<>();
+        tableColumns.stream().map(TableColumn::getTableIndex).forEach(index -> tableIndexes.add(index));
+        conditions.stream().forEach(cond -> {
+            tableIndexes.add(cond.tableColumn.getTableIndex());
+            if (cond instanceof MutualCondition) {
+                tableIndexes.add(((MutualCondition) cond).tableColumn2.getTableIndex());
+            }
+        });
+        groupBys.stream().map(TableColumn::getTableIndex).forEach(index -> tableIndexes.add(index));
+        orderBys.stream().map(orderBy -> orderBy.tableColumn.getTableIndex()).forEach(index -> tableIndexes.add(index));
+        return tableIndexes;
     }
 
     protected <T> T createMockedObject(Class<T> clazz, int tableIndex) {
@@ -40,7 +57,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         this.tableColumns = ctx.takeAllTableColumns();
         ctx.scope = null;
     }
-    
+
     protected void onWhereScope(Runnable collectConditions) {
         QueryContext ctx = QueryContext.get();
         ctx.scope = Scope.where;
@@ -50,7 +67,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         this.conditions = QueryContext.get().conditions;
         ctx.scope = null;
     }
-    
+
     protected void onGroupByScope(Runnable collectColumns) {
         QueryContext ctx = QueryContext.get();
         ctx.scope = Scope.groupBy;
@@ -60,7 +77,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         this.groupBys = ctx.takeAllTableColumns();
         ctx.scope = null;
     }
-    
+
     protected void onOrderByScope(Runnable collectColumns) {
         QueryContext ctx = QueryContext.get();
         ctx.scope = Scope.orderBy;
@@ -70,7 +87,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         this.orderBys = QueryContext.get().orderBys;
         ctx.scope = null;
     }
-    
+
     protected abstract String getTablesClause();
 
     public String sql() {
@@ -105,7 +122,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     @Override
     protected Object[] paramValues() {
         ArrayList<Object> paramValues = new ArrayList<>();
-        conditions.forEach(cond->{
+        conditions.forEach(cond -> {
             cond.appendValuesTo(paramValues);
         });
         return paramValues.toArray();

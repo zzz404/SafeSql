@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.params.provider.ValueSource;
 
+import zzz404.safesql.reflection.MethodAnalyzer;
+
 class TestMethodAnalyzer {
 
     // @ParameterizedTest

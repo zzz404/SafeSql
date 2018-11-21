@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.reflection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -42,5 +42,10 @@ public class ClassAnalyzer<T> {
     public static Field[] getAllField(Class<?> clazz) {
         Field[] fields = clazz.getDeclaredFields();
         return fields;
+    }
+
+    public MethodAnalyzer find_setter_by_columnName() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

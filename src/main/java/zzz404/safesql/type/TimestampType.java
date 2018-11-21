@@ -10,12 +10,17 @@ import zzz404.safesql.sql.QuietResultSet;
 public class TimestampType extends ValueType<Timestamp> {
 
     public static final DateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    
+
     public Timestamp readFromRs(QuietResultSet rs, int index) {
         return rs.getTimestamp(index);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Timestamp value) {
+    @Override
+    public Timestamp readFromRs(QuietResultSet rs, String columnName) {
+        return rs.getTimestamp(columnName);
+    }
+
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Timestamp value)  {
         pstmt.setTimestamp(index, value);
     }
 

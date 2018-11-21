@@ -1,14 +1,20 @@
 package zzz404.safesql.type;
 
+import java.lang.reflect.Method;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import zzz404.safesql.QueryContext;
+import zzz404.safesql.reflection.ClassAnalyzer;
+import zzz404.safesql.reflection.MethodAnalyzer;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.util.NoisySupplier;
 
 public abstract class ValueType<T> {
     @SuppressWarnings("rawtypes")
@@ -40,21 +46,6 @@ public abstract class ValueType<T> {
         map.put(Instant.class, new InstantType());
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void setValueToPstmt(QuietPreparedStatement pstmt, int index, Object value) {
-        if (value == null) {
-            pstmt.setObject(index, null);
-            return;
-        }
-        ValueType valueType = ValueType.get(value.getClass());
-        if (valueType != null) {
-            valueType.setToPstmt(pstmt, index, value);
-        }
-        else {
-            pstmt.setObject(index, value);
-        }
-    }
-
     @SuppressWarnings({ "unchecked" })
     public static <E> ValueType<E> get(Class<E> clazz) {
         if (map.containsKey(clazz)) {
@@ -64,6 +55,8 @@ public abstract class ValueType<T> {
             return null;
         }
     }
+
+    public abstract T readFromRs(QuietResultSet rs, String columnName);
 
     public abstract T readFromRs(QuietResultSet rs, int index);
 
@@ -89,6 +82,64 @@ public abstract class ValueType<T> {
         else {
             return valueType.toString(value);
         }
+    }
+
+    protected T primitiveToObject(T value, QuietResultSet rs) {
+        if (rs.wasNull()) {
+            return null;
+        }
+        else {
+            return value;
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static void setValueToPstmt(QuietPreparedStatement pstmt, int index, Object value) {
+        if (value == null) {
+            pstmt.setObject(index, null);
+            return;
+        }
+        ValueType valueType = ValueType.get(value.getClass());
+        if (valueType != null) {
+            valueType.setToPstmt(pstmt, index, value);
+        }
+        else {
+            pstmt.setObject(index, value);
+        }
+    }
+
+    public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz) {
+        return mapRsRowToObject(rs, clazz, QueryContext.get().getColumnNames(rs));
+    }
+
+    public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz, Set<String> columnNames) {
+        ValueType<R> valueType = ValueType.get(clazz);
+        if (valueType != null) {
+            return valueType.readFirstFromRs(rs);
+        }
+        else {
+            return toObject(columnNames, rs, clazz);
+        }
+    }
+
+    private static <R> R toObject(Set<String> columnNames, QuietResultSet rs, Class<R> clazz) {
+        return NoisySupplier.getQuietly(() -> {
+            R o = clazz.newInstance();
+            ClassAnalyzer<R> classAnalyzer = ClassAnalyzer.get(clazz);
+            for (String columnName : columnNames) {
+                MethodAnalyzer analyzerOfSetter = classAnalyzer.find_setter_by_columnName();
+                if (analyzerOfSetter != null) {
+                    Class<?> type = analyzerOfSetter.getType();
+                    ValueType<?> valueType = ValueType.get(type);
+                    if (valueType != null) {
+                        Object value = valueType.readFromRs(rs, columnName);
+                        Method setter = analyzerOfSetter.getMethod();
+                        setter.invoke(o, value);
+                    }
+                }
+            }
+            return o;
+        });
     }
 
 }

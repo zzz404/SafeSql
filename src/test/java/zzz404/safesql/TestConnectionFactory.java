@@ -17,7 +17,7 @@ public class TestConnectionFactory {
         ConnectionFactory factory = ConnectionFactory.get("ds1");
         assertNull(factory);
 
-        factory = ConnectionFactory.create("ds1");
+        factory = ConnectionFactory.create("ds1", () -> null);
         assertNotNull(factory);
 
         ConnectionFactory factory2 = ConnectionFactory.get("ds1");
@@ -26,16 +26,16 @@ public class TestConnectionFactory {
 
     @Test
     public void test_create_nameConflict_throwException() {
-        ConnectionFactory.create("ds1");
-        ConfigException ex = assertThrows(ConfigException.class, () -> ConnectionFactory.create("ds1"));
+        ConnectionFactory.create("ds1", () -> null);
+        ConfigException ex = assertThrows(ConfigException.class, () -> ConnectionFactory.create("ds1", () -> null));
         assertTrue(ex.getMessage().contains("conflict"));
         assertTrue(ex.getMessage().contains("ds1"));
     }
 
     @Test
     public void test_create_multipleInstance() {
-        ConnectionFactory ds1 = ConnectionFactory.create("ds1");
-        ConnectionFactory ds2 = ConnectionFactory.create("ds2");
+        ConnectionFactory ds1 = ConnectionFactory.create("ds1", () -> null);
+        ConnectionFactory ds2 = ConnectionFactory.create("ds2", () -> null);
         assertTrue(ds1 != ds2);
     }
 

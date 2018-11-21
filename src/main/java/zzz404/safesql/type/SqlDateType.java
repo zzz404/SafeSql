@@ -11,11 +11,17 @@ public class SqlDateType extends ValueType<Date> {
 
     public static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
     
+    @Override
     public Date readFromRs(QuietResultSet rs, int index) {
         return rs.getDate(index);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Date value) {
+    @Override
+    public Date readFromRs(QuietResultSet rs, String columnName) {
+        return rs.getDate(columnName);
+    }
+
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Date value)  {
         pstmt.setDate(index, value);
     }
 

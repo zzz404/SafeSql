@@ -1,12 +1,13 @@
-package zzz404.safesql;
+package zzz404.safesql.reflection;
 
 import java.lang.reflect.Method;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import zzz404.safesql.QueryContext;
 import zzz404.safesql.util.NoisySupplier;
 
-class GetterTracer<T> implements MethodInterceptor {
+public class GetterTracer<T> implements MethodInterceptor {
 
     private ClassAnalyzer<T> classAnalyzer;
     private int tableIndex;
@@ -23,7 +24,7 @@ class GetterTracer<T> implements MethodInterceptor {
             QueryContext ctx = QueryContext.get();
             ctx.addTableColumn(tableIndex, m.getColumnName());
         }
-        return NoisySupplier.getQuiet(() -> proxy.invokeSuper(obj, args));
+        return NoisySupplier.getQuietly(() -> proxy.invokeSuper(obj, args));
     }
 
 }

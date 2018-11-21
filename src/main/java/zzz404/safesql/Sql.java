@@ -35,6 +35,9 @@ public class Sql {
     @SafeVarargs
     public static <T> Condition cond(T field, String operator, T... values) {
         QueryContext ctx = QueryContext.get();
+        if (ctx.scope != Scope.where) {
+            throw new ScopeErrorException("cond", ctx.scope);
+        }
         TableColumn tableColumn = ctx.takeTableColumn();
         Condition cond;
         if (ctx.hasMoreColumn()) {
@@ -49,12 +52,27 @@ public class Sql {
 
     public static <T> void innerJoin(T field1, String operator, T field2) {
         QueryContext ctx = QueryContext.get();
+        if (ctx.scope != Scope.where) {
+            throw new ScopeErrorException("innerJoin", ctx.scope);
+        }
         Condition cond = new MutualCondition(ctx.takeTableColumn(), operator, ctx.takeTableColumn());
         ctx.conditions.add(cond);
     }
 
     public static void asc(Object o) {
+        QueryContext ctx = QueryContext.get();
+        if (ctx.scope != Scope.orderBy) {
+            throw new ScopeErrorException("asc", ctx.scope);
+        }
         addOrderByToContext(true);
+    }
+
+    public static void desc(Object o) {
+        QueryContext ctx = QueryContext.get();
+        if (ctx.scope != Scope.orderBy) {
+            throw new ScopeErrorException("asc", ctx.scope);
+        }
+        addOrderByToContext(false);
     }
 
     private static void addOrderByToContext(boolean isAsc) {
@@ -62,7 +80,4 @@ public class Sql {
         ctx.orderBys.add(new OrderBy(ctx.takeTableColumn(), isAsc));
     }
 
-    public static void desc(Object o) {
-        addOrderByToContext(false);
-    }
 }

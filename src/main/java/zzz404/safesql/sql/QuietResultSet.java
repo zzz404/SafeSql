@@ -11,7 +11,6 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLType;
 import java.sql.SQLWarning;
@@ -29,6 +28,15 @@ public class QuietResultSet implements ResultSet {
 
     public QuietResultSet(ResultSet rs) {
         this.rs = rs;
+    }
+
+    public QuietResultSetMetaData getMetaData() {
+        try {
+            return new QuietResultSetMetaData(rs.getMetaData());
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
     }
 
     public <T> T unwrap(Class<T> iface) {
@@ -389,15 +397,6 @@ public class QuietResultSet implements ResultSet {
     public String getCursorName() {
         try {
             return rs.getCursorName();
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public ResultSetMetaData getMetaData() {
-        try {
-            return rs.getMetaData();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);

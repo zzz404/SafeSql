@@ -9,7 +9,12 @@ public class StringType extends ValueType<String> {
         return rs.getString(index);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, String value) {
+    @Override
+    public String readFromRs(QuietResultSet rs, String columnName) {
+        return rs.getString(columnName);
+    }
+
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, String value)  {
         pstmt.setString(index, value);
     }
 

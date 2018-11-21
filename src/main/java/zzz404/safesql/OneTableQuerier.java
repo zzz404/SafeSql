@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import zzz404.safesql.reflection.ClassAnalyzer;
+
 public class OneTableQuerier<T> extends DynamicQuerier {
 
     private Class<T> clazz;

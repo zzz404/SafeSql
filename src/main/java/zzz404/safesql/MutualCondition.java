@@ -7,7 +7,7 @@ import zzz404.safesql.util.CommonUtils;
 public class MutualCondition extends Condition {
 
     private String operator;
-    private TableColumn tableColumn2;
+    protected TableColumn tableColumn2;
 
     public MutualCondition(TableColumn tableColumn, String operator, TableColumn tableColumn2) {
         super(tableColumn);
