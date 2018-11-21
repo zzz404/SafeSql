@@ -116,8 +116,8 @@ public class TwoTableQuerier<T, U> extends DynamicQuerier {
         Set<String> columns1 = separater.getColumnsOfTable(1);
         Set<String> columns2 = separater.getColumnsOfTable(2);
 
-        T t = ValueType.mapRsRowToObject(rs, class1, columns1);
-        U u = ValueType.mapRsRowToObject(rs, class2, columns2);
+        T t = ValueType.mapRsRowToObject(rs, class1, columns1.toArray(new String[columns1.size()]));
+        U u = ValueType.mapRsRowToObject(rs, class2, columns2.toArray(new String[columns1.size()]));
         return new Tuple2<>(t, u);
     }
 

@@ -3,7 +3,7 @@ package zzz404.safesql.util;
 public interface NoisyRunnable {
     public void run() throws Exception;
 
-    public static void runQuiet(NoisyRunnable runnable) {
+    public static void runQuietly(NoisyRunnable runnable) {
         try {
             runnable.run();
         }

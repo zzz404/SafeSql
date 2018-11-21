@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -53,7 +54,8 @@ public abstract class SqlQuerier {
     }
 
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        return ValueType.mapRsRowToObject(rs, clazz);
+        Set<String> columnNames = QueryContext.get().getColumnNames(rs);
+        return ValueType.mapRsRowToObject(rs, clazz, columnNames.toArray(new String[columnNames.size()]));
     }
 
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {

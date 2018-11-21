@@ -12,17 +12,15 @@ import java.util.Queue;
 import zzz404.safesql.util.NoisyRunnable;
 
 public class FakeDatabase {
-    private Connection conn;
-    private PreparedStatement pstmt;
-    private ResultSet rs;
+    private Connection conn = mock(Connection.class);
+    private PreparedStatement pstmt = mock(PreparedStatement.class);
+    private ResultSet rs = mock(ResultSet.class);
 
     protected int row = -1;
     protected Queue<Record[]> data = new LinkedList<>();
 
     public FakeDatabase() {
-        NoisyRunnable.runQuiet(() -> {
-            conn = mock(Connection.class);
-            pstmt = mock(PreparedStatement.class);
+        NoisyRunnable.runQuietly(() -> {
             when(conn.prepareStatement(anyString())).thenReturn(pstmt);
             when(conn.prepareStatement(anyString(), anyInt(), anyInt())).thenReturn(pstmt);
             when(pstmt.executeQuery()).then(info -> {

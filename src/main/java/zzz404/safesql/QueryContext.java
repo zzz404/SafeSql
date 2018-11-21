@@ -24,8 +24,8 @@ public class QueryContext {
     List<OrderBy> orderBys = new ArrayList<>();
 
     private ConnectionFactoryImpl connFactory;
-    private QuietResultSet rs;
-    private Set<String> columnNames_of_resultSet = null;
+    QuietResultSet rs;
+    Set<String> columnNames_of_resultSet = null;
 
     public Set<String> getColumnNames(QuietResultSet rs) {
         if (rs == this.rs && columnNames_of_resultSet != null) {

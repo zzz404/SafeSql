@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.mockito.Mockito;
@@ -78,6 +79,9 @@ public class Record {
                 throw new RuntimeException(new SQLException());
             }
         });
+        ResultSetMetaData meta = mock(ResultSetMetaData.class);
+        when(rs.getMetaData()).thenReturn(meta);
+        when(meta.getColumnCount()).thenReturn(0);
     }
 
 }

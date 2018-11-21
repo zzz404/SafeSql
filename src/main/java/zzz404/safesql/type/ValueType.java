@@ -7,9 +7,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import zzz404.safesql.QueryContext;
 import zzz404.safesql.reflection.ClassAnalyzer;
 import zzz404.safesql.reflection.MethodAnalyzer;
 import zzz404.safesql.sql.QuietPreparedStatement;
@@ -108,21 +106,17 @@ public abstract class ValueType<T> {
         }
     }
 
-    public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz) {
-        return mapRsRowToObject(rs, clazz, QueryContext.get().getColumnNames(rs));
-    }
-
-    public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz, Set<String> columnNames) {
+    public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz, String... columnNames) {
         ValueType<R> valueType = ValueType.get(clazz);
         if (valueType != null) {
             return valueType.readFirstFromRs(rs);
         }
         else {
-            return toObject(columnNames, rs, clazz);
+            return toObject(rs, clazz, columnNames);
         }
     }
 
-    private static <R> R toObject(Set<String> columnNames, QuietResultSet rs, Class<R> clazz) {
+    private static <R> R toObject(QuietResultSet rs, Class<R> clazz, String... columnNames) {
         return NoisySupplier.getQuietly(() -> {
             R o = clazz.newInstance();
             ClassAnalyzer<R> classAnalyzer = ClassAnalyzer.get(clazz);

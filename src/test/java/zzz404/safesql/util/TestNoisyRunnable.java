@@ -9,7 +9,7 @@ public class TestNoisyRunnable {
     @Test
     void test_runQuiet() {
         assertThrows(RuntimeException.class, () -> {
-            NoisyRunnable.runQuiet(() -> {
+            NoisyRunnable.runQuietly(() -> {
                 throw new Exception();
             });
         });
