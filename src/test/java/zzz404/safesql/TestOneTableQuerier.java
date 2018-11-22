@@ -103,8 +103,8 @@ class TestOneTableQuerier {
         });
 
         assertEquals(2, q.orderBys.size());
-        assertEquals(new OrderBy(new TableColumn(0, "id"), true), q.orderBys.get(0));
-        assertEquals(new OrderBy(new TableColumn(0, "title"), false), q.orderBys.get(1));
+        assertEquals(new OrderBy("id", true), q.orderBys.get(0));
+        assertEquals(new OrderBy("title", false), q.orderBys.get(1));
     }
 
     @Test

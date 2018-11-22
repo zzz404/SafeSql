@@ -33,8 +33,6 @@ public abstract class DynamicQuerier extends SqlQuerier {
                 tableIndexes.add(((MutualCondition) cond).tableColumn2.getTableIndex());
             }
         });
-        groupBys.stream().map(TableColumn::getTableIndex).forEach(index -> tableIndexes.add(index));
-        orderBys.stream().map(orderBy -> orderBy.tableColumn.getTableIndex()).forEach(index -> tableIndexes.add(index));
         return tableIndexes;
     }
 

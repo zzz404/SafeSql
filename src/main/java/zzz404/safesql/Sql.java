@@ -55,13 +55,20 @@ public class Sql {
     public static void asc(Object o) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("asc");
-        ctx.addOrderBy(ctx.takeTableColumn(), true);
+        String columnName;
+        if(o instanceof String && !ctx.hasMoreColumn()) {
+            columnName = (String) o;
+        }
+        else {
+            columnName = ctx.takeTableColumn().getPrefixedColumnName();
+        }
+        ctx.addOrderBy(columnName, true);
     }
 
     public static void desc(Object o) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("desc");
-        ctx.addOrderBy(ctx.takeTableColumn(), false);
+        ctx.addOrderBy(ctx.takeTableColumn().getPrefixedColumnName(), false);
     }
 
 }
