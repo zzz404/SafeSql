@@ -21,11 +21,11 @@ public class Sql {
         return use("").sql(sql);
     }
 
-    public static <T> OneTableQuerier<T> from(Class<T> clazz) {
+    public static <T> OneEntityQuerier<T> from(Class<T> clazz) {
         return use("").from(clazz);
     }
 
-    public static <T, U> TwoTableQuerier<T, U> from(Class<T> class1, Class<U> class2) {
+    public static <T, U> TwoEntityQuerier<T, U> from(Class<T> class1, Class<U> class2) {
         return use("").from(class1, class2);
     }
 

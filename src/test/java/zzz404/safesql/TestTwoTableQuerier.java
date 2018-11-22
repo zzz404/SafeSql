@@ -12,7 +12,7 @@ class TestTwoTableQuerier {
 
     @Test
     void test_select_withAssignedFields() {
-        TwoTableQuerier<Document, User> q = from(Document.class, User.class);
+        TwoEntityQuerier<Document, User> q = from(Document.class, User.class);
         q.select((d, u) -> {
             d.getId();
             d.getTitle();
@@ -24,7 +24,7 @@ class TestTwoTableQuerier {
 
     @Test
     void test_select_notCalled_meansAllFields() {
-        TwoTableQuerier<Document, User> q = from(Document.class, User.class);
+        TwoEntityQuerier<Document, User> q = from(Document.class, User.class);
 
         assertEquals(1, q.tableColumns.size());
         assertEquals("*", q.getColumnsClause());
@@ -32,7 +32,7 @@ class TestTwoTableQuerier {
 
     @Test
     void test_where_notCalled_meansNoCondition() {
-        TwoTableQuerier<Document, User> q = from(Document.class, User.class);
+        TwoEntityQuerier<Document, User> q = from(Document.class, User.class);
         assertEquals(0, q.conditions.size());
     }
 

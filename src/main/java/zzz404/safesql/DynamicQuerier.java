@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.sf.cglib.proxy.Enhancer;
+import zzz404.safesql.reflection.ClassAnalyzer;
 import zzz404.safesql.reflection.GetterTracer;
 import zzz404.safesql.util.CommonUtils;
 
@@ -125,6 +126,11 @@ public abstract class DynamicQuerier extends SqlQuerier {
             cond.appendValuesTo(paramValues);
         });
         return paramValues.toArray();
+    }
+    
+    protected String getRealTableName(Class<?> clazz) {
+        String tableName = ClassAnalyzer.get(clazz).getTableName();
+        return connFactory.getRealTableName(tableName);
     }
 
     public abstract Object queryOne();

@@ -2,59 +2,58 @@ package zzz404.safesql;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import zzz404.safesql.reflection.ClassAnalyzer;
+import zzz404.safesql.util.OneObjectPlayer;
 
-public class OneTableQuerier<T> extends DynamicQuerier {
+public class OneEntityQuerier<T> extends DynamicQuerier {
 
     private Class<T> clazz;
     private T mockedObject;
 
-    public OneTableQuerier(String name, Class<T> clazz) {
+    public OneEntityQuerier(String name, Class<T> clazz) {
         super(name);
         this.clazz = clazz;
         this.mockedObject = createMockedObject(clazz, 0);
     }
 
-    public OneTableQuerier<T> select(Consumer<T> columnsCollector) {
+    public OneEntityQuerier<T> select(OneObjectPlayer<T> columnsCollector) {
         onSelectScope(() -> {
-            columnsCollector.accept(mockedObject);
+            columnsCollector.play(mockedObject);
         });
         return this;
     }
 
-    public OneTableQuerier<T> where(Consumer<T> conditionsCollector) {
+    public OneEntityQuerier<T> where(OneObjectPlayer<T> conditionsCollector) {
         onWhereScope(() -> {
-            conditionsCollector.accept(mockedObject);
+            conditionsCollector.play(mockedObject);
         });
         return this;
     }
 
-    public OneTableQuerier<T> groupBy(Consumer<T> columnsCollector) {
+    public OneEntityQuerier<T> groupBy(OneObjectPlayer<T> columnsCollector) {
         onGroupByScope(() -> {
-            columnsCollector.accept(mockedObject);
+            columnsCollector.play(mockedObject);
         });
         return this;
     }
 
-    public OneTableQuerier<T> orderBy(Consumer<T> columnsCollector) {
+    public OneEntityQuerier<T> orderBy(OneObjectPlayer<T> columnsCollector) {
         onOrderByScope(() -> {
-            columnsCollector.accept(mockedObject);
+            columnsCollector.play(mockedObject);
         });
         return this;
     }
 
     @Override
-    public OneTableQuerier<T> offset(int offset) {
+    public OneEntityQuerier<T> offset(int offset) {
         super.offset(offset);
         return this;
     }
 
     @Override
-    public OneTableQuerier<T> limit(int limit) {
+    public OneEntityQuerier<T> limit(int limit) {
         super.limit(limit);
         return this;
     }
@@ -80,8 +79,7 @@ public class OneTableQuerier<T> extends DynamicQuerier {
 
     @Override
     protected String getTablesClause() {
-        String tableName = ClassAnalyzer.get(clazz).getTableName();
-        return connFactory.getRealTableName(tableName);
+        return getRealTableName(clazz);
     }
 
 }

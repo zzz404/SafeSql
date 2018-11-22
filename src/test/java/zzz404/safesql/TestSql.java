@@ -26,7 +26,7 @@ public class TestSql {
 
     @Test
     void test_from_useDefault() {
-        OneTableQuerier<?> querier = from(Object.class);
+        OneEntityQuerier<?> querier = from(Object.class);
         assertEquals("", querier.connFactory.name);
     }
 
