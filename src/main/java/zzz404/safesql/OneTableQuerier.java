@@ -80,7 +80,8 @@ public class OneTableQuerier<T> extends DynamicQuerier {
 
     @Override
     protected String getTablesClause() {
-        return ClassAnalyzer.get(clazz).getTableName();
+        String tableName = ClassAnalyzer.get(clazz).getTableName();
+        return connFactory.getRealTableName(tableName);
     }
 
 }

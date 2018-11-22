@@ -104,12 +104,18 @@ public class TwoTableQuerier<T, U> extends DynamicQuerier {
         Set<Integer> allUsedTableIndexes = getAllUsedTableIndexes();
         ArrayList<String> tables = new ArrayList<>(2);
         if (allUsedTableIndexes.contains(1)) {
-            tables.add(ClassAnalyzer.get(class1).getTableName() + " t1");
+            
+            tables.add(getTableName(class1) + " t1");
         }
         if (allUsedTableIndexes.contains(2)) {
             tables.add(ClassAnalyzer.get(class2).getTableName() + " t2");
         }
         return StringUtils.join(tables, ", ");
+    }
+
+    private String getTableName(Class<T> clazz) {
+        String tableName = ClassAnalyzer.get(clazz).getTableName();
+        return connFactory.getRealTableName(tableName);
     }
 
     private Tuple2<T, U> rsToTuple(QuietResultSet rs) {

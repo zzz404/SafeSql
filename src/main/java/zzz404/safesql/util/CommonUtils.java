@@ -58,6 +58,22 @@ public final class CommonUtils {
         return c.stream().map(converter).collect(Collectors.joining(separator));
     }
 
+    public static String camelForm_to_snakeForm(String camelForm) {
+        char[] cs = camelForm.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        sb.append(Character.toLowerCase(cs[0]));
+        for (int i = 1; i < cs.length; i++) {
+            if (Character.isUpperCase(cs[i])) {
+                sb.append('_');
+                sb.append(Character.toLowerCase(cs[i]));
+            }
+            else {
+                sb.append(cs[i]);
+            }
+        }
+        return sb.toString();
+    }
+
     //    public static <T, U> List<Tuple2<T, U>> zip(List<T> list, U[] array) {
     //        ArrayList<Tuple2<T, U>> result = new ArrayList<>();
     //
