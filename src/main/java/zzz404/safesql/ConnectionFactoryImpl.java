@@ -8,4 +8,9 @@ public class ConnectionFactoryImpl extends ConnectionFactory {
         return new QuietConnection(connectionProvider.getConnection());
     }
 
+    public void closeConnection(QuietConnection conn) {
+        if (willCloseConnAfterQuery.get()) {
+            conn.close();
+        }
+    }
 }

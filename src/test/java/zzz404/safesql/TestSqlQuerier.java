@@ -3,7 +3,6 @@ package zzz404.safesql;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,13 +21,10 @@ class TestSqlQuerier {
     void beforeEach() {
         ConnectionFactory.create(() -> fakeDb.getConnection());
         fakeDb = new FakeDatabase();
-        QueryContext ctx = QueryContext.create("");
-        ctx.columnNames_of_resultSet = new HashSet<>();
     }
 
     @AfterEach
     void afterEach() {
-        QueryContext.clear();
         ConnectionFactory.map.clear();
     }
 
@@ -106,6 +102,10 @@ class TestSqlQuerier {
     }
 
     public static class MySqlQuerier extends SqlQuerier {
+
+        public MySqlQuerier() {
+            super("");
+        }
 
         @Override
         protected String sql() {

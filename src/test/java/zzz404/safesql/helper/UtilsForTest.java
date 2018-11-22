@@ -3,7 +3,6 @@ package zzz404.safesql.helper;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
-import zzz404.safesql.QueryContext;
 import zzz404.safesql.util.NoisyRunnable;
 
 public class UtilsForTest {
@@ -34,16 +33,6 @@ public class UtilsForTest {
             runnable.run();
         }
         catch (Exception ignored) {
-        }
-    }
-
-    public static void underQueryContext(Runnable runnable) {
-        try {
-            QueryContext.create("");
-            runnable.run();
-        }
-        finally {
-            QueryContext.clear();
         }
     }
 

@@ -2,6 +2,7 @@ package zzz404.safesql;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -9,17 +10,27 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import zzz404.safesql.sql.QuietResultSetIterator;
-import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
+import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.QuietResultSetIterator;
+import zzz404.safesql.sql.QuietResultSetMetaData;
 import zzz404.safesql.type.ValueType;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class SqlQuerier {
 
+    ConnectionFactoryImpl connFactory;
+
     protected int offset = 0;
     protected int limit = 0;
+
+    private QuietResultSet rs = null;
+    Set<String> columnNames_of_resultSet = null;
+
+    public SqlQuerier(String name) {
+        this.connFactory = ConnectionFactory.get(name);
+    }
 
     public SqlQuerier offset(int offset) {
         this.offset = offset;
@@ -30,12 +41,6 @@ public abstract class SqlQuerier {
         this.limit = limit;
         return this;
     }
-
-    protected abstract String sql();
-
-    protected abstract String sql_for_queryCount();
-
-    protected abstract Object[] paramValues();
 
     protected final void setCondsValueToPstmt(QuietPreparedStatement pstmt) {
         int i = 1;
@@ -54,8 +59,21 @@ public abstract class SqlQuerier {
     }
 
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        Set<String> columnNames = QueryContext.get().getColumnNames(rs);
+        Set<String> columnNames = getColumnNames(rs);
         return ValueType.mapRsRowToObject(rs, clazz, columnNames.toArray(new String[columnNames.size()]));
+    }
+
+    private Set<String> getColumnNames(QuietResultSet rs) {
+        if (rs == this.rs && columnNames_of_resultSet != null) {
+            return columnNames_of_resultSet;
+        }
+        this.rs = rs;
+        columnNames_of_resultSet = new HashSet<>();
+        QuietResultSetMetaData metaData = rs.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            columnNames_of_resultSet.add(metaData.getColumnName(i));
+        }
+        return columnNames_of_resultSet;
     }
 
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
@@ -64,8 +82,7 @@ public abstract class SqlQuerier {
     }
 
     private <T> T query_then_mapAll(String sql, Function<QuietResultSet, T> func) {
-        QueryContext ctx = QueryContext.get();
-        QuietConnection conn = ctx.getQuietConnection();
+        QuietConnection conn = connFactory.getQuietConnection();
         try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondsValueToPstmt(pstmt);
             QuietResultSet rs;
@@ -78,7 +95,7 @@ public abstract class SqlQuerier {
             return func.apply(rs);
         }
         finally {
-            ctx.closeConnection(conn);
+            connFactory.closeConnection(conn);
         }
     }
 
@@ -154,5 +171,11 @@ public abstract class SqlQuerier {
             return objStreamReader.apply(objStream);
         });
     }
+
+    protected abstract String sql();
+
+    protected abstract String sql_for_queryCount();
+
+    protected abstract Object[] paramValues();
 
 }

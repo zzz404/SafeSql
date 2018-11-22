@@ -4,39 +4,35 @@ import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TestSql {
+    @BeforeEach
+    void beforeEach() {
+        ConnectionFactory.create("", () -> null);
+    }
+
     @AfterEach
     void afterEach() {
-        QueryContext.clear();
+        ConnectionFactory.map.clear();
     }
 
     @Test
     void test_sql_useDefault() {
-        sql("hi");
-        QueryContext ctx = QueryContext.get();
-        assertEquals("", ctx.getName());
+        StaticSqlQuerier querier = sql("hi");
+        assertEquals("", querier.connFactory.name);
     }
 
     @Test
     void test_from_useDefault() {
-        from(Object.class);
-        QueryContext ctx = QueryContext.get();
-        assertEquals("", ctx.getName());
-    }
-
-    @Test
-    void test_use() {
-        use("ccc");
-        QueryContext ctx = QueryContext.get();
-        assertEquals("ccc", ctx.getName());
+        OneTableQuerier<?> querier = from(Object.class);
+        assertEquals("", querier.connFactory.name);
     }
 
     @Test
     void test_useDefault() {
-        use();
-        QueryContext ctx = QueryContext.get();
-        assertEquals("", ctx.getName());
+        QuerierFactory factory = use();
+        assertEquals("", factory.name);
     }
 }

@@ -6,8 +6,6 @@ public class Sql {
     public static final String IN = "in";
     public static final String LIKE = "like";
 
-    private static QuerierFactory querierFactory = new QuerierFactory();
-
     private Sql() {
     }
 
@@ -16,8 +14,7 @@ public class Sql {
     }
 
     public static QuerierFactory use(String name) {
-        QueryContext.create(name);
-        return querierFactory;
+        return new QuerierFactory(name);
     }
 
     public static StaticSqlQuerier sql(String sql) {
@@ -35,9 +32,7 @@ public class Sql {
     @SafeVarargs
     public static <T> Condition cond(T field, String operator, T... values) {
         QueryContext ctx = QueryContext.get();
-        if (ctx.scope != Scope.where) {
-            throw new ScopeErrorException("cond", ctx.scope);
-        }
+        ctx.getScope().checkCommand("cond");
         TableColumn tableColumn = ctx.takeTableColumn();
         Condition cond;
         if (ctx.hasMoreColumn()) {
@@ -46,38 +41,27 @@ public class Sql {
         else {
             cond = Condition.of(tableColumn, operator, values);
         }
-        ctx.conditions.add(cond);
+        ctx.addCondition(cond);
         return cond;
     }
 
     public static <T> void innerJoin(T field1, String operator, T field2) {
         QueryContext ctx = QueryContext.get();
-        if (ctx.scope != Scope.where) {
-            throw new ScopeErrorException("innerJoin", ctx.scope);
-        }
+        ctx.getScope().checkCommand("innerJoin");
         Condition cond = new MutualCondition(ctx.takeTableColumn(), operator, ctx.takeTableColumn());
-        ctx.conditions.add(cond);
+        ctx.addCondition(cond);
     }
 
     public static void asc(Object o) {
         QueryContext ctx = QueryContext.get();
-        if (ctx.scope != Scope.orderBy) {
-            throw new ScopeErrorException("asc", ctx.scope);
-        }
-        addOrderByToContext(true);
+        ctx.getScope().checkCommand("asc");
+        ctx.addOrderBy(ctx.takeTableColumn(), true);
     }
 
     public static void desc(Object o) {
         QueryContext ctx = QueryContext.get();
-        if (ctx.scope != Scope.orderBy) {
-            throw new ScopeErrorException("asc", ctx.scope);
-        }
-        addOrderByToContext(false);
-    }
-
-    private static void addOrderByToContext(boolean isAsc) {
-        QueryContext ctx = QueryContext.get();
-        ctx.orderBys.add(new OrderBy(ctx.takeTableColumn(), isAsc));
+        ctx.getScope().checkCommand("desc");
+        ctx.addOrderBy(ctx.takeTableColumn(), false);
     }
 
 }

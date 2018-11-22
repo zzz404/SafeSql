@@ -21,6 +21,7 @@ public abstract class ConnectionFactory {
 
     static Map<String, ConnectionFactoryImpl> map = Collections.synchronizedMap(new HashMap<>());
 
+    protected String name;
     protected boolean useTablePrefix;
     protected boolean snakeFormCompatable;
     protected ConnectionProvider connectionProvider;
@@ -37,6 +38,7 @@ public abstract class ConnectionFactory {
             throw new ConfigException("ConnectionFactory name:" + name + " conflict!");
         }
         ConnectionFactoryImpl factory = new ConnectionFactoryImpl();
+        factory.name = name;
         map.put(name, factory);
         factory.connectionProvider = connectionProvider;
         return factory;

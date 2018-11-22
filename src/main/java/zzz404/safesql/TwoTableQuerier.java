@@ -27,7 +27,8 @@ public class TwoTableQuerier<T, U> extends DynamicQuerier {
     private T mockedObject1;
     private U mockedObject2;
 
-    public TwoTableQuerier(Class<T> class1, Class<U> class2) {
+    public TwoTableQuerier(String name, Class<T> class1, Class<U> class2) {
+        super(name);
         this.class1 = class1;
         this.class2 = class2;
         this.mockedObject1 = createMockedObject(class1, 1);

@@ -6,17 +6,11 @@ import static zzz404.safesql.Sql.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.Document;
 
 class TestOneTableQuerier {
-
-    @AfterEach
-    void afterEach() {
-        QueryContext.clear();
-    }
 
     @Test
     void test_select_withAssignedFields() {

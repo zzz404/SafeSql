@@ -19,7 +19,8 @@ public abstract class DynamicQuerier extends SqlQuerier {
     protected List<TableColumn> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
-    public DynamicQuerier() {
+    public DynamicQuerier(String name) {
+        super(name);
         this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
     }
 
@@ -49,43 +50,43 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     protected void onSelectScope(Runnable collectColumns) {
-        QueryContext ctx = QueryContext.get();
-        ctx.scope = Scope.select;
+        QueryContext.underQueryContext(ctx -> {
+            ctx.setScope(Scope.select);
 
-        collectColumns.run();
+            collectColumns.run();
 
-        this.tableColumns = ctx.takeAllTableColumns();
-        ctx.scope = null;
+            this.tableColumns = ctx.takeAllTableColumnsUniquely();
+        });
     }
 
     protected void onWhereScope(Runnable collectConditions) {
-        QueryContext ctx = QueryContext.get();
-        ctx.scope = Scope.where;
+        QueryContext.underQueryContext(ctx -> {
+            ctx.setScope(Scope.where);
 
-        collectConditions.run();
+            collectConditions.run();
 
-        this.conditions = QueryContext.get().conditions;
-        ctx.scope = null;
+            this.conditions = ctx.getConditions();
+        });
     }
 
     protected void onGroupByScope(Runnable collectColumns) {
-        QueryContext ctx = QueryContext.get();
-        ctx.scope = Scope.groupBy;
+        QueryContext.underQueryContext(ctx -> {
+            ctx.setScope(Scope.groupBy);
 
-        collectColumns.run();
+            collectColumns.run();
 
-        this.groupBys = ctx.takeAllTableColumns();
-        ctx.scope = null;
+            this.groupBys = ctx.takeAllTableColumnsUniquely();
+        });
     }
 
     protected void onOrderByScope(Runnable collectColumns) {
-        QueryContext ctx = QueryContext.get();
-        ctx.scope = Scope.orderBy;
+        QueryContext.underQueryContext(ctx -> {
+            ctx.setScope(Scope.orderBy);
 
-        collectColumns.run();
+            collectColumns.run();
 
-        this.orderBys = QueryContext.get().orderBys;
-        ctx.scope = null;
+            this.orderBys = ctx.getOrderBys();
+        });
     }
 
     protected abstract String getTablesClause();

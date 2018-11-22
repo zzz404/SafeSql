@@ -13,24 +13,24 @@ class TestStaticSqlQuerier {
     @Test
     void test_buildSql() {
         String sql = "aaa";
-        StaticSqlQuerier q = new StaticSqlQuerier().sql(sql);
+        StaticSqlQuerier q = new StaticSqlQuerier("").sql(sql);
         assertEquals(sql, q.sql());
     }
 
     @Test
     void test_buildSql_for_queryCount() {
         String sql_hasOrderBy = "select aaa,bbb, ccc FROM ddd where aaa=1 order BY eee";
-        StaticSqlQuerier q = new StaticSqlQuerier().sql(sql_hasOrderBy);
+        StaticSqlQuerier q = new StaticSqlQuerier("").sql(sql_hasOrderBy);
         assertEquals("SELECT COUNT(*) FROM ddd where aaa=1", q.sql_for_queryCount());
 
         String sql_noOrderBy = "select aaa,bbb, ccc FROM ddd where aaa=1 ";
-        q = new StaticSqlQuerier().sql(sql_noOrderBy);
+        q = new StaticSqlQuerier("").sql(sql_noOrderBy);
         assertEquals("SELECT COUNT(*) FROM ddd where aaa=1 ", q.sql_for_queryCount());
     }
 
     @Test
     void test_setCondValueToPstmt() {
-        StaticSqlQuerier q = new StaticSqlQuerier().sql("Hello").paramValues(123, "zzz");
+        StaticSqlQuerier q = new StaticSqlQuerier("").sql("Hello").paramValues(123, "zzz");
         QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
 
         q.setCondsValueToPstmt(pstmt);
@@ -42,6 +42,6 @@ class TestStaticSqlQuerier {
 
     @Test
     void coverRest() {
-        new StaticSqlQuerier().sql("Hello").offset(0).limit(0);
+        new StaticSqlQuerier("").sql("Hello").offset(0).limit(0);
     }
 }

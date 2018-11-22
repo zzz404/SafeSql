@@ -3,18 +3,12 @@ package zzz404.safesql;
 import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
 
 class TestTwoTableQuerier {
-
-    @AfterEach
-    void afterEach() {
-        QueryContext.clear();
-    }
 
     @Test
     void test_select_withAssignedFields() {

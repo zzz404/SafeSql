@@ -13,7 +13,8 @@ public class OneTableQuerier<T> extends DynamicQuerier {
     private Class<T> clazz;
     private T mockedObject;
 
-    public OneTableQuerier(Class<T> clazz) {
+    public OneTableQuerier(String name, Class<T> clazz) {
+        super(name);
         this.clazz = clazz;
         this.mockedObject = createMockedObject(clazz, 0);
     }
