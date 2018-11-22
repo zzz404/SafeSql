@@ -4,17 +4,68 @@ import java.lang.reflect.Method;
 
 public class MethodAnalyzer {
 
+    private static final String SETTER_PREFIX = "set";
+    private static final String GETTER_PREFIX = "get";
+    private static final String GETTER_boolean_PREFIX = "is";
+
     private Method method;
-    private boolean isGetter;
+    private String methodName;
+    private boolean isGetter = false;
+    private boolean isSetter = false;
     private String columnName;
     private Class<?> type;
-    private boolean isSetter;
 
     public MethodAnalyzer(Method method) {
         this.method = method;
-        this.type = method.getReturnType();
-        this.isGetter = analyze_isGetter();
-        this.isSetter = analyze_isSetter();
+        this.methodName = method.getName();
+        analyze();
+    }
+
+    private void analyze() {
+        if (checkPrefix(methodName, SETTER_PREFIX)) {
+            analyzeSetter();
+        }
+        else if (checkPrefix(methodName, GETTER_PREFIX)) {
+            analyzeGetter(false);
+        }
+        else if (checkPrefix(methodName, GETTER_boolean_PREFIX)) {
+            analyzeGetter(true);
+        }
+    }
+
+    private void analyzeGetter(boolean expectPrimitiveBoolean) {
+        if (method.getParameterTypes().length == 0) {
+            Class<?> returnType = method.getReturnType();
+            if ((returnType == boolean.class) == expectPrimitiveBoolean) {
+                isGetter = true;
+                this.type = returnType;
+                this.columnName = evaluateColumnName(SETTER_PREFIX.length());
+            }
+        }
+    }
+
+    private void analyzeSetter() {
+        Class<?>[] paramTypes = method.getParameterTypes();
+        if (paramTypes.length == 1) {
+            isSetter = true;
+            this.type = paramTypes[0];
+            this.columnName = evaluateColumnName(SETTER_PREFIX.length());
+        }
+    }
+
+    private String evaluateColumnName(int prefixLength) {
+        char firstLetterAfterPrefix = methodName.toCharArray()[prefixLength];
+        return Character.toLowerCase(firstLetterAfterPrefix) + methodName.substring(prefixLength + 1);
+    }
+
+    private boolean checkPrefix(String methodName, String prefix) {
+        if (!methodName.startsWith(prefix)) {
+            return false;
+        }
+        if (methodName.length() <= prefix.length()) {
+            return false;
+        }
+        return Character.isUpperCase(methodName.charAt(prefix.length()));
     }
 
     public Class<?> getType() {
@@ -27,62 +78,6 @@ public class MethodAnalyzer {
 
     public boolean isSetter() {
         return isSetter;
-    }
-
-    private boolean analyze_isGetter() {
-        if (hasParameters() || hasNoReturnType()) {
-            return false;
-        }
-        if (type == boolean.class) {
-            return matchGetterName_and_evaluateColumnName("is");
-        }
-        else {
-            return matchGetterName_and_evaluateColumnName("get");
-        }
-    }
-
-    private boolean analyze_isSetter() {
-        if (method.getParameterTypes().length != 1) {
-            return false;
-        }
-        return matchSetterName_and_evaluateColumnName("set");
-    }
-
-    private boolean matchGetterName_and_evaluateColumnName(String prefix) {
-        String methodName = method.getName();
-        if (!methodName.startsWith(prefix) || methodName.length() <= prefix.length()) {
-            return false;
-        }
-        char firstLetterAfterPrefix = methodName.toCharArray()[prefix.length()];
-
-        boolean isGetter = Character.isUpperCase(firstLetterAfterPrefix);
-        if (isGetter) {
-            // TODO support JPA annotation
-            this.columnName = Character.toLowerCase(firstLetterAfterPrefix) + methodName.substring(prefix.length() + 1);
-        }
-        return isGetter;
-    }
-
-    private boolean matchSetterName_and_evaluateColumnName(String prefix) {
-        String methodName = method.getName();
-        if (!methodName.startsWith(prefix) || methodName.length() <= prefix.length()) {
-            return false;
-        }
-        char firstLetterAfterPrefix = methodName.toCharArray()[prefix.length()];
-
-        boolean isSetter = Character.isUpperCase(firstLetterAfterPrefix);
-        if (isSetter) {
-            this.columnName = Character.toLowerCase(firstLetterAfterPrefix) + methodName.substring(prefix.length() + 1);
-        }
-        return isSetter;
-    }
-
-    private boolean hasNoReturnType() {
-        return type == void.class;
-    }
-
-    private boolean hasParameters() {
-        return method.getParameterTypes().length > 0;
     }
 
     public String getColumnName() {
