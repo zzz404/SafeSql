@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,7 +8,15 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.BetweenCondition;
+import zzz404.safesql.Condition;
+import zzz404.safesql.InCondition;
+import zzz404.safesql.OpCondition;
+import zzz404.safesql.OrCondition;
+import zzz404.safesql.OrderBy;
+import zzz404.safesql.TableColumn;
 import zzz404.safesql.helper.Document;
+import zzz404.safesql.querier.OneEntityQuerier;
 
 class TestOneTableQuerier {
 

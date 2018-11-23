@@ -14,13 +14,13 @@ public class TestConnectionFactory {
 
     @Test
     public void test_create_then_get() {
-        ConnectionFactory factory = ConnectionFactory.get("ds1");
+        ConnectionFactory factory = ConnectionFactoryImpl.get("ds1");
         assertNull(factory);
 
         factory = ConnectionFactory.create("ds1", () -> null);
         assertNotNull(factory);
 
-        ConnectionFactory factory2 = ConnectionFactory.get("ds1");
+        ConnectionFactory factory2 = ConnectionFactoryImpl.get("ds1");
         assertTrue(factory == factory2);
     }
 

@@ -31,7 +31,7 @@ public class BetweenCondition extends Condition {
     }
 
     @Override
-    protected void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<Object> paramValues) {
         paramValues.add(value1);
         paramValues.add(value2);
     }

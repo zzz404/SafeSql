@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import zzz404.safesql.querier.StaticSqlQuerier;
 import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestStaticSqlQuerier {

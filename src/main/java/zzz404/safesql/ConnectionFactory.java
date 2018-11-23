@@ -63,8 +63,4 @@ public abstract class ConnectionFactory {
         return this;
     }
 
-    protected static ConnectionFactoryImpl get(String name) {
-        return map.get(name);
-    }
-
 }

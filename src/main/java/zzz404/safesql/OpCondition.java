@@ -31,7 +31,7 @@ public class OpCondition extends Condition {
     }
 
     @Override
-    protected void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<Object> paramValues) {
         paramValues.add(value);
     }
 

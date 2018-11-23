@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.FakeDatabase;
+import zzz404.safesql.querier.SqlQuerier;
 
 class TestSqlQuerier {
 

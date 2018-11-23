@@ -1,5 +1,9 @@
 package zzz404.safesql;
 
+import zzz404.safesql.querier.OneEntityQuerier;
+import zzz404.safesql.querier.StaticSqlQuerier;
+import zzz404.safesql.querier.TwoEntityQuerier;
+
 public class QuerierFactory {
     String name;
 

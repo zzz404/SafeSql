@@ -1,21 +1,26 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import zzz404.safesql.util.OneObjectPlayer;
+import zzz404.safesql.Page;
+import zzz404.safesql.reflection.OneObjectPlayer;
 
 public class OneEntityQuerier<T> extends DynamicQuerier {
 
     private Class<T> clazz;
-    private T mockedObject;
+    T mockedObject;
 
     public OneEntityQuerier(String name, Class<T> clazz) {
         super(name);
         this.clazz = clazz;
         this.mockedObject = createMockedObject(clazz, 0);
+    }
+
+    public <R> OneEntityBindResultQuerier<T, R> to(Class<R> clazz) {
+        return new OneEntityBindResultQuerier<>(this, clazz);
     }
 
     public OneEntityQuerier<T> select(OneObjectPlayer<T> columnsCollector) {

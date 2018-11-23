@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,10 +10,12 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import zzz404.safesql.Page;
+import zzz404.safesql.TableColumn;
 import zzz404.safesql.reflection.ClassAnalyzer;
+import zzz404.safesql.reflection.ThreeObjectPlayer;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.type.ValueType;
-import zzz404.safesql.util.TreeObjectPlayer;
 import zzz404.safesql.util.Tuple3;
 
 public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
@@ -21,9 +23,9 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
     private Class<T> class1;
     private Class<U> class2;
     private Class<V> class3;
-    private T mockedObject1;
-    private U mockedObject2;
-    private V mockedObject3;
+    T mockedObject1;
+    U mockedObject2;
+    V mockedObject3;
 
     public ThreeEntityQuerier(String name, Class<T> class1, Class<U> class2, Class<V> class3) {
         super(name);
@@ -37,28 +39,28 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
         this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
     }
 
-    public ThreeEntityQuerier<T, U, V> select(TreeObjectPlayer<T, U, V> columnsCollector) {
+    public ThreeEntityQuerier<T, U, V> select(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onSelectScope(() -> {
             columnsCollector.play(mockedObject1, mockedObject2, mockedObject3);
         });
         return this;
     }
 
-    public ThreeEntityQuerier<T, U, V> where(TreeObjectPlayer<T, U, V> columnsCollector) {
+    public ThreeEntityQuerier<T, U, V> where(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onWhereScope(() -> {
             columnsCollector.play(mockedObject1, mockedObject2, mockedObject3);
         });
         return this;
     }
 
-    public ThreeEntityQuerier<T, U, V> groupBy(TreeObjectPlayer<T, U, V> columnsCollector) {
+    public ThreeEntityQuerier<T, U, V> groupBy(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onGroupByScope(() -> {
             columnsCollector.play(mockedObject1, mockedObject2, mockedObject3);
         });
         return this;
     }
 
-    public ThreeEntityQuerier<T, U, V> orderBy(TreeObjectPlayer<T, U, V> columnsCollector) {
+    public ThreeEntityQuerier<T, U, V> orderBy(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onOrderByScope(() -> {
             columnsCollector.play(mockedObject1, mockedObject2, mockedObject3);
         });

@@ -31,7 +31,11 @@ public class MutualCondition extends Condition {
     }
 
     @Override
-    protected void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<Object> paramValues) {
+    }
+
+    public TableColumn getTableColumn2() {
+        return tableColumn2;
     }
 
 }

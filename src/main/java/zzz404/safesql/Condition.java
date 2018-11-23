@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 
-abstract class Condition {
+public abstract class Condition {
 
     protected TableColumn tableColumn;
 
@@ -39,6 +39,10 @@ abstract class Condition {
 
     public abstract String toClause();
 
-    protected abstract void appendValuesTo(List<Object> paramValues);
+    public abstract void appendValuesTo(List<Object> paramValues);
+
+    public TableColumn getTableColumn() {
+        return tableColumn;
+    }
 
 }

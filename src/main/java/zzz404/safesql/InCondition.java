@@ -38,7 +38,7 @@ public class InCondition extends Condition {
     }
 
     @Override
-    protected void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<Object> paramValues) {
         for (Object value : values) {
             paramValues.add(value);
         }

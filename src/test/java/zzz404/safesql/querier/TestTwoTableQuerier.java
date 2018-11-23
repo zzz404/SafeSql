@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
+import zzz404.safesql.querier.TwoEntityQuerier;
 
 class TestTwoTableQuerier {
 

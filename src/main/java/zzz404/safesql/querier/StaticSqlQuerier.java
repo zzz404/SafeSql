@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import org.apache.commons.lang3.Validate;
 

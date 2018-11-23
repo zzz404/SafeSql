@@ -1,4 +1,4 @@
-package zzz404.safesql.util;
+package zzz404.safesql.reflection;
 
 public interface OneObjectPlayer<T> {
 

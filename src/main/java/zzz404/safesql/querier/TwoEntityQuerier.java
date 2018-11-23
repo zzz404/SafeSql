@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,18 +10,20 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import zzz404.safesql.Page;
+import zzz404.safesql.TableColumn;
 import zzz404.safesql.reflection.ClassAnalyzer;
+import zzz404.safesql.reflection.TwoObjectPlayer;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.type.ValueType;
 import zzz404.safesql.util.Tuple2;
-import zzz404.safesql.util.TwoObjectPlayer;
 
 public class TwoEntityQuerier<T, U> extends DynamicQuerier {
 
     private Class<T> class1;
     private Class<U> class2;
-    private T mockedObject1;
-    private U mockedObject2;
+    T mockedObject1;
+    U mockedObject2;
 
     public TwoEntityQuerier(String name, Class<T> class1, Class<U> class2) {
         super(name);

@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +8,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.Validate;
+
 import net.sf.cglib.proxy.Enhancer;
+import zzz404.safesql.Condition;
+import zzz404.safesql.MutualCondition;
+import zzz404.safesql.OrderBy;
+import zzz404.safesql.Page;
+import zzz404.safesql.QueryContext;
+import zzz404.safesql.Scope;
+import zzz404.safesql.TableColumn;
 import zzz404.safesql.reflection.ClassAnalyzer;
 import zzz404.safesql.reflection.GetterTracer;
 import zzz404.safesql.util.CommonUtils;
@@ -20,6 +29,8 @@ public abstract class DynamicQuerier extends SqlQuerier {
     protected List<TableColumn> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
+    private Scope currentScope = null;
+
     public DynamicQuerier(String name) {
         super(name);
         this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
@@ -29,9 +40,9 @@ public abstract class DynamicQuerier extends SqlQuerier {
         HashSet<Integer> tableIndexes = new HashSet<>();
         tableColumns.stream().map(TableColumn::getTableIndex).forEach(index -> tableIndexes.add(index));
         conditions.stream().forEach(cond -> {
-            tableIndexes.add(cond.tableColumn.getTableIndex());
+            tableIndexes.add(cond.getTableColumn().getTableIndex());
             if (cond instanceof MutualCondition) {
-                tableIndexes.add(((MutualCondition) cond).tableColumn2.getTableIndex());
+                tableIndexes.add(((MutualCondition) cond).getTableColumn2().getTableIndex());
             }
         });
         return tableIndexes;
@@ -49,6 +60,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     protected void onSelectScope(Runnable collectColumns) {
+        checkScope(Scope.select);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.select);
 
@@ -58,7 +70,14 @@ public abstract class DynamicQuerier extends SqlQuerier {
         });
     }
 
+    private void checkScope(Scope scope) {
+        Scope previousScope = this.currentScope;
+        Validate.isTrue(previousScope == null || scope.ordinal() >= previousScope.ordinal());
+        currentScope = scope;
+    }
+
     protected void onWhereScope(Runnable collectConditions) {
+        checkScope(Scope.where);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.where);
 
@@ -69,6 +88,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     protected void onGroupByScope(Runnable collectColumns) {
+        checkScope(Scope.groupBy);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.groupBy);
 
@@ -79,6 +99,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     protected void onOrderByScope(Runnable collectColumns) {
+        checkScope(Scope.orderBy);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.orderBy);
 
@@ -127,7 +148,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         });
         return paramValues.toArray();
     }
-    
+
     protected String getRealTableName(Class<?> clazz) {
         String tableName = ClassAnalyzer.get(clazz).getTableName();
         return connFactory.getRealTableName(tableName);

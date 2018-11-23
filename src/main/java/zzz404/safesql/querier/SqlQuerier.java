@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -10,6 +10,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import zzz404.safesql.ConnectionFactoryImpl;
+import zzz404.safesql.Page;
+import zzz404.safesql.SqlQueryException;
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
@@ -29,7 +32,7 @@ public abstract class SqlQuerier {
     Set<String> columnNames_of_resultSet = null;
 
     public SqlQuerier(String name) {
-        this.connFactory = ConnectionFactory.get(name);
+        this.connFactory = ConnectionFactoryImpl.get(name);
     }
 
     public SqlQuerier offset(int offset) {
@@ -177,5 +180,9 @@ public abstract class SqlQuerier {
     protected abstract String sql_for_queryCount();
 
     protected abstract Object[] paramValues();
+
+    public ConnectionFactoryImpl getConnectionFactory() {
+        return connFactory;
+    }
 
 }

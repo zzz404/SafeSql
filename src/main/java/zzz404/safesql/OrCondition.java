@@ -35,7 +35,7 @@ public class OrCondition extends Condition {
     }
 
     @Override
-    protected void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<Object> paramValues) {
         for (Condition cond : subConditions) {
             cond.appendValuesTo(paramValues);
         }

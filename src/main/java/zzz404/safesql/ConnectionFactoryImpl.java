@@ -12,6 +12,10 @@ public final class ConnectionFactoryImpl extends ConnectionFactory {
 
     private Map<String, String> map = new HashMap<>();
 
+    public static ConnectionFactoryImpl get(String name) {
+        return ConnectionFactory.map.get(name);
+    }
+
     public QuietConnection getQuietConnection() {
         return new QuietConnection(connectionProvider.getConnection());
     }
