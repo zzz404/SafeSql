@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import zzz404.safesql.util.CommonUtils;
 
-public class InCondition extends Condition {
+public class InCondition extends AbstractCondition {
 
     private Object[] values = new Object[0];
 

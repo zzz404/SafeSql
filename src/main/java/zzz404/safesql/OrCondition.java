@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 import zzz404.safesql.util.CommonUtils;
 
-public class OrCondition extends Condition {
+public class OrCondition extends AbstractCondition {
 
-    public List<Condition> subConditions;
+    public List<AbstractCondition> subConditions;
 
-    protected OrCondition(Condition... subConditions) {
+    protected OrCondition(AbstractCondition... subConditions) {
         super(null);
         this.subConditions = new ArrayList<>();
         this.subConditions.addAll(Arrays.asList(subConditions));
@@ -19,7 +19,7 @@ public class OrCondition extends Condition {
 
     public <T> OrCondition or(T field, String operator, Object... values) {
         QueryContext ctx = QueryContext.get();
-        Condition cond = Condition.of(ctx.takeTableColumn(), operator, values);
+        AbstractCondition cond = AbstractCondition.of(ctx.takeTableColumn(), operator, values);
         subConditions.add(cond);
         return this;
     }
@@ -36,7 +36,7 @@ public class OrCondition extends Condition {
 
     @Override
     public void appendValuesTo(List<Object> paramValues) {
-        for (Condition cond : subConditions) {
+        for (AbstractCondition cond : subConditions) {
             cond.appendValuesTo(paramValues);
         }
     }

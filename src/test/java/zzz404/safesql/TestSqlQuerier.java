@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.helper.FakeConnectionFactory;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.querier.SqlQuerier;
 
@@ -20,7 +21,6 @@ class TestSqlQuerier {
 
     @BeforeEach
     void beforeEach() {
-        ConnectionFactory.create(() -> fakeDb.getConnection());
         fakeDb = new FakeDatabase();
     }
 
@@ -32,13 +32,13 @@ class TestSqlQuerier {
     @Test
     void test_queryCount() {
         fakeDb.pushData(7);
-        SqlQuerier q = new MySqlQuerier();
+        SqlQuerier q = new MySqlQuerier(fakeDb);
         assertEquals(7, q.queryCount());
     }
 
     @Test
     void test_queryOne_noData_returnNothing() {
-        SqlQuerier q = new MySqlQuerier();
+        SqlQuerier q = new MySqlQuerier(fakeDb);
         Optional<Integer> result = q.queryOne(Integer.class);
         assertFalse(result.isPresent());
     }
@@ -46,7 +46,7 @@ class TestSqlQuerier {
     @Test
     void test_queryOne_twoData_returnFirst() {
         fakeDb.pushData(3, 6);
-        SqlQuerier q = new MySqlQuerier();
+        SqlQuerier q = new MySqlQuerier(fakeDb);
         Optional<Integer> result = q.queryOne(Integer.class);
         assertEquals(3, result.get().intValue());
     }
@@ -54,7 +54,7 @@ class TestSqlQuerier {
     @Test
     void test_queryOne_offset() {
         fakeDb.pushData(3, 1, 4, 1, 5, 9);
-        SqlQuerier q = new MySqlQuerier().offset(4);
+        SqlQuerier q = new MySqlQuerier(fakeDb).offset(4);
         Optional<Integer> result = q.queryOne(Integer.class);
         assertEquals(5, result.get().intValue());
     }
@@ -62,7 +62,7 @@ class TestSqlQuerier {
     @Test
     void test_queryList() {
         fakeDb.pushData(7, 5);
-        SqlQuerier q = new MySqlQuerier();
+        SqlQuerier q = new MySqlQuerier(fakeDb);
         List<Integer> result = q.queryList(Integer.class);
         assertEquals(Arrays.asList(7, 5), result);
     }
@@ -70,7 +70,7 @@ class TestSqlQuerier {
     @Test
     void test_queryList_offset() {
         fakeDb.pushData(3, 1, 4, 1, 5, 9);
-        SqlQuerier q = new MySqlQuerier().offset(4).limit(5);
+        SqlQuerier q = new MySqlQuerier(fakeDb).offset(4).limit(5);
         List<Integer> result = q.queryList(Integer.class);
         assertEquals(Arrays.asList(5, 9), result);
     }
@@ -79,7 +79,7 @@ class TestSqlQuerier {
     void test_queryPage() {
         fakeDb.pushData(6);
         fakeDb.pushData(3, 1, 4, 1, 5, 9);
-        SqlQuerier q = new MySqlQuerier().offset(2).limit(3);
+        SqlQuerier q = new MySqlQuerier(fakeDb).offset(2).limit(3);
         Page<Integer> page = q.queryPage(Integer.class);
         assertEquals(6, page.getTotalCount());
 
@@ -89,7 +89,7 @@ class TestSqlQuerier {
     @Test
     void test_queryStream_of_ResultSet() {
         fakeDb.pushData("a", "b", "c");
-        SqlQuerier q = new MySqlQuerier();
+        SqlQuerier q = new MySqlQuerier(fakeDb);
         String text = q.queryStream(stream -> stream.map(rs -> rs.getString(1)).collect(Collectors.joining(",")));
         assertEquals("a,b,c", text);
     }
@@ -97,15 +97,14 @@ class TestSqlQuerier {
     @Test
     void test_queryStream_of_Object() {
         fakeDb.pushData("a", "b", "c");
-        SqlQuerier q = new MySqlQuerier();
+        SqlQuerier q = new MySqlQuerier(fakeDb);
         String text = q.queryStream(String.class, stream -> stream.collect(Collectors.joining(",")));
         assertEquals("a,b,c", text);
     }
 
     public static class MySqlQuerier extends SqlQuerier {
-
-        public MySqlQuerier() {
-            super("");
+        public MySqlQuerier(FakeDatabase fakeDb) {
+            super(new FakeConnectionFactory(fakeDb));
         }
 
         @Override
@@ -122,6 +121,5 @@ class TestSqlQuerier {
         protected Object[] paramValues() {
             return new Object[0];
         }
-
     }
 }

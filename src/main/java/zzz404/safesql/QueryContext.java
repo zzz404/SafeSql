@@ -15,7 +15,7 @@ public class QueryContext {
 
     private Scope scope;
     private Queue<TableColumn> tableColumns = null;
-    private List<Condition> conditions = null;
+    private List<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
 
     private QueryContext() {
@@ -60,18 +60,18 @@ public class QueryContext {
         return !tableColumns.isEmpty();
     }
 
-    public void addCondition(Condition cond) {
+    public void addCondition(AbstractCondition cond) {
         if (conditions == null) {
             conditions = new ArrayList<>();
         }
         conditions.add(cond);
     }
 
-    public void replaceLastCondition(Condition cond) {
+    public void replaceLastCondition(AbstractCondition cond) {
         conditions.set(conditions.size() - 1, cond);
     }
 
-    public List<Condition> getConditions() {
+    public List<AbstractCondition> getConditions() {
         return conditions;
     }
 

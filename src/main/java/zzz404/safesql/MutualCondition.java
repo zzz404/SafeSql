@@ -4,7 +4,7 @@ import java.util.List;
 
 import zzz404.safesql.util.CommonUtils;
 
-public class MutualCondition extends Condition {
+public class MutualCondition extends AbstractCondition {
 
     private String operator;
     protected TableColumn tableColumn2;

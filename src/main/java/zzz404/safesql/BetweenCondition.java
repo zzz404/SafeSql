@@ -4,7 +4,7 @@ import java.util.List;
 
 import zzz404.safesql.util.CommonUtils;
 
-public class BetweenCondition extends Condition {
+public class BetweenCondition extends AbstractCondition {
 
     private Object value1;
     private Object value2;

@@ -12,20 +12,20 @@ class TestCondition {
 
     @Test
     void test_of_createConditionByOperator() {
-        Condition cond = Condition.of(column_z, "=", 1);
+        AbstractCondition cond = AbstractCondition.of(column_z, "=", 1);
         assertTrue(cond instanceof OpCondition);
 
-        cond = Condition.of(column_z, BETWEEN, 1, 2);
+        cond = AbstractCondition.of(column_z, BETWEEN, 1, 2);
         assertTrue(cond instanceof BetweenCondition);
 
-        cond = Condition.of(column_z, IN, 1, 2);
+        cond = AbstractCondition.of(column_z, IN, 1, 2);
         assertTrue(cond instanceof InCondition);
     }
 
     @Test
     void coverRest() {
-        UtilsForTest.pass(() -> Condition.of(column_z, "=", 1, 2));
-        UtilsForTest.pass(() -> Condition.of(column_z, BETWEEN, 1));
+        UtilsForTest.pass(() -> AbstractCondition.of(column_z, "=", 1, 2));
+        UtilsForTest.pass(() -> AbstractCondition.of(column_z, BETWEEN, 1));
     }
 
 }

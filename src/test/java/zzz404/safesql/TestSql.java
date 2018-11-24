@@ -36,6 +36,6 @@ public class TestSql {
     @Test
     void test_useDefault() {
         QuerierFactory factory = use();
-        assertEquals("", factory.name);
+        assertEquals("", factory.connFactory.name);
     }
 }

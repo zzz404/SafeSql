@@ -3,6 +3,7 @@ package zzz404.safesql.helper;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
+import zzz404.safesql.ConnectionFactory;
 import zzz404.safesql.util.NoisyRunnable;
 
 public class UtilsForTest {

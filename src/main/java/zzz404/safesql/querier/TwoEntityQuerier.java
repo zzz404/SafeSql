@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import zzz404.safesql.ConnectionFactoryImpl;
 import zzz404.safesql.Page;
 import zzz404.safesql.TableColumn;
 import zzz404.safesql.reflection.ClassAnalyzer;
@@ -25,8 +26,8 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
     T mockedObject1;
     U mockedObject2;
 
-    public TwoEntityQuerier(String name, Class<T> class1, Class<U> class2) {
-        super(name);
+    public TwoEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> class1, Class<U> class2) {
+        super(connFactory);
         this.class1 = class1;
         this.class2 = class2;
         this.mockedObject1 = createMockedObject(class1, 1);

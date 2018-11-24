@@ -34,16 +34,16 @@ public class Sql {
     }
 
     @SafeVarargs
-    public static <T> Condition cond(T field, String operator, T... values) {
+    public static <T> AbstractCondition cond(T field, String operator, T... values) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("cond");
         TableColumn tableColumn = ctx.takeTableColumn();
-        Condition cond;
+        AbstractCondition cond;
         if (ctx.hasMoreColumn()) {
             cond = new MutualCondition(tableColumn, operator, ctx.takeTableColumn());
         }
         else {
-            cond = Condition.of(tableColumn, operator, values);
+            cond = AbstractCondition.of(tableColumn, operator, values);
         }
         ctx.addCondition(cond);
         return cond;
@@ -52,7 +52,7 @@ public class Sql {
     public static <T> void innerJoin(T field1, String operator, T field2) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("innerJoin");
-        Condition cond = new MutualCondition(ctx.takeTableColumn(), operator, ctx.takeTableColumn());
+        AbstractCondition cond = new MutualCondition(ctx.takeTableColumn(), operator, ctx.takeTableColumn());
         ctx.addCondition(cond);
     }
 

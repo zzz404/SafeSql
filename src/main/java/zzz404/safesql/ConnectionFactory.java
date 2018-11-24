@@ -31,14 +31,17 @@ public abstract class ConnectionFactory {
         return create("", connectionProvider);
     }
 
+    public ConnectionFactory(String name) {
+        this.name = name;
+    }
+
     public static synchronized ConnectionFactory create(String name, ConnectionProvider connectionProvider) {
         Validate.notNull(name);
         Validate.notNull(connectionProvider);
         if (map.containsKey(name)) {
             throw new ConfigException("ConnectionFactory name:" + name + " conflict!");
         }
-        ConnectionFactoryImpl factory = new ConnectionFactoryImpl();
-        factory.name = name;
+        ConnectionFactoryImpl factory = new ConnectionFactoryImpl("");
         map.put(name, factory);
         factory.connectionProvider = connectionProvider;
         return factory;
@@ -61,6 +64,10 @@ public abstract class ConnectionFactory {
     public ConnectionFactory willCloseConnAfterQuery(NoisySupplier<Boolean> closeConnAfterQuery) {
         this.willCloseConnAfterQuery = NoisySupplier.shutUp(closeConnAfterQuery);
         return this;
+    }
+
+    public static ConnectionFactoryImpl get(String name) {
+        return map.get(name);
     }
 
 }

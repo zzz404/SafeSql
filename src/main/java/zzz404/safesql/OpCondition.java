@@ -4,7 +4,7 @@ import java.util.List;
 
 import zzz404.safesql.util.CommonUtils;
 
-public class OpCondition extends Condition {
+public class OpCondition extends AbstractCondition {
 
     private String operator;
     private Object value;

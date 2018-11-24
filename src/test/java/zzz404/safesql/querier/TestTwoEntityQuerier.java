@@ -9,7 +9,7 @@ import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.querier.TwoEntityQuerier;
 
-class TestTwoTableQuerier {
+class TestTwoEntityQuerier {
 
     @Test
     void test_select_withAssignedFields() {

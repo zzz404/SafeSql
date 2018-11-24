@@ -31,8 +31,8 @@ public abstract class SqlQuerier {
     private QuietResultSet rs = null;
     Set<String> columnNames_of_resultSet = null;
 
-    public SqlQuerier(String name) {
-        this.connFactory = ConnectionFactoryImpl.get(name);
+    public SqlQuerier(ConnectionFactoryImpl connFactory) {
+        this.connFactory = connFactory;
     }
 
     public SqlQuerier offset(int offset) {

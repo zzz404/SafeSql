@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 
 import net.sf.cglib.proxy.Enhancer;
-import zzz404.safesql.Condition;
+import zzz404.safesql.AbstractCondition;
+import zzz404.safesql.ConnectionFactoryImpl;
 import zzz404.safesql.MutualCondition;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
@@ -25,14 +26,14 @@ import zzz404.safesql.util.CommonUtils;
 public abstract class DynamicQuerier extends SqlQuerier {
 
     protected List<TableColumn> tableColumns = Collections.emptyList();
-    protected List<Condition> conditions = Collections.emptyList();
+    protected List<AbstractCondition> conditions = Collections.emptyList();
     protected List<TableColumn> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
     private Scope currentScope = null;
 
-    public DynamicQuerier(String name) {
-        super(name);
+    public DynamicQuerier(ConnectionFactoryImpl connFactory) {
+        super(connFactory);
         this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
     }
 
@@ -124,7 +125,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     private String getConditionsClause() {
-        return this.conditions.stream().map(Condition::toClause).collect(Collectors.joining(" AND "));
+        return this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
     }
 
     String getColumnsClause() {
@@ -135,7 +136,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         String tableName = getTablesClause();
         String sql = "SELECT COUNT(*) FROM " + tableName;
         if (!this.conditions.isEmpty()) {
-            sql += " WHERE " + this.conditions.stream().map(Condition::toClause).collect(Collectors.joining(" AND "));
+            sql += " WHERE " + this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
         }
         return sql;
     }

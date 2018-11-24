@@ -8,12 +8,12 @@ import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.util.CommonUtils;
 import zzz404.safesql.util.NoisyRunnable;
 
-public final class ConnectionFactoryImpl extends ConnectionFactory {
+public class ConnectionFactoryImpl extends ConnectionFactory {
 
     private Map<String, String> map = new HashMap<>();
 
-    public static ConnectionFactoryImpl get(String name) {
-        return ConnectionFactory.map.get(name);
+    public ConnectionFactoryImpl(String name) {
+        super(name);
     }
 
     public QuietConnection getQuietConnection() {

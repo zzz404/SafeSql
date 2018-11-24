@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import zzz404.safesql.ConnectionFactoryImpl;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.OneObjectPlayer;
 
@@ -13,8 +14,8 @@ public class OneEntityQuerier<T> extends DynamicQuerier {
     private Class<T> clazz;
     T mockedObject;
 
-    public OneEntityQuerier(String name, Class<T> clazz) {
-        super(name);
+    public OneEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> clazz) {
+        super(connFactory);
         this.clazz = clazz;
         this.mockedObject = createMockedObject(clazz, 0);
     }
