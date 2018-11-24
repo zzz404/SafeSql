@@ -107,21 +107,31 @@ public abstract class ValueType<T> {
     }
 
     public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz, String... columnNames) {
+        return mapRsRowToObject(rs, clazz, null, columnNames);
+    }
+
+    public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz, Map<String, String> columnMap,
+            String... columnNames) {
         ValueType<R> valueType = ValueType.get(clazz);
         if (valueType != null) {
             return valueType.readFirstFromRs(rs);
         }
         else {
-            return toObject(rs, clazz, columnNames);
+            return toObject(rs, clazz, columnMap, columnNames);
         }
     }
 
-    private static <R> R toObject(QuietResultSet rs, Class<R> clazz, String... columnNames) {
+    private static <R> R toObject(QuietResultSet rs, Class<R> clazz, Map<String, String> columnMap,
+            String... columnNames) {
         return NoisySupplier.getQuietly(() -> {
             R o = clazz.newInstance();
             ClassAnalyzer<R> classAnalyzer = ClassAnalyzer.get(clazz);
             for (String columnName : columnNames) {
-                MethodAnalyzer analyzerOfSetter = classAnalyzer.find_setter_by_columnName();
+                String toColumnName = columnName;
+                if (columnMap != null) {
+                    toColumnName = columnMap.containsKey(columnName) ? columnMap.get(columnName) : columnName;
+                }
+                MethodAnalyzer analyzerOfSetter = classAnalyzer.find_setter_by_columnName(toColumnName);
                 if (analyzerOfSetter != null) {
                     Class<?> type = analyzerOfSetter.getType();
                     ValueType<?> valueType = ValueType.get(type);

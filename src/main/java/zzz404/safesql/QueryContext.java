@@ -1,9 +1,11 @@
 package zzz404.safesql;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.function.Consumer;
 
@@ -17,6 +19,8 @@ public class QueryContext {
     private Queue<TableColumn> tableColumns = null;
     private List<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
+
+    private Map<String, String> columnMap = null;
 
     private QueryContext() {
     }
@@ -56,6 +60,13 @@ public class QueryContext {
         return result;
     }
 
+    public void addColumnMapping(String fromColumn, String toColumn) {
+        if (columnMap == null) {
+            columnMap = new HashMap<>();
+        }
+        columnMap.put(fromColumn, toColumn);
+    }
+
     public boolean hasMoreColumn() {
         return !tableColumns.isEmpty();
     }
@@ -93,6 +104,10 @@ public class QueryContext {
 
     public List<OrderBy> getOrderBys() {
         return orderBys;
+    }
+
+    public Map<String, String> getColumnMap() {
+        return columnMap;
     }
 
 }

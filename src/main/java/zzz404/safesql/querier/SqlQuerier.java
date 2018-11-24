@@ -66,7 +66,7 @@ public abstract class SqlQuerier {
         return ValueType.mapRsRowToObject(rs, clazz, columnNames.toArray(new String[columnNames.size()]));
     }
 
-    private Set<String> getColumnNames(QuietResultSet rs) {
+    protected Set<String> getColumnNames(QuietResultSet rs) {
         if (rs == this.rs && columnNames_of_resultSet != null) {
             return columnNames_of_resultSet;
         }

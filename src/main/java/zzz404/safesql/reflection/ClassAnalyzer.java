@@ -11,6 +11,7 @@ public class ClassAnalyzer<T> {
 
     private Class<T> clazz;
     private Map<Method, MethodAnalyzer> methodMap = new HashMap<>();
+    private Map<String, MethodAnalyzer> columnName_analyzer_map = new HashMap<>();
 
     private ClassAnalyzer(Class<T> clazz) {
         this.clazz = clazz;
@@ -31,6 +32,9 @@ public class ClassAnalyzer<T> {
         if (analyzer == null) {
             analyzer = new MethodAnalyzer(method);
             methodMap.put(method, analyzer);
+            if (analyzer.isSetter()) {
+                columnName_analyzer_map.put(analyzer.getColumnName(), analyzer);
+            }
         }
         return analyzer;
     }
@@ -44,8 +48,7 @@ public class ClassAnalyzer<T> {
         return fields;
     }
 
-    public MethodAnalyzer find_setter_by_columnName() {
-        // TODO Auto-generated method stub
-        return null;
+    public MethodAnalyzer find_setter_by_columnName(String columnName) {
+        return columnName_analyzer_map.get(columnName);
     }
 }

@@ -47,7 +47,9 @@ public abstract class AbstractCondition implements Condition {
 
     @Override
     public <T> void as(T field) {
-        // TODO Auto-generated method stub
+        QueryContext ctx = QueryContext.get();
+        TableColumn column = ctx.takeTableColumn();
+        ctx.addColumnMapping(tableColumn.getColumnName(), column.getColumnName());
     }
 
 }

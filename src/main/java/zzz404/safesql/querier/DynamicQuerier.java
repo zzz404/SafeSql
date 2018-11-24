@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,8 @@ import zzz404.safesql.Scope;
 import zzz404.safesql.TableColumn;
 import zzz404.safesql.reflection.ClassAnalyzer;
 import zzz404.safesql.reflection.GetterTracer;
+import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.type.ValueType;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class DynamicQuerier extends SqlQuerier {
@@ -29,6 +32,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     protected List<AbstractCondition> conditions = Collections.emptyList();
     protected List<TableColumn> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
+    private Map<String, String> columnMap;
 
     private Scope currentScope = null;
 
@@ -68,6 +72,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
             collectColumns.run();
 
             this.tableColumns = ctx.takeAllTableColumnsUniquely();
+            this.columnMap = ctx.getColumnMap();
         });
     }
 
@@ -110,6 +115,11 @@ public abstract class DynamicQuerier extends SqlQuerier {
         });
     }
 
+    protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
+        Set<String> columnNames = getColumnNames(rs);
+        return ValueType.mapRsRowToObject(rs, clazz, columnMap, columnNames.toArray(new String[columnNames.size()]));
+    }
+
     protected abstract String getTablesClause();
 
     public String sql() {
@@ -136,7 +146,8 @@ public abstract class DynamicQuerier extends SqlQuerier {
         String tableName = getTablesClause();
         String sql = "SELECT COUNT(*) FROM " + tableName;
         if (!this.conditions.isEmpty()) {
-            sql += " WHERE " + this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
+            sql += " WHERE "
+                    + this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
         }
         return sql;
     }
