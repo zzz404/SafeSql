@@ -15,6 +15,7 @@ public class Entity<T> {
     private Class<T> objClass;
     private T mockedObject;
 
+    private transient QuietResultSet rs;
     private transient OrMapper<T> orMapper;
 
     public Entity(int index, Class<T> clazz) {
@@ -46,9 +47,10 @@ public class Entity<T> {
     }
 
     public T mapToObject(QuietResultSet rs, List<TableField> tableFields) {
-        if (orMapper == null) {
+        if (orMapper == null || rs != this.rs) {
             Set<String> columnNames = tableFields.stream().map(f -> f.realColumnName).collect(Collectors.toSet());
             orMapper = new OrMapper<>(objClass, rs).selectColumns(columnNames);
+            this.rs = rs;
         }
         return orMapper.mapToObject();
     }
