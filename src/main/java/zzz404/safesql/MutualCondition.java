@@ -7,9 +7,9 @@ import zzz404.safesql.util.CommonUtils;
 public class MutualCondition extends AbstractCondition {
 
     private String operator;
-    protected TableColumn tableColumn2;
+    protected TableField tableColumn2;
 
-    public MutualCondition(TableColumn tableColumn, String operator, TableColumn tableColumn2) {
+    public MutualCondition(TableField tableColumn, String operator, TableField tableColumn2) {
         super(tableColumn);
         this.operator = operator;
         this.tableColumn2 = tableColumn2;
@@ -34,7 +34,7 @@ public class MutualCondition extends AbstractCondition {
     public void appendValuesTo(List<Object> paramValues) {
     }
 
-    public TableColumn getTableColumn2() {
+    public TableField getTableColumn2() {
         return tableColumn2;
     }
 

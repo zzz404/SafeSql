@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.sql.QuietResultSetMetaData;
 
 public class CoverQuietResultSetMetaData {
 

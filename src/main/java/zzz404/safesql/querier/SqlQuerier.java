@@ -2,22 +2,19 @@ package zzz404.safesql.querier;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import zzz404.safesql.ConnectionFactoryImpl;
 import zzz404.safesql.Page;
-import zzz404.safesql.SqlQueryException;
+import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.QuietResultSetIterator;
-import zzz404.safesql.sql.QuietResultSetMetaData;
 import zzz404.safesql.type.ValueType;
 import zzz404.safesql.util.CommonUtils;
 
@@ -28,8 +25,8 @@ public abstract class SqlQuerier {
     protected int offset = 0;
     protected int limit = 0;
 
-    private QuietResultSet rs = null;
-    Set<String> columnNames_of_resultSet = null;
+    private transient QuietResultSet rs = null;
+    transient OrMapper<?> orMapper = null;
 
     public SqlQuerier(ConnectionFactoryImpl connFactory) {
         this.connFactory = connFactory;
@@ -61,24 +58,6 @@ public abstract class SqlQuerier {
         }
     }
 
-    protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        Set<String> columnNames = getColumnNames(rs);
-        return ValueType.mapRsRowToObject(rs, clazz, columnNames.toArray(new String[columnNames.size()]));
-    }
-
-    protected Set<String> getColumnNames(QuietResultSet rs) {
-        if (rs == this.rs && columnNames_of_resultSet != null) {
-            return columnNames_of_resultSet;
-        }
-        this.rs = rs;
-        columnNames_of_resultSet = new HashSet<>();
-        QuietResultSetMetaData metaData = rs.getMetaData();
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            columnNames_of_resultSet.add(metaData.getColumnName(i));
-        }
-        return columnNames_of_resultSet;
-    }
-
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
         String sql = sql();
         return query_then_mapAll(sql, func);
@@ -89,12 +68,7 @@ public abstract class SqlQuerier {
         try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondsValueToPstmt(pstmt);
             QuietResultSet rs;
-            try {
-                rs = new QuietResultSet(pstmt.executeQuery());
-            }
-            catch (Exception e) {
-                throw new SqlQueryException(sql(), paramValues(), e);
-            }
+            rs = new QuietResultSet(pstmt.executeQuery());
             return func.apply(rs);
         }
         finally {
@@ -122,6 +96,20 @@ public abstract class SqlQuerier {
                 return Optional.empty();
             }
         });
+    }
+
+    protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
+        OrMapper<T> orMapper = getOrMapper(rs, clazz);
+        return orMapper.mapToObject();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> OrMapper<T> getOrMapper(QuietResultSet rs, Class<T> clazz) {
+        if (rs != this.rs || this.orMapper == null) {
+            this.orMapper = new OrMapper<>(clazz, rs);
+            this.rs = rs;
+        }
+        return (OrMapper<T>) this.orMapper;
     }
 
     public final <T> Optional<T> queryOne(Class<T> clazz) {

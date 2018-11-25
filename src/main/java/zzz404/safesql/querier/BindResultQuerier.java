@@ -1,21 +1,37 @@
 package zzz404.safesql.querier;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
+import zzz404.safesql.QueryContext;
+import zzz404.safesql.sql.OrMapper;
 
 public abstract class BindResultQuerier<R> {
 
     protected DynamicQuerier querier;
-    protected Class<R> resultClass;
-    protected R mockedResultObject;
+    protected Entity<R> resultEntity;
+
+    protected Map<String, String> columnMap;
 
     public BindResultQuerier(DynamicQuerier querier, Class<R> resultClass) {
         this.querier = querier;
-        this.mockedResultObject = querier.createMockedObject(resultClass, 0);
+        resultEntity = new Entity<>(0, resultClass);
+    }
+
+    protected void onSelectScope(Runnable collectColumns) {
+        querier.onSelectScope(() -> {
+            collectColumns.run();
+            this.columnMap = QueryContext.get().getColumnMap();
+            if (this.columnMap == null) {
+                this.columnMap = Collections.emptyMap();
+            }
+        });
     }
 
     public BindResultQuerier<R> offset(int offset) {
@@ -29,19 +45,34 @@ public abstract class BindResultQuerier<R> {
     }
 
     public Optional<R> queryOne() {
-        return querier.queryOne(resultClass);
+        return querier.queryOne(rs -> {
+            OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
+            return orMapper.mapToObject(columnMap);
+        });
     }
 
     public List<R> queryList() {
-        return querier.queryList(resultClass);
+        return querier.queryList(rs -> {
+            OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
+            return orMapper.mapToObject(columnMap);
+        });
     }
 
     public Page<R> queryPage() {
-        return querier.queryPage(resultClass);
+        return querier.queryPage(rs -> {
+            OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
+            return orMapper.mapToObject(columnMap);
+        });
     }
 
     public <E> E queryEntityStream(Function<Stream<R>, E> streamReader) {
-        return querier.queryStream(resultClass, streamReader);
+        return querier.queryStream(stream -> {
+            Stream<R> objStream = stream.map(rs -> {
+                OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
+                return orMapper.mapToObject(columnMap);
+            });
+            return streamReader.apply(objStream);
+        });
     }
 
 }

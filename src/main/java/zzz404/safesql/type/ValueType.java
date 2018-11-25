@@ -1,6 +1,5 @@
 package zzz404.safesql.type;
 
-import java.lang.reflect.Method;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -8,11 +7,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import zzz404.safesql.reflection.ClassAnalyzer;
-import zzz404.safesql.reflection.MethodAnalyzer;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.util.NoisySupplier;
 
 public abstract class ValueType<T> {
     @SuppressWarnings("rawtypes")
@@ -106,44 +102,12 @@ public abstract class ValueType<T> {
         }
     }
 
-    public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz, String... columnNames) {
-        return mapRsRowToObject(rs, clazz, null, columnNames);
-    }
-
-    public static <R> R mapRsRowToObject(QuietResultSet rs, Class<R> clazz, Map<String, String> columnMap,
-            String... columnNames) {
-        ValueType<R> valueType = ValueType.get(clazz);
+    public static <T> T mapRsRowToObject(QuietResultSet rs, Class<T> clazz) {
+        ValueType<T> valueType = ValueType.get(clazz);
         if (valueType != null) {
             return valueType.readFirstFromRs(rs);
         }
-        else {
-            return toObject(rs, clazz, columnMap, columnNames);
-        }
-    }
-
-    private static <R> R toObject(QuietResultSet rs, Class<R> clazz, Map<String, String> columnMap,
-            String... columnNames) {
-        return NoisySupplier.getQuietly(() -> {
-            R o = clazz.newInstance();
-            ClassAnalyzer<R> classAnalyzer = ClassAnalyzer.get(clazz);
-            for (String columnName : columnNames) {
-                String toColumnName = columnName;
-                if (columnMap != null) {
-                    toColumnName = columnMap.containsKey(columnName) ? columnMap.get(columnName) : columnName;
-                }
-                MethodAnalyzer analyzerOfSetter = classAnalyzer.find_setter_by_columnName(toColumnName);
-                if (analyzerOfSetter != null) {
-                    Class<?> type = analyzerOfSetter.getType();
-                    ValueType<?> valueType = ValueType.get(type);
-                    if (valueType != null) {
-                        Object value = valueType.readFromRs(rs, columnName);
-                        Method setter = analyzerOfSetter.getMethod();
-                        setter.invoke(o, value);
-                    }
-                }
-            }
-            return o;
-        });
+        return null;
     }
 
 }

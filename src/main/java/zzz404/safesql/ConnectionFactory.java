@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.Validate;
 
+import zzz404.safesql.sql.ConnectionFactoryImpl;
 import zzz404.safesql.util.NoisySupplier;
 
 /**
@@ -59,6 +60,10 @@ public abstract class ConnectionFactory {
     public ConnectionFactory snakeFormCompatable(boolean snakeFormCompatable) {
         this.snakeFormCompatable = snakeFormCompatable;
         return this;
+    }
+
+    public boolean isSnakeFormCompatable() {
+        return snakeFormCompatable;
     }
 
     public ConnectionFactory willCloseConnAfterQuery(NoisySupplier<Boolean> closeConnAfterQuery) {

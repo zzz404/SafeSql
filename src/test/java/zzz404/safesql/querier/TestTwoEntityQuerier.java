@@ -27,7 +27,7 @@ class TestTwoEntityQuerier {
     void test_select_notCalled_meansAllFields() {
         TwoEntityQuerier<Document, User> q = from(Document.class, User.class);
 
-        assertEquals(1, q.tableColumns.size());
+        assertEquals(1, q.tableFields.size());
         assertEquals("*", q.getColumnsClause());
     }
 

@@ -43,6 +43,15 @@ public final class CommonUtils {
         }
     }
 
+    public static <T> int hashCode(Object... args) {
+        final int prime = 31;
+        int result = 1;
+        for (Object arg : args) {
+            result = prime * result + ((arg == null) ? 0 : arg.hashCode());
+        }
+        return result;
+    }
+
     public static <T> Stream<T> iter_to_stream(Iterator<T> iter) {
         Spliterator<T> spliterator;
         if (!iter.hasNext()) {
@@ -74,31 +83,25 @@ public final class CommonUtils {
         return sb.toString();
     }
 
-    //    public static <T, U> List<Tuple2<T, U>> zip(List<T> list, U[] array) {
-    //        ArrayList<Tuple2<T, U>> result = new ArrayList<>();
-    //
-    //        Iterator<T> iter = list.iterator();
-    //        for (U u : array) {
-    //            if (!iter.hasNext()) {
-    //                break;
-    //            }
-    //            result.add(new Tuple2<T, U>(iter.next(), u));
-    //        }
-    //        return result;
-    //    }
-    //
-    //    public static <T, U, R> List<R> zip(List<T> list, U[] array, BiFunction<T, U, R> func) {
-    //        ArrayList<R> result = new ArrayList<>();
-    //
-    //        Iterator<T> iter = list.iterator();
-    //        for (U u : array) {
-    //            if (!iter.hasNext()) {
-    //                break;
-    //            }
-    //            R r = func.apply(iter.next(), u);
-    //            result.add(r);
-    //        }
-    //        return result;
-    //    }
+    public static String snakeForm_to_camelForm(String snakeForm) {
+        boolean upperCase = false;
+        StringBuilder sb = new StringBuilder();
+        char[] cs = snakeForm.toCharArray();
+        for (char c : cs) {
+            if (c == '_') {
+                upperCase = true;
+            }
+            else {
+                if (upperCase) {
+                    sb.append(Character.toUpperCase(c));
+                    upperCase = false;
+                }
+                else {
+                    sb.append(Character.toLowerCase(c));
+                }
+            }
+        }
+        return sb.toString();
+    }
 
 }

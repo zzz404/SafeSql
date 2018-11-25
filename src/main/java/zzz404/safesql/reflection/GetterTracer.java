@@ -4,17 +4,18 @@ import java.lang.reflect.Method;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import zzz404.safesql.Entity;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.util.NoisySupplier;
 
 public class GetterTracer<T> implements MethodInterceptor {
 
     private ClassAnalyzer<T> classAnalyzer;
-    private int tableIndex;
+    private Entity<T> entity;
 
-    public GetterTracer(Class<T> clazz, int tableIndex) {
-        this.classAnalyzer = ClassAnalyzer.get(clazz);
-        this.tableIndex = tableIndex;
+    public GetterTracer(Entity<T> entity) {
+        this.classAnalyzer = ClassAnalyzer.get(entity.getObjClass());
+        this.entity = entity;
     }
 
     @Override
@@ -22,7 +23,7 @@ public class GetterTracer<T> implements MethodInterceptor {
         MethodAnalyzer m = classAnalyzer.getMethodAnalyzer(method);
         if (m.isGetter()) {
             QueryContext ctx = QueryContext.get();
-            ctx.addTableColumn(tableIndex, m.getColumnName());
+            ctx.addTableColumn(entity, m.getColumnName());
         }
         return NoisySupplier.getQuietly(() -> proxy.invokeSuper(obj, args));
     }

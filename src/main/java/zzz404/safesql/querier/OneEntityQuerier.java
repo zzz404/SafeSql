@@ -5,19 +5,18 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import zzz404.safesql.ConnectionFactoryImpl;
+import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.OneObjectPlayer;
+import zzz404.safesql.sql.ConnectionFactoryImpl;
 
 public class OneEntityQuerier<T> extends DynamicQuerier {
 
-    private Class<T> clazz;
-    T mockedObject;
+    Entity<T> entity = null;
 
     public OneEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> clazz) {
         super(connFactory);
-        this.clazz = clazz;
-        this.mockedObject = createMockedObject(clazz, 0);
+        entity = new Entity<>(1, clazz);
     }
 
     public <R> OneEntityBindResultQuerier<T, R> to(Class<R> clazz) {
@@ -26,28 +25,28 @@ public class OneEntityQuerier<T> extends DynamicQuerier {
 
     public OneEntityQuerier<T> select(OneObjectPlayer<T> columnsCollector) {
         onSelectScope(() -> {
-            columnsCollector.play(mockedObject);
+            columnsCollector.play(entity.getMockedObject());
         });
         return this;
     }
 
     public OneEntityQuerier<T> where(OneObjectPlayer<T> conditionsCollector) {
         onWhereScope(() -> {
-            conditionsCollector.play(mockedObject);
+            conditionsCollector.play(entity.getMockedObject());
         });
         return this;
     }
 
     public OneEntityQuerier<T> groupBy(OneObjectPlayer<T> columnsCollector) {
         onGroupByScope(() -> {
-            columnsCollector.play(mockedObject);
+            columnsCollector.play(entity.getMockedObject());
         });
         return this;
     }
 
     public OneEntityQuerier<T> orderBy(OneObjectPlayer<T> columnsCollector) {
         onOrderByScope(() -> {
-            columnsCollector.play(mockedObject);
+            columnsCollector.play(entity.getMockedObject());
         });
         return this;
     }
@@ -66,26 +65,26 @@ public class OneEntityQuerier<T> extends DynamicQuerier {
 
     @Override
     public Optional<T> queryOne() {
-        return queryOne(clazz);
+        return queryOne(entity.getObjClass());
     }
 
     @Override
     public List<T> queryList() {
-        return queryList(clazz);
+        return queryList(entity.getObjClass());
     }
 
     @Override
     public Page<T> queryPage() {
-        return queryPage(clazz);
+        return queryPage(entity.getObjClass());
     }
 
     public <E> E queryEntityStream(Function<Stream<T>, E> streamReader) {
-        return queryStream(clazz, streamReader);
+        return queryStream(entity.getObjClass(), streamReader);
     }
 
     @Override
-    protected String getTablesClause() {
-        return getRealTableName(clazz);
+    protected Entity<?>[] getEntites() {
+        return new Entity[] { entity };
     }
 
 }

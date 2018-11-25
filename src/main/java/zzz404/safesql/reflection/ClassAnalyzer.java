@@ -9,12 +9,10 @@ public class ClassAnalyzer<T> {
     @SuppressWarnings("rawtypes")
     private static Map<Class, ClassAnalyzer> classMap = new HashMap<>();
 
-    private Class<T> clazz;
     private Map<Method, MethodAnalyzer> methodMap = new HashMap<>();
     private Map<String, MethodAnalyzer> columnName_analyzer_map = new HashMap<>();
 
     private ClassAnalyzer(Class<T> clazz) {
-        this.clazz = clazz;
     }
 
     @SuppressWarnings("unchecked")
@@ -37,10 +35,6 @@ public class ClassAnalyzer<T> {
             }
         }
         return analyzer;
-    }
-
-    public String getTableName() {
-        return clazz.getSimpleName();
     }
 
     public static Field[] getAllField(Class<?> clazz) {

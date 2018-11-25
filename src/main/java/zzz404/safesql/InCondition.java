@@ -11,7 +11,7 @@ public class InCondition extends AbstractCondition {
 
     private Object[] values = new Object[0];
 
-    public InCondition(TableColumn tableColumn, Object... values) {
+    public InCondition(TableField tableColumn, Object... values) {
         super(tableColumn);
         this.values = values;
     }

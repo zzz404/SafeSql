@@ -13,50 +13,35 @@ import org.apache.commons.lang3.Validate;
 
 import net.sf.cglib.proxy.Enhancer;
 import zzz404.safesql.AbstractCondition;
-import zzz404.safesql.ConnectionFactoryImpl;
+import zzz404.safesql.Entity;
 import zzz404.safesql.MutualCondition;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
-import zzz404.safesql.TableColumn;
-import zzz404.safesql.reflection.ClassAnalyzer;
+import zzz404.safesql.TableField;
 import zzz404.safesql.reflection.GetterTracer;
-import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.type.ValueType;
+import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.TableSchema;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class DynamicQuerier extends SqlQuerier {
 
-    protected List<TableColumn> tableColumns = Collections.emptyList();
+    protected List<TableField> tableFields = Collections.emptyList();
     protected List<AbstractCondition> conditions = Collections.emptyList();
-    protected List<TableColumn> groupBys = Collections.emptyList();
+    protected List<TableField> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
-    private Map<String, String> columnMap;
 
     private Scope currentScope = null;
 
     public DynamicQuerier(ConnectionFactoryImpl connFactory) {
         super(connFactory);
-        this.tableColumns = Arrays.asList(new TableColumn(0, "*"));
     }
 
-    protected Set<Integer> getAllUsedTableIndexes() {
-        HashSet<Integer> tableIndexes = new HashSet<>();
-        tableColumns.stream().map(TableColumn::getTableIndex).forEach(index -> tableIndexes.add(index));
-        conditions.stream().forEach(cond -> {
-            tableIndexes.add(cond.getTableColumn().getTableIndex());
-            if (cond instanceof MutualCondition) {
-                tableIndexes.add(((MutualCondition) cond).getTableColumn2().getTableIndex());
-            }
-        });
-        return tableIndexes;
-    }
-
-    protected <T> T createMockedObject(Class<T> clazz, int tableIndex) {
+    protected <T> T createMockedObject(Entity<T> entity) {
         Enhancer en = new Enhancer();
-        en.setSuperclass(clazz);
-        GetterTracer<T> getterLogger = new GetterTracer<>(clazz, tableIndex);
+        en.setSuperclass(entity.getObjClass());
+        GetterTracer<T> getterLogger = new GetterTracer<>(entity);
         en.setCallback(getterLogger);
 
         @SuppressWarnings("unchecked")
@@ -71,8 +56,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
 
             collectColumns.run();
 
-            this.tableColumns = ctx.takeAllTableColumnsUniquely();
-            this.columnMap = ctx.getColumnMap();
+            this.tableFields = ctx.takeAllTableColumnsUniquely();
         });
     }
 
@@ -115,12 +99,25 @@ public abstract class DynamicQuerier extends SqlQuerier {
         });
     }
 
-    protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        Set<String> columnNames = getColumnNames(rs);
-        return ValueType.mapRsRowToObject(rs, clazz, columnMap, columnNames.toArray(new String[columnNames.size()]));
+    private String getTablesClause() {
+        Set<Integer> allUsedTableIndexes = getAllUsedTableIndexes();
+        return Arrays.stream(getEntites()).filter(entity -> allUsedTableIndexes.contains(entity.getIndex()))
+                .map(entity -> connFactory.getSchema(entity.getVirtualTableName()).getRealTableName() + " t"
+                        + entity.getIndex())
+                .collect(Collectors.joining(", "));
     }
 
-    protected abstract String getTablesClause();
+    private Set<Integer> getAllUsedTableIndexes() {
+        HashSet<Integer> tableIndexes = new HashSet<>();
+        tableFields.stream().map(TableField::getEntityIndex).forEach(index -> tableIndexes.add(index));
+        conditions.stream().forEach(cond -> {
+            tableIndexes.add(cond.getTableColumn().getEntityIndex());
+            if (cond instanceof MutualCondition) {
+                tableIndexes.add(((MutualCondition) cond).getTableColumn2().getEntityIndex());
+            }
+        });
+        return tableIndexes;
+    }
 
     public String sql() {
         String tableName = getTablesClause();
@@ -138,8 +135,19 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
     }
 
-    String getColumnsClause() {
-        return CommonUtils.join(tableColumns, ", ", TableColumn::getPrefixedColumnName);
+    private String getColumnsClause() {
+        if (tableFields.isEmpty()) {
+            return "*";
+        }
+        if (connFactory.isSnakeFormCompatable()) {
+            Map<Entity<?>, List<TableField>> map = tableFields.stream()
+                    .collect(Collectors.groupingBy(TableField::getEntity));
+            map.forEach((entity, fields) -> {
+                TableSchema schema = connFactory.getSchema(entity.getVirtualTableName());
+                fields.forEach(schema::revise);
+            });
+        }
+        return CommonUtils.join(tableFields, ", ", TableField::getPrefixedColumnName);
     }
 
     public String sql_for_queryCount() {
@@ -161,15 +169,12 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return paramValues.toArray();
     }
 
-    protected String getRealTableName(Class<?> clazz) {
-        String tableName = ClassAnalyzer.get(clazz).getTableName();
-        return connFactory.getRealTableName(tableName);
-    }
-
     public abstract Object queryOne();
 
     public abstract List<?> queryList();
 
     public abstract Page<?> queryPage();
+
+    protected abstract Entity<?>[] getEntites();
 
 }

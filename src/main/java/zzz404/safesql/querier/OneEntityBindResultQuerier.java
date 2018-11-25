@@ -13,8 +13,8 @@ public class OneEntityBindResultQuerier<T, R> extends BindResultQuerier<R> {
     }
 
     public OneEntityBindResultQuerier<T, R> select(TwoObjectPlayer<T, R> columnsCollector) {
-        querier.onSelectScope(() -> {
-            columnsCollector.play(querier.mockedObject, mockedResultObject);
+        super.onSelectScope(() -> {
+            columnsCollector.play(querier.entity.getMockedObject(), resultEntity.getMockedObject());
         });
         return this;
     }

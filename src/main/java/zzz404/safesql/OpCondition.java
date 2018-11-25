@@ -9,7 +9,7 @@ public class OpCondition extends AbstractCondition {
     private String operator;
     private Object value;
 
-    public OpCondition(TableColumn tableColumn, String operator, Object value) {
+    public OpCondition(TableField tableColumn, String operator, Object value) {
         super(tableColumn);
         this.operator = operator;
         this.value = value;

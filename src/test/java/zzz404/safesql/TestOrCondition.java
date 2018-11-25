@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 class TestOrCondition {
 
-    private static OpCondition cond1 = new OpCondition(new TableColumn(0, "a"), "=", "aaa");
-    private static OpCondition cond2 = new OpCondition(new TableColumn(0, "b"), "<>", 11);
+    private static OpCondition cond1 = new OpCondition(new TableField(0, "a"), "=", "aaa");
+    private static OpCondition cond2 = new OpCondition(new TableField(0, "b"), "<>", 11);
 
     @Test
     void test_toClause() {

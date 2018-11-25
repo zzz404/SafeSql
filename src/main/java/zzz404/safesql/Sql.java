@@ -37,7 +37,7 @@ public class Sql {
     public static <T> AbstractCondition cond(T field, String operator, T... values) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("cond");
-        TableColumn tableColumn = ctx.takeTableColumn();
+        TableField tableColumn = ctx.takeTableColumn();
         AbstractCondition cond;
         if (ctx.hasMoreColumn()) {
             cond = new MutualCondition(tableColumn, operator, ctx.takeTableColumn());

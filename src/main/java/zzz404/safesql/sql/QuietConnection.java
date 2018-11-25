@@ -27,6 +27,15 @@ public class QuietConnection implements Connection {
         this.conn = conn;
     }
 
+    public void close() {
+        try {
+            conn.close();
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
     public <T> T unwrap(Class<T> iface) {
         try {
             return conn.unwrap(iface);
@@ -111,15 +120,6 @@ public class QuietConnection implements Connection {
     public void rollback() {
         try {
             conn.rollback();
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public void close() {
-        try {
-            conn.close();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);

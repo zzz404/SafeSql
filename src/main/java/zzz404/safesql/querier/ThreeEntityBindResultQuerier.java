@@ -9,21 +9,18 @@ import zzz404.safesql.Page;
 import zzz404.safesql.reflection.FourObjectPlayer;
 import zzz404.safesql.reflection.ThreeObjectPlayer;
 
-public class ThreeEntityBindResultQuerier<T, U, V, R> {
+public class ThreeEntityBindResultQuerier<T, U, V, R> extends BindResultQuerier<R> {
 
     private ThreeEntityQuerier<T, U, V> querier;
-    private Class<R> resultClass;
-    private R mockedResultObject;
 
     public ThreeEntityBindResultQuerier(ThreeEntityQuerier<T, U, V> querier, Class<R> resultClass) {
-        this.querier = querier;
-        this.mockedResultObject = querier.createMockedObject(resultClass, 0);
+        super(querier, resultClass);
     }
 
     public ThreeEntityBindResultQuerier<T, U, V, R> select(FourObjectPlayer<T, U, V, R> columnsCollector) {
-        querier.onSelectScope(() -> {
-            columnsCollector.play(querier.mockedObject1, querier.mockedObject2, querier.mockedObject3,
-                    mockedResultObject);
+        super.onSelectScope(() -> {
+            columnsCollector.play(querier.entity1.getMockedObject(), querier.entity2.getMockedObject(),
+                    querier.entity3.getMockedObject(), resultEntity.getMockedObject());
         });
         return this;
     }
@@ -54,19 +51,19 @@ public class ThreeEntityBindResultQuerier<T, U, V, R> {
     }
 
     public Optional<R> queryOne() {
-        return querier.queryOne(resultClass);
+        return querier.queryOne(resultEntity.getObjClass());
     }
 
     public List<R> queryList() {
-        return querier.queryList(resultClass);
+        return querier.queryList(resultEntity.getObjClass());
     }
 
     public Page<R> queryPage() {
-        return querier.queryPage(resultClass);
+        return querier.queryPage(resultEntity.getObjClass());
     }
 
     public <E> E queryEntityStream(Function<Stream<R>, E> streamReader) {
-        return querier.queryStream(resultClass, streamReader);
+        return querier.queryStream(resultEntity.getObjClass(), streamReader);
     }
 
 }

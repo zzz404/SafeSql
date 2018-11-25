@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.sql.QuietPreparedStatement;
 
 public class CoverQuietPreparedStatement {
 

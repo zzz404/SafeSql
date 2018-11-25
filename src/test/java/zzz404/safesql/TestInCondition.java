@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 class TestInCondition {
 
-    private static final TableColumn column_zzz = new TableColumn(0, "zzz");
+    private static final TableField column_zzz = new TableField(0, "zzz");
 
     @Test
     void test_toClause() {
@@ -36,6 +36,6 @@ class TestInCondition {
 
     @Test
     void coverRest() {
-        new InCondition(new TableColumn(0, ""), "", "").toString();
+        new InCondition(new TableField(0, ""), "", "").toString();
     }
 }

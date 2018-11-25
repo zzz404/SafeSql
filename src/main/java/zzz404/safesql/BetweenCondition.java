@@ -9,7 +9,7 @@ public class BetweenCondition extends AbstractCondition {
     private Object value1;
     private Object value2;
 
-    public BetweenCondition(TableColumn tableColumn, Object value1, Object value2) {
+    public BetweenCondition(TableField tableColumn, Object value1, Object value2) {
         super(tableColumn);
         this.value1 = value1;
         this.value2 = value2;

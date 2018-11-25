@@ -8,13 +8,13 @@ import org.apache.commons.lang3.Validate;
 
 public abstract class AbstractCondition implements Condition {
 
-    protected TableColumn tableColumn;
+    protected TableField tableColumn;
 
-    protected AbstractCondition(TableColumn tableColumn) {
+    protected AbstractCondition(TableField tableColumn) {
         this.tableColumn = tableColumn;
     }
 
-    public static <T> AbstractCondition of(TableColumn tableColumn, String operator, Object... values) {
+    public static <T> AbstractCondition of(TableField tableColumn, String operator, Object... values) {
         if (operator.equals(BETWEEN)) {
             Validate.isTrue(values.length == 2);
             return new BetweenCondition(tableColumn, values[0], values[1]);
@@ -41,15 +41,15 @@ public abstract class AbstractCondition implements Condition {
 
     public abstract void appendValuesTo(List<Object> paramValues);
 
-    public TableColumn getTableColumn() {
+    public TableField getTableColumn() {
         return tableColumn;
     }
 
     @Override
     public <T> void as(T field) {
         QueryContext ctx = QueryContext.get();
-        TableColumn column = ctx.takeTableColumn();
-        ctx.addColumnMapping(tableColumn.getColumnName(), column.getColumnName());
+        TableField column = ctx.takeTableColumn();
+        ctx.addColumnMapping(tableColumn.getPropertyName(), column.getPropertyName());
     }
 
 }

@@ -16,7 +16,7 @@ public class QueryContext {
     private static final ThreadLocal<QueryContext> container = new ThreadLocal<>();
 
     private Scope scope;
-    private Queue<TableColumn> tableColumns = null;
+    private Queue<TableField> tableColumns = null;
     private List<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
 
@@ -42,20 +42,20 @@ public class QueryContext {
         return ctx;
     }
 
-    public void addTableColumn(int tableIndex, String columnName) {
+    public void addTableColumn(Entity<?> entity, String columnName) {
         if (tableColumns == null) {
             tableColumns = new LinkedList<>();
         }
-        tableColumns.offer(new TableColumn(tableIndex, columnName));
+        tableColumns.offer(new TableField(entity, columnName));
     }
 
-    public TableColumn takeTableColumn() {
+    public TableField takeTableColumn() {
         Validate.notNull(tableColumns);
         return tableColumns.poll();
     }
 
-    public List<TableColumn> takeAllTableColumnsUniquely() {
-        ArrayList<TableColumn> result = new ArrayList<>(new LinkedHashSet<>(tableColumns));
+    public List<TableField> takeAllTableColumnsUniquely() {
+        ArrayList<TableField> result = new ArrayList<>(new LinkedHashSet<>(tableColumns));
         tableColumns.clear();
         return result;
     }
