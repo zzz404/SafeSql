@@ -135,7 +135,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
     }
 
-    private String getColumnsClause() {
+    String getColumnsClause() {
         if (tableFields.isEmpty()) {
             return "*";
         }

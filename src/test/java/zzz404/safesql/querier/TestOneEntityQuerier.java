@@ -8,16 +8,15 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.BetweenCondition;
 import zzz404.safesql.AbstractCondition;
+import zzz404.safesql.BetweenCondition;
 import zzz404.safesql.InCondition;
 import zzz404.safesql.OpCondition;
 import zzz404.safesql.OrCondition;
 import zzz404.safesql.OrderBy;
-import zzz404.safesql.TableField;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeConnectionFactory;
-import zzz404.safesql.querier.OneEntityQuerier;
+import zzz404.safesql.helper.UtilsForTest;
 
 class TestOneEntityQuerier {
 
@@ -53,7 +52,7 @@ class TestOneEntityQuerier {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new OpCondition(new TableField(0, "id"), "=", 3), q.conditions.get(0));
+        assertEquals(new OpCondition(UtilsForTest.createTableField("id"), "=", 3), q.conditions.get(0));
     }
 
     @Test
@@ -63,7 +62,7 @@ class TestOneEntityQuerier {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new BetweenCondition(new TableField(0, "id"), 1, 3), q.conditions.get(0));
+        assertEquals(new BetweenCondition(UtilsForTest.createTableField("id"), 1, 3), q.conditions.get(0));
     }
 
     @Test
@@ -73,7 +72,8 @@ class TestOneEntityQuerier {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new InCondition(new TableField(0, "id"), 3, 1, 4, 1, 5, 9, 2, 6, 5, 3), q.conditions.get(0));
+        assertEquals(new InCondition(UtilsForTest.createTableField("id"), 3, 1, 4, 1, 5, 9, 2, 6, 5, 3),
+                q.conditions.get(0));
     }
 
     @Test
@@ -83,8 +83,8 @@ class TestOneEntityQuerier {
             cond(d.getTitle(), LIKE, "abc%");
         });
         assertEquals(2, q.conditions.size());
-        assertEquals(new OpCondition(new TableField(0, "id"), ">", 3), q.conditions.get(0));
-        assertEquals(new OpCondition(new TableField(0, "title"), "like", "abc%"), q.conditions.get(1));
+        assertEquals(new OpCondition(UtilsForTest.createTableField("id"), ">", 3), q.conditions.get(0));
+        assertEquals(new OpCondition(UtilsForTest.createTableField("title"), "like", "abc%"), q.conditions.get(1));
     }
 
     @Test
@@ -99,9 +99,9 @@ class TestOneEntityQuerier {
         List<AbstractCondition> conds = cond.subConditions;
         assertEquals(3, conds.size());
 
-        assertEquals(new OpCondition(new TableField(0, "id"), "<", 2), conds.get(0));
-        assertEquals(new OpCondition(new TableField(0, "id"), ">", 10), conds.get(1));
-        assertEquals(new OpCondition(new TableField(0, "ownerId"), "=", 1), conds.get(2));
+        assertEquals(new OpCondition(UtilsForTest.createTableField("id"), "<", 2), conds.get(0));
+        assertEquals(new OpCondition(UtilsForTest.createTableField("id"), ">", 10), conds.get(1));
+        assertEquals(new OpCondition(UtilsForTest.createTableField("ownerId"), "=", 1), conds.get(2));
     }
 
     @Test

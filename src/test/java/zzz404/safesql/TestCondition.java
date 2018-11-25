@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import zzz404.safesql.helper.UtilsForTest;
 
 class TestCondition {
-    private static final TableField column_z = new TableField(0, "z");
+    private static final TableField column_z = UtilsForTest.createTableField("z");
 
     @Test
     void test_of_createConditionByOperator() {

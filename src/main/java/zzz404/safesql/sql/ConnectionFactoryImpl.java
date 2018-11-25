@@ -1,16 +1,15 @@
-package zzz404.safesql;
+package zzz404.safesql.sql;
 
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import zzz404.safesql.sql.QuietConnection;
+import zzz404.safesql.ConnectionFactory;
 import zzz404.safesql.util.CommonUtils;
-import zzz404.safesql.util.NoisyRunnable;
 
 public class ConnectionFactoryImpl extends ConnectionFactory {
 
-    private Map<String, String> map = new HashMap<>();
+    private Map<String, TableSchema> tableSchema_map = new HashMap<>();
 
     public ConnectionFactoryImpl(String name) {
         super(name);
@@ -26,36 +25,18 @@ public class ConnectionFactoryImpl extends ConnectionFactory {
         }
     }
 
-    public String getRealTableName(String tableName) {
-        String realTableName = map.get(tableName);
-        if (realTableName == null) {
-            realTableName = tableName;
-            if (useTablePrefix) {
-                realTableName = name + realTableName;
+    public TableSchema getSchema(String virtualTableName) {
+        TableSchema schema = tableSchema_map.get(virtualTableName);
+        if (schema == null) {
+            try(QuietConnection conn = getQuietConnection(); Statement stmt = conn.createStatement();) {
+                schema = TableSchema.query(virtualTableName, snakeFormCompatable, stmt);
             }
-            if (snakeFormCompatable) {
-                realTableName = chooseTableName(realTableName);
+            catch (Exception e) {
+                throw CommonUtils.wrapToRuntime(e);
             }
-            map.put(tableName, realTableName);
+            tableSchema_map.put(virtualTableName, schema);
         }
-        return realTableName;
+        return schema;
     }
 
-    private String chooseTableName(String tableName) {
-        try (QuietConnection conn = getQuietConnection(); Statement stmt = conn.createStatement()) {
-            if (NoisyRunnable.withoutException(() -> stmt.executeQuery("SELECT * FROM " + tableName))) {
-                return tableName;
-            }
-            else {
-                String snakeTableName = CommonUtils.camelForm_to_snakeForm(tableName);
-                if (NoisyRunnable.withoutException(() -> stmt.executeQuery("SELECT * FROM " + snakeTableName))) {
-                    return snakeTableName;
-                }
-            }
-            return tableName;
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
 }

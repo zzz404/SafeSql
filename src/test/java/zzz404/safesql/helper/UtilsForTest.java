@@ -3,6 +3,8 @@ package zzz404.safesql.helper;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
+import zzz404.safesql.Entity;
+import zzz404.safesql.TableField;
 import zzz404.safesql.util.NoisyRunnable;
 
 public class UtilsForTest {
@@ -36,4 +38,7 @@ public class UtilsForTest {
         }
     }
 
+    public static TableField createTableField(String name) {
+        return new TableField(new Entity<Object>(0, Object.class), name);
+    }
 }

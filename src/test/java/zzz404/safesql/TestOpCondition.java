@@ -7,9 +7,11 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.helper.UtilsForTest;
+
 class TestOpCondition {
 
-    private static final TableField column_zzz = new TableField(0, "zzz");
+    private static final TableField column_zzz = UtilsForTest.createTableField("zzz");
 
     @Test
     void test_toClause() {
@@ -20,7 +22,7 @@ class TestOpCondition {
     @Test
     void test_appendValuesTo() {
         OpCondition cond = new OpCondition(column_zzz, "=", 123);
-        
+
         ArrayList<Object> values = new ArrayList<>();
         cond.appendValuesTo(values);
 

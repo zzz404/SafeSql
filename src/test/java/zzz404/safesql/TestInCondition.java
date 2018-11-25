@@ -8,9 +8,11 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.helper.UtilsForTest;
+
 class TestInCondition {
 
-    private static final TableField column_zzz = new TableField(0, "zzz");
+    private static final TableField column_zzz = UtilsForTest.createTableField("zzz");
 
     @Test
     void test_toClause() {
@@ -36,6 +38,6 @@ class TestInCondition {
 
     @Test
     void coverRest() {
-        new InCondition(new TableField(0, ""), "", "").toString();
+        new InCondition(UtilsForTest.createTableField(""), "", "").toString();
     }
 }
