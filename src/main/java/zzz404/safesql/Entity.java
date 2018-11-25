@@ -1,13 +1,21 @@
 package zzz404.safesql;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import net.sf.cglib.proxy.Enhancer;
 import zzz404.safesql.reflection.GetterTracer;
+import zzz404.safesql.sql.OrMapper;
+import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.CommonUtils;
 
 public class Entity<T> {
     private int index;
     private Class<T> objClass;
     private T mockedObject;
+
+    private transient OrMapper<T> orMapper;
 
     public Entity(int index, Class<T> clazz) {
         this.index = index;
@@ -28,6 +36,21 @@ public class Entity<T> {
 
     public String getVirtualTableName() {
         return objClass.getSimpleName();
+    }
+
+    public T mapToObject(QuietResultSet rs, Set<String> columns) {
+        if (orMapper == null) {
+            orMapper = new OrMapper<>(objClass, rs).selectColumns(columns);
+        }
+        return orMapper.mapToObject();
+    }
+
+    public T mapToObject(QuietResultSet rs, List<TableField> tableFields) {
+        if (orMapper == null) {
+            Set<String> columnNames = tableFields.stream().map(f -> f.realColumnName).collect(Collectors.toSet());
+            orMapper = new OrMapper<>(objClass, rs).selectColumns(columnNames);
+        }
+        return orMapper.mapToObject();
     }
 
     public int getIndex() {
@@ -51,4 +74,5 @@ public class Entity<T> {
     public int hashCode() {
         return CommonUtils.hashCode(index, objClass);
     }
+
 }

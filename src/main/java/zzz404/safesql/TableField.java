@@ -5,7 +5,7 @@ import zzz404.safesql.util.CommonUtils;
 public final class TableField {
     private Entity<?> entity;
     private String propertyName;
-    private String realColumnName;
+    String realColumnName;
 
     public TableField(Entity<?> entity, String propertyName) {
         this.entity = entity;

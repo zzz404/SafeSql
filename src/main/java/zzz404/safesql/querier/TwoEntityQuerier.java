@@ -2,7 +2,6 @@ package zzz404.safesql.querier;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -10,7 +9,6 @@ import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.TwoObjectPlayer;
 import zzz404.safesql.sql.ConnectionFactoryImpl;
-import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.Tuple2;
 
@@ -18,10 +16,6 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
 
     Entity<T> entity1 = null;
     Entity<U> entity2 = null;
-
-    private transient QuietResultSet rs;
-    private transient OrMapper<T> orMapper1;
-    private transient OrMapper<U> orMapper2;
 
     public TwoEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> class1, Class<U> class2) {
         super(connFactory);
@@ -92,16 +86,8 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
     }
 
     private Tuple2<T, U> rsToTuple(QuietResultSet rs) {
-        if (rs != this.rs || orMapper2 == null) {
-            TableColumnSeparater separater = new TableColumnSeparater(this.tableFields);
-            Set<String> columns1 = separater.getColumnsOfTable(1);
-            Set<String> columns2 = separater.getColumnsOfTable(2);
-            orMapper1 = getOrMapper(rs, entity1.getObjClass()).selectColumns(columns1);
-            orMapper2 = getOrMapper(rs, entity2.getObjClass()).selectColumns(columns2);
-            this.rs = rs;
-        }
-        T t = orMapper1.mapToObject();
-        U u = orMapper2.mapToObject();
+        T t = entity1.mapToObject(rs, getTableFieldsOfEntity(entity1));
+        U u = entity2.mapToObject(rs, getTableFieldsOfEntity(entity2));
         return new Tuple2<>(t, u);
     }
 

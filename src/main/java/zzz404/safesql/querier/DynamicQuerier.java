@@ -33,6 +33,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     protected List<OrderBy> orderBys = Collections.emptyList();
 
     private Scope currentScope = null;
+    private transient Map<Entity<?>, List<TableField>> entity_fields_map = null;
 
     public DynamicQuerier(ConnectionFactoryImpl connFactory) {
         super(connFactory);
@@ -140,12 +141,10 @@ public abstract class DynamicQuerier extends SqlQuerier {
             return "*";
         }
         if (connFactory.isSnakeFormCompatable()) {
-            Map<Entity<?>, List<TableField>> map = tableFields.stream()
-                    .collect(Collectors.groupingBy(TableField::getEntity));
-            map.forEach((entity, fields) -> {
+            for (Entity<?> entity : getEntites()) {
                 TableSchema schema = connFactory.getSchema(entity.getVirtualTableName());
-                fields.forEach(schema::revise);
-            });
+                getTableFieldsOfEntity(entity).forEach(schema::revise);
+            }
         }
         return CommonUtils.join(tableFields, ", ", TableField::getPrefixedColumnName);
     }
@@ -167,6 +166,13 @@ public abstract class DynamicQuerier extends SqlQuerier {
             cond.appendValuesTo(paramValues);
         });
         return paramValues.toArray();
+    }
+
+    protected List<TableField> getTableFieldsOfEntity(Entity<?> entity) {
+        if (entity_fields_map == null) {
+            entity_fields_map = tableFields.stream().collect(Collectors.groupingBy(TableField::getEntity));
+        }
+        return entity_fields_map.get(entity);
     }
 
     public abstract Object queryOne();

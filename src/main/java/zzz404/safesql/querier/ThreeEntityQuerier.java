@@ -2,7 +2,6 @@ package zzz404.safesql.querier;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -10,7 +9,6 @@ import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.ThreeObjectPlayer;
 import zzz404.safesql.sql.ConnectionFactoryImpl;
-import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.Tuple3;
 
@@ -19,11 +17,6 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
     Entity<T> entity1 = null;
     Entity<U> entity2 = null;
     Entity<V> entity3 = null;
-
-    private transient QuietResultSet rs;
-    private transient OrMapper<T> orMapper1;
-    private transient OrMapper<U> orMapper2;
-    private transient OrMapper<V> orMapper3;
 
     public ThreeEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> class1, Class<U> class2, Class<V> class3) {
         super(connFactory);
@@ -95,20 +88,9 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
     }
 
     private Tuple3<T, U, V> rsToTuple(QuietResultSet rs) {
-        if (rs != this.rs || orMapper2 == null) {
-            TableColumnSeparater separater = new TableColumnSeparater(this.tableFields);
-            Set<String> columns1 = separater.getColumnsOfTable(1);
-            Set<String> columns2 = separater.getColumnsOfTable(2);
-            Set<String> columns3 = separater.getColumnsOfTable(3);
-            orMapper1 = getOrMapper(rs, entity1.getObjClass()).selectColumns(columns1);
-            orMapper2 = getOrMapper(rs, entity2.getObjClass()).selectColumns(columns2);
-            orMapper3 = getOrMapper(rs, entity3.getObjClass()).selectColumns(columns3);
-            this.rs = rs;
-        }
-        T t = orMapper1.mapToObject();
-        U u = orMapper2.mapToObject();
-        V v = orMapper3.mapToObject();
-
+        T t = entity1.mapToObject(rs, getTableFieldsOfEntity(entity1));
+        U u = entity2.mapToObject(rs, getTableFieldsOfEntity(entity2));
+        V v = entity3.mapToObject(rs, getTableFieldsOfEntity(entity3));
         return new Tuple3<>(t, u, v);
     }
 
