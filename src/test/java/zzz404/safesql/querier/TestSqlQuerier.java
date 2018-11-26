@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.querier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,9 +11,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.ConnFactoryBackDoor;
+import zzz404.safesql.Page;
 import zzz404.safesql.helper.FakeConnectionFactory;
 import zzz404.safesql.helper.FakeDatabase;
-import zzz404.safesql.querier.SqlQuerier;
 
 class TestSqlQuerier {
 
@@ -26,7 +27,7 @@ class TestSqlQuerier {
 
     @AfterEach
     void afterEach() {
-        ConnectionFactory.map.clear();
+        ConnFactoryBackDoor.removeAllFactories();
     }
 
     @Test

@@ -7,35 +7,55 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.querier.OneEntityQuerier;
-import zzz404.safesql.querier.StaticSqlQuerier;
+import zzz404.safesql.querier.QuerierBackDoor;
 
 public class TestSql {
+
     @BeforeEach
     void beforeEach() {
-        ConnectionFactory.create("", () -> null);
+        //        fakeDb = new FakeDatabase();
     }
 
     @AfterEach
     void afterEach() {
-        ConnectionFactory.map.clear();
+        ConnFactoryBackDoor.removeAllFactories();
     }
 
     @Test
-    void test_sql_useDefault() {
-        StaticSqlQuerier querier = sql("hi");
-        assertEquals("", querier.getConnectionFactory().name);
-    }
+    void test_use() {
+        assertThrows(RuntimeException.class, () -> use("aaa"));
 
-    @Test
-    void test_from_useDefault() {
-        OneEntityQuerier<?> querier = from(Object.class);
-        assertEquals("", querier.getConnectionFactory().name);
+        ConnectionFactory.create("bbb", () -> null);
+        assertThrows(RuntimeException.class, () -> use("aaa"));
+
+        ConnectionFactory.create("aaa", () -> null);
+        QuerierFactory factory = use("aaa");
+        assertEquals("aaa", factory.connFactory.name);
     }
 
     @Test
     void test_useDefault() {
+        assertThrows(RuntimeException.class, () -> use());
+
+        ConnectionFactory.create(() -> null);
         QuerierFactory factory = use();
         assertEquals("", factory.connFactory.name);
     }
+
+    @Test
+    void test_sql_useDefault() {
+        assertThrows(RuntimeException.class, () -> sql("hi"));
+
+        ConnectionFactory.create("", () -> null);
+        assertEquals("", QuerierBackDoor.getConnFactory(sql("hi")).name);
+    }
+
+    @Test
+    void test_from_useDefault() {
+        assertThrows(RuntimeException.class, () -> from(Object.class));
+
+        ConnectionFactory.create("", () -> null);
+        assertEquals("", QuerierBackDoor.getConnFactory(from(Object.class)).name);
+    }
+
 }

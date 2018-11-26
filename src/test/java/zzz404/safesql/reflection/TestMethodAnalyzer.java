@@ -1,16 +1,15 @@
-package zzz404.safesql;
+package zzz404.safesql.reflection;
 
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;
 
 import org.junit.jupiter.params.provider.ValueSource;
 
-import zzz404.safesql.reflection.MethodAnalyzer;
-
 class TestMethodAnalyzer {
 
-    // @ParameterizedTest
+    //@ParameterizedTest
     @ValueSource(strings = { "title", "gettitle", "get", "getTitle_returnVoid", "getTitle_withParameter", "isTitle",
             "isEnabled_returnObjectBoolean", "getDisabled_returnPrimitiveBooolean" })
     void test_isGetter_return_false(String methodName) {

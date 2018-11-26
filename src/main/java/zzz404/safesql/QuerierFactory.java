@@ -1,5 +1,7 @@
 package zzz404.safesql;
 
+import org.apache.commons.lang3.Validate;
+
 import zzz404.safesql.querier.OneEntityQuerier;
 import zzz404.safesql.querier.StaticSqlQuerier;
 import zzz404.safesql.querier.TwoEntityQuerier;
@@ -11,6 +13,7 @@ public class QuerierFactory {
 
     public QuerierFactory(String name) {
         this.connFactory = ConnectionFactory.get(name);
+        Validate.notNull(this.connFactory);
     }
 
     public StaticSqlQuerier sql(String sql) {

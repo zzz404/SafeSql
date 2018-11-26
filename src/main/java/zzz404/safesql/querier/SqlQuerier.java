@@ -169,8 +169,4 @@ public abstract class SqlQuerier {
 
     protected abstract Object[] paramValues();
 
-    public ConnectionFactoryImpl getConnectionFactory() {
-        return connFactory;
-    }
-
 }

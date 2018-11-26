@@ -20,7 +20,7 @@ import zzz404.safesql.util.NoisySupplier;
  */
 public abstract class ConnectionFactory {
 
-    static Map<String, ConnectionFactoryImpl> map = Collections.synchronizedMap(new HashMap<>());
+    protected static Map<String, ConnectionFactoryImpl> map = Collections.synchronizedMap(new HashMap<>());
 
     protected String name;
     protected boolean useTablePrefix;
@@ -42,7 +42,7 @@ public abstract class ConnectionFactory {
         if (map.containsKey(name)) {
             throw new ConfigException("ConnectionFactory name:" + name + " conflict!");
         }
-        ConnectionFactoryImpl factory = new ConnectionFactoryImpl("");
+        ConnectionFactoryImpl factory = new ConnectionFactoryImpl(name);
         map.put(name, factory);
         factory.connectionProvider = connectionProvider;
         return factory;

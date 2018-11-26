@@ -1,7 +1,6 @@
 package zzz404.safesql.querier;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
 
 import java.util.List;
