@@ -1,14 +1,10 @@
 package zzz404.safesql.querier;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
 
@@ -22,11 +18,11 @@ import zzz404.safesql.Scope;
 import zzz404.safesql.TableField;
 import zzz404.safesql.reflection.GetterTracer;
 import zzz404.safesql.sql.ConnectionFactoryImpl;
-import zzz404.safesql.sql.TableSchema;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class DynamicQuerier extends SqlQuerier {
 
+    protected List<Entity<?>> entities = new ArrayList<>();
     protected List<TableField> tableFields = Collections.emptyList();
     protected List<AbstractCondition> conditions = Collections.emptyList();
     protected List<TableField> groupBys = Collections.emptyList();
@@ -101,25 +97,15 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     private String getTablesClause() {
-        Stream<Entity<?>> entityStream;
-        if (tableFields.isEmpty()) {
-            entityStream = Arrays.stream(getEntites());
-        }
-        else {
-            entityStream = getAllUsedEntities().stream();
-        }
-        return entityStream.map(entity -> connFactory.getSchema(entity.getVirtualTableName()).getRealTableName() + " t"
-                + entity.getIndex()).collect(Collectors.joining(", "));
-    }
-
-    private Set<Entity<?>> getAllUsedEntities() {
-        HashSet<Entity<?>> entities = new HashSet<>();
-        tableFields.stream().map(TableField::getEntity).forEach(entity -> entities.add(entity));
-        conditions.forEach(cond -> cond.appendUsedEntitiesTo(entities));
-        return entities;
+        List<Entity<?>> usedEntities = tableFields.isEmpty() ? entities
+                : entities.stream().filter(entity -> !entity.getFields().isEmpty()).collect(Collectors.toList());
+        return usedEntities.stream()
+                .map(entity -> connFactory.getRealTableName(entity.getVirtualTableName()) + " t" + entity.getIndex())
+                .collect(Collectors.joining(", "));
     }
 
     public String sql() {
+        connFactory.revise(entities);
         String tableName = getTablesClause();
         String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;
         if (!this.conditions.isEmpty()) {
@@ -138,12 +124,6 @@ public abstract class DynamicQuerier extends SqlQuerier {
     String getColumnsClause() {
         if (tableFields.isEmpty()) {
             return "*";
-        }
-        if (connFactory.isSnakeFormCompatable()) {
-            for (Entity<?> entity : getEntites()) {
-                TableSchema schema = connFactory.getSchema(entity.getVirtualTableName());
-                getTableFieldsOfEntity(entity).forEach(schema::revise);
-            }
         }
         return CommonUtils.join(tableFields, ", ", TableField::getPrefixedColumnName);
     }
@@ -179,7 +159,5 @@ public abstract class DynamicQuerier extends SqlQuerier {
     public abstract List<?> queryList();
 
     public abstract Page<?> queryPage();
-
-    protected abstract Entity<?>[] getEntites();
 
 }

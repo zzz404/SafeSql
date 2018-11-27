@@ -124,19 +124,19 @@ class TestOneEntityQuerier {
             desc(d.getTitle());
         });
 
-        String sql = "SELECT id, title FROM Document"
-                + " WHERE (id > ? OR ownerId = ?) AND title like ? ORDER BY id ASC, title DESC";
+        String sql = "SELECT t1.id, t1.title FROM Document t1"
+                + " WHERE (t1.id > ? OR t1.ownerId = ?) AND t1.title like ? ORDER BY t1.id ASC, t1.title DESC";
         assertEquals(sql, q.sql());
 
-        sql = "SELECT COUNT(*) FROM Document" + " WHERE (id > ? OR ownerId = ?) AND title like ?";
+        sql = "SELECT COUNT(*) FROM Document t1 WHERE (t1.id > ? OR t1.ownerId = ?) AND t1.title like ?";
         assertEquals(sql, q.sql_for_queryCount());
     }
 
     @Test
     void test_buildSql_simple() {
         OneEntityQuerier<Document> q = createQuerier(Document.class);
-        assertEquals("SELECT * FROM Document", q.sql());
-        assertEquals("SELECT COUNT(*) FROM Document", q.sql_for_queryCount());
+        assertEquals("SELECT * FROM Document t1", q.sql());
+        assertEquals("SELECT COUNT(*) FROM Document t1", q.sql_for_queryCount());
     }
 
     private <T> OneEntityQuerier<T> createQuerier(Class<T> clazz) {

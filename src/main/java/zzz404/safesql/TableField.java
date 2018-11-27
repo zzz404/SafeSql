@@ -11,6 +11,7 @@ public final class TableField {
         this.entity = entity;
         this.propertyName = propertyName;
         this.realColumnName = propertyName;
+        entity.addField(this);
     }
 
     public Entity<?> getEntity() {

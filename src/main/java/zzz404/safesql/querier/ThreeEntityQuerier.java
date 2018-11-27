@@ -20,9 +20,9 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
 
     public ThreeEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> class1, Class<U> class2, Class<V> class3) {
         super(connFactory);
-        entity1 = new Entity<>(1, class1);
-        entity2 = new Entity<>(2, class2);
-        entity3 = new Entity<>(3, class3);
+        entities.add(entity1 = new Entity<>(1, class1));
+        entities.add(entity2 = new Entity<>(2, class2));
+        entities.add(entity3 = new Entity<>(3, class3));
     }
 
     public ThreeEntityQuerier<T, U, V> select(ThreeObjectPlayer<T, U, V> columnsCollector) {
@@ -92,11 +92,6 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
         U u = entity2.mapToObject(rs, getTableFieldsOfEntity(entity2));
         V v = entity3.mapToObject(rs, getTableFieldsOfEntity(entity3));
         return new Tuple3<>(t, u, v);
-    }
-
-    @Override
-    protected Entity<?>[] getEntites() {
-        return new Entity[] { entity1, entity2, entity3 };
     }
 
 }

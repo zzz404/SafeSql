@@ -1,5 +1,6 @@
 package zzz404.safesql;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,6 +15,8 @@ public class Entity<T> {
     private int index;
     private Class<T> objClass;
     private T mockedObject;
+
+    private List<TableField> fields = new ArrayList<>();
 
     private transient QuietResultSet rs;
     private transient OrMapper<T> orMapper;
@@ -53,6 +56,14 @@ public class Entity<T> {
             this.rs = rs;
         }
         return orMapper.mapToObject();
+    }
+
+    public void addField(TableField field) {
+        fields.add(field);
+    }
+
+    public List<TableField> getFields() {
+        return fields;
     }
 
     public int getIndex() {

@@ -19,8 +19,8 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
 
     public TwoEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> class1, Class<U> class2) {
         super(connFactory);
-        entity1 = new Entity<>(1, class1);
-        entity2 = new Entity<>(2, class2);
+        entities.add(entity1 = new Entity<>(1, class1));
+        entities.add(entity2 = new Entity<>(2, class2));
     }
 
     public TwoEntityQuerier<T, U> select(TwoObjectPlayer<T, U> columnsCollector) {
@@ -89,11 +89,6 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
         T t = entity1.mapToObject(rs, getTableFieldsOfEntity(entity1));
         U u = entity2.mapToObject(rs, getTableFieldsOfEntity(entity2));
         return new Tuple2<>(t, u);
-    }
-
-    @Override
-    protected Entity<?>[] getEntites() {
-        return new Entity[] { entity1, entity2 };
     }
 
 }

@@ -17,6 +17,7 @@ public class OneEntityQuerier<T> extends DynamicQuerier {
     public OneEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> clazz) {
         super(connFactory);
         entity = new Entity<>(1, clazz);
+        entities.add(entity);
     }
 
     public <R> OneEntityBindResultQuerier<T, R> to(Class<R> clazz) {
@@ -80,11 +81,6 @@ public class OneEntityQuerier<T> extends DynamicQuerier {
 
     public <E> E queryEntityStream(Function<Stream<T>, E> streamReader) {
         return queryStream(entity.getObjClass(), streamReader);
-    }
-
-    @Override
-    protected Entity<?>[] getEntites() {
-        return new Entity[] { entity };
     }
 
 }

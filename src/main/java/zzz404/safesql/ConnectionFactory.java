@@ -62,10 +62,6 @@ public abstract class ConnectionFactory {
         return this;
     }
 
-    public boolean isSnakeFormCompatable() {
-        return snakeFormCompatable;
-    }
-
     public ConnectionFactory willCloseConnAfterQuery(NoisySupplier<Boolean> closeConnAfterQuery) {
         this.willCloseConnAfterQuery = NoisySupplier.shutUp(closeConnAfterQuery);
         return this;
