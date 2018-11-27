@@ -17,17 +17,17 @@ public class BetweenCondition extends AbstractCondition {
 
     @Override
     public String toString() {
-        return "BetweenCondition [field=" + tableColumn + ", value1=" + value1 + ", value2=" + value2 + "]";
+        return "BetweenCondition [field=" + tableField + ", value1=" + value1 + ", value2=" + value2 + "]";
     }
 
     @Override
     public String toClause() {
-        return tableColumn + " BETWEEN ? AND ?";
+        return tableField + " BETWEEN ? AND ?";
     }
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableColumn, o.value1, o.value2 });
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableField, o.value1, o.value2 });
     }
 
     @Override

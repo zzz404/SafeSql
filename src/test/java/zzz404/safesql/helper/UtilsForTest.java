@@ -38,7 +38,8 @@ public class UtilsForTest {
         }
     }
 
-    public static TableField createTableField(String name) {
-        return new TableField(new Entity<Object>(0, Object.class), name);
+    public static TableField createSimpleField(String field) {
+        return new TableField(new Entity<>(0, Object.class), field);
     }
+
 }

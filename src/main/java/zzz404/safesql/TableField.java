@@ -17,10 +17,6 @@ public final class TableField {
         return entity;
     }
 
-    public int getEntityIndex() {
-        return entity.getIndex();
-    }
-
     public String getPropertyName() {
         return propertyName;
     }

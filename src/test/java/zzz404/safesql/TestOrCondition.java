@@ -12,8 +12,8 @@ import zzz404.safesql.helper.UtilsForTest;
 
 class TestOrCondition {
 
-    private static OpCondition cond1 = new OpCondition(UtilsForTest.createTableField("a"), "=", "aaa");
-    private static OpCondition cond2 = new OpCondition(UtilsForTest.createTableField("b"), "<>", 11);
+    private static OpCondition cond1 = new OpCondition(UtilsForTest.createSimpleField("a"), "=", "aaa");
+    private static OpCondition cond2 = new OpCondition(UtilsForTest.createSimpleField("b"), "<>", 11);
 
     @Test
     void test_toClause() {

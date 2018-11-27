@@ -1,6 +1,7 @@
 package zzz404.safesql;
 
 import java.util.List;
+import java.util.Set;
 
 import zzz404.safesql.util.CommonUtils;
 
@@ -17,7 +18,7 @@ public class MutualCondition extends AbstractCondition {
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableColumn, o.operator, o.tableColumn2 });
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableField, o.operator, o.tableColumn2 });
     }
 
     @Override
@@ -27,7 +28,7 @@ public class MutualCondition extends AbstractCondition {
 
     @Override
     public String toClause() {
-        return tableColumn + " " + operator + " ?";
+        return tableField + " " + operator + " ?";
     }
 
     @Override
@@ -36,6 +37,12 @@ public class MutualCondition extends AbstractCondition {
 
     public TableField getTableColumn2() {
         return tableColumn2;
+    }
+
+    @Override
+    public void appendUsedEntitiesTo(Set<Entity<?>> entities) {
+        super.appendUsedEntitiesTo(entities);
+        entities.add(tableColumn2.getEntity());
     }
 
 }

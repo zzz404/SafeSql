@@ -17,17 +17,17 @@ public class OpCondition extends AbstractCondition {
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableColumn, o.operator, o.value });
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableField, o.operator, o.value });
     }
 
     @Override
     public String toString() {
-        return "OpCondition [field=" + tableColumn + ", operator=" + operator + ", value=" + value + "]";
+        return "OpCondition [field=" + tableField + ", operator=" + operator + ", value=" + value + "]";
     }
 
     @Override
     public String toClause() {
-        return tableColumn + " " + operator + " ?";
+        return tableField + " " + operator + " ?";
     }
 
     @Override

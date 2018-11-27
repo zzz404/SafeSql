@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.Validate;
 
 import net.sf.cglib.proxy.Enhancer;
 import zzz404.safesql.AbstractCondition;
 import zzz404.safesql.Entity;
-import zzz404.safesql.MutualCondition;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
@@ -101,23 +101,22 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     private String getTablesClause() {
-        Set<Integer> allUsedTableIndexes = getAllUsedTableIndexes();
-        return Arrays.stream(getEntites()).filter(entity -> allUsedTableIndexes.contains(entity.getIndex()))
-                .map(entity -> connFactory.getSchema(entity.getVirtualTableName()).getRealTableName() + " t"
-                        + entity.getIndex())
-                .collect(Collectors.joining(", "));
+        Stream<Entity<?>> entityStream;
+        if (tableFields.isEmpty()) {
+            entityStream = Arrays.stream(getEntites());
+        }
+        else {
+            entityStream = getAllUsedEntities().stream();
+        }
+        return entityStream.map(entity -> connFactory.getSchema(entity.getVirtualTableName()).getRealTableName() + " t"
+                + entity.getIndex()).collect(Collectors.joining(", "));
     }
 
-    private Set<Integer> getAllUsedTableIndexes() {
-        HashSet<Integer> tableIndexes = new HashSet<>();
-        tableFields.stream().map(TableField::getEntityIndex).forEach(index -> tableIndexes.add(index));
-        conditions.stream().forEach(cond -> {
-            tableIndexes.add(cond.getTableColumn().getEntityIndex());
-            if (cond instanceof MutualCondition) {
-                tableIndexes.add(((MutualCondition) cond).getTableColumn2().getEntityIndex());
-            }
-        });
-        return tableIndexes;
+    private Set<Entity<?>> getAllUsedEntities() {
+        HashSet<Entity<?>> entities = new HashSet<>();
+        tableFields.stream().map(TableField::getEntity).forEach(entity -> entities.add(entity));
+        conditions.forEach(cond -> cond.appendUsedEntitiesTo(entities));
+        return entities;
     }
 
     public String sql() {

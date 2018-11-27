@@ -12,13 +12,13 @@ class TestBetweenCondition {
 
     @Test
     void test_toClause() {
-        BetweenCondition cond = new BetweenCondition(UtilsForTest.createTableField("zzz"), 123, 456);
+        BetweenCondition cond = new BetweenCondition(UtilsForTest.createSimpleField("zzz"), 123, 456);
         assertEquals("zzz BETWEEN ? AND ?", cond.toClause());
     }
 
     @Test
     void test_appendValuesTo() {
-        BetweenCondition cond = new BetweenCondition(UtilsForTest.createTableField("zzz"), 123, 456);
+        BetweenCondition cond = new BetweenCondition(UtilsForTest.createSimpleField("zzz"), 123, 456);
         ArrayList<Object> values = new ArrayList<>();
         cond.appendValuesTo(values);
         assertEquals(2, values.size());
@@ -28,6 +28,6 @@ class TestBetweenCondition {
 
     @Test
     void coverRest() {
-        new BetweenCondition(UtilsForTest.createTableField("zzz"), 123, 456).toString();
+        new BetweenCondition(UtilsForTest.createSimpleField("zzz"), 123, 456).toString();
     }
 }

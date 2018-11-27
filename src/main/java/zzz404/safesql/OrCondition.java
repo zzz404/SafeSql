@@ -3,6 +3,7 @@ package zzz404.safesql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import zzz404.safesql.util.CommonUtils;
@@ -38,6 +39,13 @@ public class OrCondition extends AbstractCondition {
     public void appendValuesTo(List<Object> paramValues) {
         for (AbstractCondition cond : subConditions) {
             cond.appendValuesTo(paramValues);
+        }
+    }
+
+    @Override
+    public void appendUsedEntitiesTo(Set<Entity<?>> entities) {
+        for (AbstractCondition cond : subConditions) {
+            cond.appendUsedEntitiesTo(entities);
         }
     }
 

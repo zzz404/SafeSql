@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.AbstractCondition;
 import zzz404.safesql.BetweenCondition;
+import zzz404.safesql.Entity;
 import zzz404.safesql.InCondition;
 import zzz404.safesql.OpCondition;
 import zzz404.safesql.OrCondition;
 import zzz404.safesql.OrderBy;
+import zzz404.safesql.TableField;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeConnectionFactory;
-import zzz404.safesql.helper.UtilsForTest;
 
 class TestOneEntityQuerier {
 
@@ -27,15 +28,7 @@ class TestOneEntityQuerier {
             d.getTitle();
             d.setTitle("zzz");
         });
-        assertEquals("id, title", q.getColumnsClause());
-    }
-
-    @Test
-    void test_select_notCalled_meansAllFields() {
-        OneEntityQuerier<Document> q = createQuerier(Document.class);
-
-        assertEquals(1, q.tableFields.size());
-        assertEquals("*", q.getColumnsClause());
+        assertEquals("t1.id, t1.title", q.getColumnsClause());
     }
 
     @Test
@@ -51,7 +44,11 @@ class TestOneEntityQuerier {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new OpCondition(UtilsForTest.createTableField("id"), "=", 3), q.conditions.get(0));
+        assertEquals(new OpCondition(field("id"), "=", 3), q.conditions.get(0));
+    }
+
+    static TableField field(String name) {
+        return new TableField(new Entity<Document>(1, Document.class), name);
     }
 
     @Test
@@ -61,7 +58,7 @@ class TestOneEntityQuerier {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new BetweenCondition(UtilsForTest.createTableField("id"), 1, 3), q.conditions.get(0));
+        assertEquals(new BetweenCondition(field("id"), 1, 3), q.conditions.get(0));
     }
 
     @Test
@@ -71,8 +68,7 @@ class TestOneEntityQuerier {
         });
 
         assertEquals(1, q.conditions.size());
-        assertEquals(new InCondition(UtilsForTest.createTableField("id"), 3, 1, 4, 1, 5, 9, 2, 6, 5, 3),
-                q.conditions.get(0));
+        assertEquals(new InCondition(field("id"), 3, 1, 4, 1, 5, 9, 2, 6, 5, 3), q.conditions.get(0));
     }
 
     @Test
@@ -82,8 +78,8 @@ class TestOneEntityQuerier {
             cond(d.getTitle(), LIKE, "abc%");
         });
         assertEquals(2, q.conditions.size());
-        assertEquals(new OpCondition(UtilsForTest.createTableField("id"), ">", 3), q.conditions.get(0));
-        assertEquals(new OpCondition(UtilsForTest.createTableField("title"), "like", "abc%"), q.conditions.get(1));
+        assertEquals(new OpCondition(field("id"), ">", 3), q.conditions.get(0));
+        assertEquals(new OpCondition(field("title"), "like", "abc%"), q.conditions.get(1));
     }
 
     @Test
@@ -98,9 +94,9 @@ class TestOneEntityQuerier {
         List<AbstractCondition> conds = cond.subConditions;
         assertEquals(3, conds.size());
 
-        assertEquals(new OpCondition(UtilsForTest.createTableField("id"), "<", 2), conds.get(0));
-        assertEquals(new OpCondition(UtilsForTest.createTableField("id"), ">", 10), conds.get(1));
-        assertEquals(new OpCondition(UtilsForTest.createTableField("ownerId"), "=", 1), conds.get(2));
+        assertEquals(new OpCondition(field("id"), "<", 2), conds.get(0));
+        assertEquals(new OpCondition(field("id"), ">", 10), conds.get(1));
+        assertEquals(new OpCondition(field("ownerId"), "=", 1), conds.get(2));
     }
 
     @Test
@@ -111,8 +107,8 @@ class TestOneEntityQuerier {
         });
 
         assertEquals(2, q.orderBys.size());
-        assertEquals(new OrderBy("id", true), q.orderBys.get(0));
-        assertEquals(new OrderBy("title", false), q.orderBys.get(1));
+        assertEquals(new OrderBy("t1.id", true), q.orderBys.get(0));
+        assertEquals(new OrderBy("t1.title", false), q.orderBys.get(1));
     }
 
     @Test
@@ -139,12 +135,8 @@ class TestOneEntityQuerier {
     @Test
     void test_buildSql_simple() {
         OneEntityQuerier<Document> q = createQuerier(Document.class);
-
-        String sql = "SELECT * FROM Document";
         assertEquals("SELECT * FROM Document", q.sql());
-
-        sql = "SELECT COUNT(*) FROM Document";
-        assertEquals(sql, q.sql_for_queryCount());
+        assertEquals("SELECT COUNT(*) FROM Document", q.sql_for_queryCount());
     }
 
     private <T> OneEntityQuerier<T> createQuerier(Class<T> clazz) {

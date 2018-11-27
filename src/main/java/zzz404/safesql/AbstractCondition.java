@@ -3,15 +3,16 @@ package zzz404.safesql;
 import static zzz404.safesql.Sql.*;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 
 public abstract class AbstractCondition implements Condition {
 
-    protected TableField tableColumn;
+    protected TableField tableField;
 
-    protected AbstractCondition(TableField tableColumn) {
-        this.tableColumn = tableColumn;
+    protected AbstractCondition(TableField tableField) {
+        this.tableField = tableField;
     }
 
     public static <T> AbstractCondition of(TableField tableColumn, String operator, Object... values) {
@@ -41,15 +42,19 @@ public abstract class AbstractCondition implements Condition {
 
     public abstract void appendValuesTo(List<Object> paramValues);
 
-    public TableField getTableColumn() {
-        return tableColumn;
+    public void appendUsedEntitiesTo(Set<Entity<?>> entities) {
+        entities.add(tableField.getEntity());
+    }
+
+    public TableField getTableField() {
+        return tableField;
     }
 
     @Override
     public <T> void as(T field) {
         QueryContext ctx = QueryContext.get();
         TableField column = ctx.takeTableColumn();
-        ctx.addColumnMapping(tableColumn.getPropertyName(), column.getPropertyName());
+        ctx.addColumnMapping(tableField.getPropertyName(), column.getPropertyName());
     }
 
 }
