@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.TwoObjectPlayer;
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.Tuple2;
 
@@ -17,7 +17,7 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
     Entity<T> entity1 = null;
     Entity<U> entity2 = null;
 
-    public TwoEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> class1, Class<U> class2) {
+    public TwoEntityQuerier(DbSourceImpl connFactory, Class<T> class1, Class<U> class2) {
         super(connFactory);
         entities.add(entity1 = new Entity<>(1, class1));
         entities.add(entity2 = new Entity<>(2, class2));

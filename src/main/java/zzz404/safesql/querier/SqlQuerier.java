@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import zzz404.safesql.Page;
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
@@ -20,7 +20,7 @@ import zzz404.safesql.util.CommonUtils;
 
 public abstract class SqlQuerier {
 
-    ConnectionFactoryImpl connFactory;
+    DbSourceImpl dbSource;
 
     protected int offset = 0;
     protected int limit = 0;
@@ -28,8 +28,8 @@ public abstract class SqlQuerier {
     private transient QuietResultSet rs = null;
     transient OrMapper<?> orMapper = null;
 
-    public SqlQuerier(ConnectionFactoryImpl connFactory) {
-        this.connFactory = connFactory;
+    public SqlQuerier(DbSourceImpl connFactory) {
+        this.dbSource = connFactory;
     }
 
     public SqlQuerier offset(int offset) {
@@ -64,7 +64,7 @@ public abstract class SqlQuerier {
     }
 
     private <T> T query_then_mapAll(String sql, Function<QuietResultSet, T> func) {
-        QuietConnection conn = connFactory.getQuietConnection();
+        QuietConnection conn = dbSource.getQuietConnection();
         try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
             setCondsValueToPstmt(pstmt);
             QuietResultSet rs;
@@ -72,7 +72,7 @@ public abstract class SqlQuerier {
             return func.apply(rs);
         }
         finally {
-            connFactory.closeConnection(conn);
+            dbSource.closeConnection(conn);
         }
     }
 

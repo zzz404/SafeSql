@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 
-import net.sf.cglib.proxy.Enhancer;
 import zzz404.safesql.AbstractCondition;
 import zzz404.safesql.Entity;
 import zzz404.safesql.OrderBy;
@@ -16,8 +15,7 @@ import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
 import zzz404.safesql.TableField;
-import zzz404.safesql.reflection.GetterTracer;
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class DynamicQuerier extends SqlQuerier {
@@ -31,19 +29,8 @@ public abstract class DynamicQuerier extends SqlQuerier {
     private Scope currentScope = null;
     private transient Map<Entity<?>, List<TableField>> entity_fields_map = null;
 
-    public DynamicQuerier(ConnectionFactoryImpl connFactory) {
+    public DynamicQuerier(DbSourceImpl connFactory) {
         super(connFactory);
-    }
-
-    protected <T> T createMockedObject(Entity<T> entity) {
-        Enhancer en = new Enhancer();
-        en.setSuperclass(entity.getObjClass());
-        GetterTracer<T> getterLogger = new GetterTracer<>(entity);
-        en.setCallback(getterLogger);
-
-        @SuppressWarnings("unchecked")
-        T mockedObject = (T) en.create();
-        return mockedObject;
     }
 
     protected void onSelectScope(Runnable collectColumns) {
@@ -96,16 +83,16 @@ public abstract class DynamicQuerier extends SqlQuerier {
         });
     }
 
-    private String getTablesClause() {
+    String getTablesClause() {
         List<Entity<?>> usedEntities = tableFields.isEmpty() ? entities
                 : entities.stream().filter(entity -> !entity.getFields().isEmpty()).collect(Collectors.toList());
         return usedEntities.stream()
-                .map(entity -> connFactory.getRealTableName(entity.getVirtualTableName()) + " t" + entity.getIndex())
+                .map(entity -> dbSource.getRealTableName(entity.getVirtualTableName()) + " t" + entity.getIndex())
                 .collect(Collectors.joining(", "));
     }
 
     public String sql() {
-        connFactory.revise(entities);
+        dbSource.revise(entities);
         String tableName = getTablesClause();
         String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;
         if (!this.conditions.isEmpty()) {
@@ -117,7 +104,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return sql;
     }
 
-    private String getConditionsClause() {
+    String getConditionsClause() {
         return this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
     }
 

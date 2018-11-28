@@ -2,14 +2,14 @@ package zzz404.safesql.querier;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 
 public class StaticSqlQuerier extends SqlQuerier {
 
     private String sql;
     private Object[] paramValues;
 
-    public StaticSqlQuerier(ConnectionFactoryImpl connFactory) {
+    public StaticSqlQuerier(DbSourceImpl connFactory) {
         super(connFactory);
     }
 

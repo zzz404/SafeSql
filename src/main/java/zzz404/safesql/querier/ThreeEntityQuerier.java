@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.ThreeObjectPlayer;
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.Tuple3;
 
@@ -18,7 +18,7 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
     Entity<U> entity2 = null;
     Entity<V> entity3 = null;
 
-    public ThreeEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> class1, Class<U> class2, Class<V> class3) {
+    public ThreeEntityQuerier(DbSourceImpl connFactory, Class<T> class1, Class<U> class2, Class<V> class3) {
         super(connFactory);
         entities.add(entity1 = new Entity<>(1, class1));
         entities.add(entity2 = new Entity<>(2, class2));

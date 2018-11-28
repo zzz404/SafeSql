@@ -5,14 +5,14 @@ import org.apache.commons.lang3.Validate;
 import zzz404.safesql.querier.OneEntityQuerier;
 import zzz404.safesql.querier.StaticSqlQuerier;
 import zzz404.safesql.querier.TwoEntityQuerier;
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 
 public class QuerierFactory {
 
-    ConnectionFactoryImpl connFactory;
+    DbSourceImpl connFactory;
 
     public QuerierFactory(String name) {
-        this.connFactory = ConnectionFactory.get(name);
+        this.connFactory = DbSource.get(name);
         Validate.notNull(this.connFactory);
     }
 

@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.util.NoisySupplier;
 
 /**
@@ -18,9 +18,9 @@ import zzz404.safesql.util.NoisySupplier;
  *   return !TransactionSynchronizationManager.isActualTransactionActive();
  * });
  */
-public abstract class ConnectionFactory {
+public abstract class DbSource {
 
-    protected static Map<String, ConnectionFactoryImpl> map = Collections.synchronizedMap(new HashMap<>());
+    protected static Map<String, DbSourceImpl> map = Collections.synchronizedMap(new HashMap<>());
 
     protected String name;
     protected boolean useTablePrefix;
@@ -28,46 +28,46 @@ public abstract class ConnectionFactory {
     protected ConnectionProvider connectionProvider;
     protected Supplier<Boolean> willCloseConnAfterQuery = (() -> true);
 
-    public static synchronized ConnectionFactory create(ConnectionProvider connectionProvider) {
+    public static synchronized DbSource create(ConnectionProvider connectionProvider) {
         return create("", connectionProvider);
     }
 
-    public ConnectionFactory(String name) {
+    public DbSource(String name) {
         this.name = name;
     }
 
-    public static synchronized ConnectionFactory create(String name, ConnectionProvider connectionProvider) {
+    public static synchronized DbSource create(String name, ConnectionProvider connectionProvider) {
         Validate.notNull(name);
         Validate.notNull(connectionProvider);
         if (map.containsKey(name)) {
             throw new ConfigException("ConnectionFactory name:" + name + " conflict!");
         }
-        ConnectionFactoryImpl factory = new ConnectionFactoryImpl(name);
+        DbSourceImpl factory = new DbSourceImpl(name);
         map.put(name, factory);
         factory.connectionProvider = connectionProvider;
         return factory;
     }
 
-    public ConnectionFactory setConnectionPrivider() {
+    public DbSource setConnectionPrivider() {
         return this;
     }
 
-    public ConnectionFactory withTablePrefix(boolean tablePrefix) {
+    public DbSource withTablePrefix(boolean tablePrefix) {
         this.useTablePrefix = tablePrefix;
         return this;
     }
 
-    public ConnectionFactory snakeFormCompatable(boolean snakeFormCompatable) {
+    public DbSource snakeFormCompatable(boolean snakeFormCompatable) {
         this.snakeFormCompatable = snakeFormCompatable;
         return this;
     }
 
-    public ConnectionFactory willCloseConnAfterQuery(NoisySupplier<Boolean> closeConnAfterQuery) {
+    public DbSource willCloseConnAfterQuery(NoisySupplier<Boolean> closeConnAfterQuery) {
         this.willCloseConnAfterQuery = NoisySupplier.shutUp(closeConnAfterQuery);
         return this;
     }
 
-    public static ConnectionFactoryImpl get(String name) {
+    public static DbSourceImpl get(String name) {
         return map.get(name);
     }
 

@@ -2,10 +2,10 @@ package zzz404.safesql;
 
 public class ConnFactoryBackDoor {
     public static void removeAllFactories() {
-        ConnectionFactory.map.clear();
+        DbSource.map.clear();
     }
 
-    public static String getName(ConnectionFactory factory) {
+    public static String getName(DbSource factory) {
         return factory.name;
     }
 }

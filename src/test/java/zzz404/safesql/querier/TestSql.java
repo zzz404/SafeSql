@@ -8,14 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.ConnFactoryBackDoor;
-import zzz404.safesql.ConnectionFactory;
+import zzz404.safesql.DbSource;
 import zzz404.safesql.querier.OneEntityQuerier;
 import zzz404.safesql.querier.StaticSqlQuerier;
 
 public class TestSql {
     @BeforeEach
     void beforeEach() {
-        ConnectionFactory.create("", () -> null);
+        DbSource.create("", () -> null);
     }
 
     @AfterEach
@@ -26,13 +26,13 @@ public class TestSql {
     @Test
     void test_sql_useDefault() {
         StaticSqlQuerier querier = sql("hi");
-        assertEquals("", ConnFactoryBackDoor.getName(querier.connFactory));
+        assertEquals("", ConnFactoryBackDoor.getName(querier.dbSource));
     }
 
     @Test
     void test_from_useDefault() {
         OneEntityQuerier<?> querier = from(Object.class);
-        assertEquals("", ConnFactoryBackDoor.getName(querier.connFactory));
+        assertEquals("", ConnFactoryBackDoor.getName(querier.dbSource));
     }
 
 }

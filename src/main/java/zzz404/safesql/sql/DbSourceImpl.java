@@ -5,15 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import zzz404.safesql.ConnectionFactory;
+import zzz404.safesql.DbSource;
 import zzz404.safesql.Entity;
 import zzz404.safesql.util.CommonUtils;
 
-public class ConnectionFactoryImpl extends ConnectionFactory {
+public class DbSourceImpl extends DbSource {
 
     private Map<String, TableSchema> tableSchema_map = new HashMap<>();
 
-    public ConnectionFactoryImpl(String name) {
+    public DbSourceImpl(String name) {
         super(name);
     }
 

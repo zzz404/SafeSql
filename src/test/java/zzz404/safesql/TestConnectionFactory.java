@@ -9,33 +9,33 @@ public class TestConnectionFactory {
 
     @AfterEach
     public void tearDown() {
-        ConnectionFactory.map.clear();
+        DbSource.map.clear();
     }
 
     @Test
     public void test_create_then_get() {
-        ConnectionFactory factory = ConnectionFactory.get("ds1");
+        DbSource factory = DbSource.get("ds1");
         assertNull(factory);
 
-        factory = ConnectionFactory.create("ds1", () -> null);
+        factory = DbSource.create("ds1", () -> null);
         assertNotNull(factory);
 
-        ConnectionFactory factory2 = ConnectionFactory.get("ds1");
+        DbSource factory2 = DbSource.get("ds1");
         assertTrue(factory == factory2);
     }
 
     @Test
     public void test_create_nameConflict_throwException() {
-        ConnectionFactory.create("ds1", () -> null);
-        ConfigException ex = assertThrows(ConfigException.class, () -> ConnectionFactory.create("ds1", () -> null));
+        DbSource.create("ds1", () -> null);
+        ConfigException ex = assertThrows(ConfigException.class, () -> DbSource.create("ds1", () -> null));
         assertTrue(ex.getMessage().contains("conflict"));
         assertTrue(ex.getMessage().contains("ds1"));
     }
 
     @Test
     public void test_create_multipleInstance() {
-        ConnectionFactory ds1 = ConnectionFactory.create("ds1", () -> null);
-        ConnectionFactory ds2 = ConnectionFactory.create("ds2", () -> null);
+        DbSource ds1 = DbSource.create("ds1", () -> null);
+        DbSource ds2 = DbSource.create("ds2", () -> null);
         assertTrue(ds1 != ds2);
     }
 

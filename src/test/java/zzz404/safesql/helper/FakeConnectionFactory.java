@@ -1,9 +1,9 @@
 package zzz404.safesql.helper;
 
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.QuietConnection;
 
-public class FakeConnectionFactory extends ConnectionFactoryImpl {
+public class FakeConnectionFactory extends DbSourceImpl {
 
     private FakeDatabase fakeDb;
 

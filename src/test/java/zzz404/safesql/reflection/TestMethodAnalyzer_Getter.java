@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class TestMethodAnalyzer {
+class TestMethodAnalyzer_Getter {
 
     @ParameterizedTest
     @ValueSource(strings = { "title", "gettitle", "get", "getTitle_returnVoid", "getTitle_withParameter", "isTitle",

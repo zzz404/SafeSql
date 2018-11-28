@@ -8,13 +8,13 @@ import java.util.stream.Stream;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.OneObjectPlayer;
-import zzz404.safesql.sql.ConnectionFactoryImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 
 public class OneEntityQuerier<T> extends DynamicQuerier {
 
     Entity<T> entity = null;
 
-    public OneEntityQuerier(ConnectionFactoryImpl connFactory, Class<T> clazz) {
+    public OneEntityQuerier(DbSourceImpl connFactory, Class<T> clazz) {
         super(connFactory);
         entity = new Entity<>(1, clazz);
         entities.add(entity);
