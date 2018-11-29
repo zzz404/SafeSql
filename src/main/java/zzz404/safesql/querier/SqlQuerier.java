@@ -28,8 +28,8 @@ public abstract class SqlQuerier {
     private transient QuietResultSet rs = null;
     transient OrMapper<?> orMapper = null;
 
-    public SqlQuerier(DbSourceImpl connFactory) {
-        this.dbSource = connFactory;
+    public SqlQuerier(DbSourceImpl dbSource) {
+        this.dbSource = dbSource;
     }
 
     public SqlQuerier offset(int offset) {

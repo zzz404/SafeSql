@@ -1,6 +1,7 @@
 package zzz404.safesql;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -42,11 +43,11 @@ public class QueryContext {
         return ctx;
     }
 
-    public void addTableColumn(Entity<?> entity, String columnName) {
+    public void addTableField(TableField field) {
         if (tableColumns == null) {
             tableColumns = new LinkedList<>();
         }
-        tableColumns.offer(new TableField(entity, columnName));
+        tableColumns.offer(field);
     }
 
     public TableField takeTableColumn() {
@@ -55,6 +56,9 @@ public class QueryContext {
     }
 
     public List<TableField> takeAllTableColumnsUniquely() {
+        if (tableColumns == null) {
+            return Collections.emptyList();
+        }
         ArrayList<TableField> result = new ArrayList<>(new LinkedHashSet<>(tableColumns));
         tableColumns.clear();
         return result;

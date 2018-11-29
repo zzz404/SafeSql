@@ -6,6 +6,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import zzz404.safesql.Entity;
 import zzz404.safesql.QueryContext;
+import zzz404.safesql.TableField;
 import zzz404.safesql.util.NoisySupplier;
 
 public class GetterTracer<T> implements MethodInterceptor {
@@ -23,7 +24,7 @@ public class GetterTracer<T> implements MethodInterceptor {
         MethodAnalyzer m = classAnalyzer.getMethodAnalyzer(method);
         if (m.isGetter()) {
             QueryContext ctx = QueryContext.get();
-            ctx.addTableColumn(entity, m.getColumnName());
+            ctx.addTableField(new TableField(entity, m.getColumnName()));
         }
         return NoisySupplier.getQuietly(() -> proxy.invokeSuper(obj, args));
     }

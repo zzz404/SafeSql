@@ -2,7 +2,7 @@ package zzz404.safesql;
 
 import zzz404.safesql.util.CommonUtils;
 
-public final class TableField {
+public class TableField {
     private Entity<?> entity;
     private String propertyName;
     String realColumnName;
