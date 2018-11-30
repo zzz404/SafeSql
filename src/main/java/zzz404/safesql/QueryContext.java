@@ -98,11 +98,11 @@ public class QueryContext {
         this.scope = scope;
     }
 
-    public void addOrderBy(String prefixedColumnName, boolean isAsc) {
+    public void addOrderBy(OrderBy orderBy) {
         if (orderBys == null) {
             orderBys = new ArrayList<>();
         }
-        OrderBy orderBy = new OrderBy(prefixedColumnName, isAsc);
+        //OrderBy orderBy = new OrderBy(prefixedColumnName, isAsc);
         orderBys.add(orderBy);
     }
 

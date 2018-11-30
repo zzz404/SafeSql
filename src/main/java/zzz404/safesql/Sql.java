@@ -57,22 +57,24 @@ public class Sql {
     }
 
     public static void asc(Object o) {
+        addOrderBy(o, true);
+    }
+
+    private static void addOrderBy(Object o, boolean isAsc) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("asc");
         String columnName;
-        if(o instanceof String && !ctx.hasMoreColumn()) {
+        if (o instanceof String && !ctx.hasMoreColumn()) {
             columnName = (String) o;
+            ctx.addOrderBy(new OrderBy(columnName, true));
         }
         else {
-            columnName = ctx.takeTableColumn().getPrefixedColumnName();
+            ctx.addOrderBy(new OrderBy(ctx.takeTableColumn(), true));
         }
-        ctx.addOrderBy(columnName, true);
     }
 
     public static void desc(Object o) {
-        QueryContext ctx = QueryContext.get();
-        ctx.getScope().checkCommand("desc");
-        ctx.addOrderBy(ctx.takeTableColumn().getPrefixedColumnName(), false);
+        addOrderBy(o, false);
     }
 
 }

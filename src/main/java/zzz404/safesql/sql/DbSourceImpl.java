@@ -7,6 +7,7 @@ import java.util.Map;
 
 import zzz404.safesql.DbSource;
 import zzz404.safesql.Entity;
+import zzz404.safesql.TableField;
 import zzz404.safesql.util.CommonUtils;
 
 public class DbSourceImpl extends DbSource {
@@ -36,7 +37,7 @@ public class DbSourceImpl extends DbSource {
         }
     }
 
-    private TableSchema getSchema(String virtualTableName) {
+    public TableSchema getSchema(String virtualTableName) {
         TableSchema schema = tableSchema_map.get(virtualTableName);
         if (schema == null) {
             try (QuietConnection conn = getQuietConnection(); Statement stmt = conn.createStatement();) {
@@ -51,12 +52,37 @@ public class DbSourceImpl extends DbSource {
     }
 
     public void revise(List<Entity<?>> entities) {
-        if(snakeFormCompatable) {
+        if (snakeFormCompatable) {
             for (Entity<?> entity : entities) {
                 TableSchema schema = getSchema(entity.getVirtualTableName());
                 entity.getFields().forEach(schema::revise);
             }
         }
+    }
+
+    public void revise(TableField field) {
+        if (snakeFormCompatable) {
+            TableSchema schema = getSchema(field.getEntity().getVirtualTableName());
+            schema.revise(field);
+        }
+    }
+
+    public Entity<?> chooseEntity(List<Entity<?>> entities, String propertyName) {
+        for (Entity<?> entity : entities) {
+            TableSchema schema = getSchema(entity.getVirtualTableName());
+            if (schema.hasColumn(propertyName, false)) {
+                return entity;
+            }
+        }
+        if (snakeFormCompatable) {
+            for (Entity<?> entity : entities) {
+                TableSchema schema = getSchema(entity.getVirtualTableName());
+                if (schema.hasColumn(propertyName, true)) {
+                    return entity;
+                }
+            }
+        }
+        return null;
     }
 
 }

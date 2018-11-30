@@ -17,6 +17,7 @@ public class TableSchema {
 
     private String virtualTableName;
     private String realTableName;
+    private Set<String> realColumnNames;
     private Map<String, String> columnMap;
 
     public TableSchema(String virtualTableName, String realTableName) {
@@ -27,6 +28,15 @@ public class TableSchema {
     public void revise(TableField field) {
         String propName = field.getPropertyName();
         field.setRealColumnName(columnMap.get(propName.toLowerCase()));
+    }
+
+    public boolean hasColumn(String propertyName, boolean snakeFormCompatable) {
+        if(!snakeFormCompatable) {
+            return realColumnNames.contains(propertyName);
+        }
+        else {
+            return columnMap.containsKey(propertyName);
+        }
     }
 
     public static TableSchema query(String virtualTableName, boolean snakeFormCompatable, Statement stmt) {
@@ -51,9 +61,9 @@ public class TableSchema {
                 schema = new TableSchema(virtualTableName, snakeTableName);
             }
         }
+        schema.realColumnNames = getLowerColumnsOfResultSet(new QuietResultSet(rs));
         if (snakeFormCompatable) {
-            Set<String> realColumnNames = getColumnsOfResultSet(new QuietResultSet(rs));
-            schema.setColumnMap(realColumnNames);
+            schema.setColumnMap(schema.realColumnNames);
         }
         return schema;
     }
@@ -62,10 +72,10 @@ public class TableSchema {
         columnMap = new HashMap<>();
         for (String realColumnName : realColumnNames) {
             if (!realColumnName.contains("_")) {
-                columnMap.put(realColumnName.toLowerCase(), realColumnName);
+                columnMap.put(realColumnName, realColumnName);
             }
             else {
-                String noSnake = StringUtils.replace(realColumnName, "_", "").toLowerCase();
+                String noSnake = StringUtils.replace(realColumnName, "_", "");
                 if (!columnMap.containsKey(noSnake)) {
                     columnMap.put(noSnake, realColumnName);
                 }
@@ -73,11 +83,11 @@ public class TableSchema {
         }
     }
 
-    public static Set<String> getColumnsOfResultSet(QuietResultSet rs) {
+    public static Set<String> getLowerColumnsOfResultSet(QuietResultSet rs) {
         HashSet<String> columnsOfResultSet = new HashSet<>();
         QuietResultSetMetaData metaData = rs.getMetaData();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            columnsOfResultSet.add(metaData.getColumnName(i));
+            columnsOfResultSet.add(metaData.getColumnName(i).toLowerCase());
         }
         return columnsOfResultSet;
     }

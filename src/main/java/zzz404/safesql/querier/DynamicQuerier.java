@@ -1,6 +1,7 @@
 package zzz404.safesql.querier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
 
     public String sql() {
         dbSource.revise(entities);
+        reviseOrderBys();
         String tableName = getTablesClause();
         String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;
         if (!this.conditions.isEmpty()) {
@@ -102,6 +104,17 @@ public abstract class DynamicQuerier extends SqlQuerier {
             sql += " ORDER BY " + this.orderBys.stream().map(OrderBy::toClause).collect(Collectors.joining(", "));
         }
         return sql;
+    }
+
+    private void reviseOrderBys() {
+        for (OrderBy orderBy : orderBys) {
+            if (orderBy.getTableField() == null) {
+                String columnName = orderBy.getColumnName();
+                Entity<?> entity = dbSource.chooseEntity(entities, columnName);
+                orderBy.setEntity(entity);
+                dbSource.revise(orderBy.getTableField());
+            }
+        }
     }
 
     String getConditionsClause() {
