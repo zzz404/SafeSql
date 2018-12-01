@@ -12,7 +12,7 @@ import zzz404.safesql.helper.UtilsForTest;
 
 class TestInCondition {
 
-    private static final TableField column_zzz = UtilsForTest.createSimpleField("zzz");
+    private static final Field column_zzz = UtilsForTest.createSimpleField("zzz");
 
     @Test
     void test_toClause() {

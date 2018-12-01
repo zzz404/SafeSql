@@ -33,14 +33,29 @@ public class Sql {
         return use("").from(class1, class2);
     }
 
+    public static <T> void count() {
+        QueryContext ctx = QueryContext.get();
+        ctx.addTableField(Field.count());
+    }
+    
+    public static <T> void count(T field) {
+        QueryContext ctx = QueryContext.get();
+        ctx.addTableField(Field.count(ctx.takeTableField()));
+    }
+
+    public static <T> void all(T mockedObject) {
+        QueryContext ctx = QueryContext.get();
+        ctx.addTableField(Field.all(mockedObject));
+    }
+    
     @SafeVarargs
     public static <T> AbstractCondition cond(T field, String operator, T... values) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("cond");
-        TableField tableColumn = ctx.takeTableColumn();
+        Field tableColumn = ctx.takeTableField();
         AbstractCondition cond;
         if (ctx.hasMoreColumn()) {
-            cond = new MutualCondition(tableColumn, operator, ctx.takeTableColumn());
+            cond = new MutualCondition(tableColumn, operator, ctx.takeTableField());
         }
         else {
             cond = AbstractCondition.of(tableColumn, operator, values);
@@ -52,7 +67,7 @@ public class Sql {
     public static <T> void innerJoin(T field1, String operator, T field2) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("innerJoin");
-        AbstractCondition cond = new MutualCondition(ctx.takeTableColumn(), operator, ctx.takeTableColumn());
+        AbstractCondition cond = new MutualCondition(ctx.takeTableField(), operator, ctx.takeTableField());
         ctx.addCondition(cond);
     }
 
@@ -69,7 +84,7 @@ public class Sql {
             ctx.addOrderBy(new OrderBy(columnName, true));
         }
         else {
-            ctx.addOrderBy(new OrderBy(ctx.takeTableColumn(), true));
+            ctx.addOrderBy(new OrderBy(ctx.takeTableField(), true));
         }
     }
 

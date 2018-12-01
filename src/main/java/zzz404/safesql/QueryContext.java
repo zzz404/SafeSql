@@ -17,7 +17,7 @@ public class QueryContext {
     private static final ThreadLocal<QueryContext> container = new ThreadLocal<>();
 
     private Scope scope;
-    private Queue<TableField> tableColumns = null;
+    private Queue<Field> fields = null;
     private List<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
 
@@ -43,24 +43,24 @@ public class QueryContext {
         return ctx;
     }
 
-    public void addTableField(TableField field) {
-        if (tableColumns == null) {
-            tableColumns = new LinkedList<>();
+    public void addTableField(Field field) {
+        if (fields == null) {
+            fields = new LinkedList<>();
         }
-        tableColumns.offer(field);
+        fields.offer(field);
     }
 
-    public TableField takeTableColumn() {
-        Validate.notNull(tableColumns);
-        return tableColumns.poll();
+    public Field takeTableField() {
+        Validate.notNull(fields);
+        return fields.poll();
     }
 
-    public List<TableField> takeAllTableColumnsUniquely() {
-        if (tableColumns == null) {
+    public List<Field> takeAllTableFieldsUniquely() {
+        if (fields == null) {
             return Collections.emptyList();
         }
-        ArrayList<TableField> result = new ArrayList<>(new LinkedHashSet<>(tableColumns));
-        tableColumns.clear();
+        ArrayList<Field> result = new ArrayList<>(new LinkedHashSet<>(fields));
+        fields.clear();
         return result;
     }
 
@@ -72,7 +72,7 @@ public class QueryContext {
     }
 
     public boolean hasMoreColumn() {
-        return !tableColumns.isEmpty();
+        return !fields.isEmpty();
     }
 
     public void addCondition(AbstractCondition cond) {

@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import zzz404.safesql.TableField;
+import zzz404.safesql.Field;
 import zzz404.safesql.util.CommonUtils;
 
 public class TableSchema {
@@ -25,7 +25,7 @@ public class TableSchema {
         this.realTableName = realTableName;
     }
 
-    public void revise(TableField field) {
+    public void revise(Field field) {
         String propName = field.getPropertyName();
         field.setRealColumnName(columnMap.get(propName.toLowerCase()));
     }

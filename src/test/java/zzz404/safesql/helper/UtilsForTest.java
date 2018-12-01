@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
 import zzz404.safesql.Entity;
-import zzz404.safesql.TableField;
+import zzz404.safesql.Field;
 import zzz404.safesql.util.NoisyRunnable;
 
 public class UtilsForTest {
@@ -38,8 +38,8 @@ public class UtilsForTest {
         }
     }
 
-    public static TableField createSimpleField(String field) {
-        return new TableField(new Entity<>(0, Object.class), field);
+    public static Field createSimpleField(String field) {
+        return new Field(new Entity<>(0, Object.class), field);
     }
 
 }

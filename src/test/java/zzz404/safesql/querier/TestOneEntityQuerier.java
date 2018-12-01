@@ -14,7 +14,7 @@ import zzz404.safesql.InCondition;
 import zzz404.safesql.OpCondition;
 import zzz404.safesql.OrCondition;
 import zzz404.safesql.OrderBy;
-import zzz404.safesql.TableField;
+import zzz404.safesql.Field;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeConnectionFactory;
 
@@ -47,8 +47,8 @@ class TestOneEntityQuerier {
         assertEquals(new OpCondition(field("id"), "=", 3), q.conditions.get(0));
     }
 
-    static TableField field(String name) {
-        return new TableField(new Entity<Document>(1, Document.class), name);
+    static Field field(String name) {
+        return new Field(new Entity<Document>(1, Document.class), name);
     }
 
     @Test

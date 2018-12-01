@@ -9,7 +9,7 @@ public class OpCondition extends AbstractCondition {
     private String operator;
     private Object value;
 
-    public OpCondition(TableField tableColumn, String operator, Object value) {
+    public OpCondition(Field tableColumn, String operator, Object value) {
         super(tableColumn);
         this.operator = operator;
         this.value = value;
@@ -17,17 +17,17 @@ public class OpCondition extends AbstractCondition {
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> new Object[] { o.tableField, o.operator, o.value });
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.field, o.operator, o.value });
     }
 
     @Override
     public String toString() {
-        return "OpCondition [field=" + tableField + ", operator=" + operator + ", value=" + value + "]";
+        return "OpCondition [field=" + field + ", operator=" + operator + ", value=" + value + "]";
     }
 
     @Override
     public String toClause() {
-        return tableField + " " + operator + " ?";
+        return field + " " + operator + " ?";
     }
 
     @Override

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.Validate;
 import zzz404.safesql.util.CommonUtils;
 
 public class OrderBy {
-    private TableField tableField;
+    private Field tableField;
     private String columnName;
     private boolean isAsc;
 
@@ -14,18 +14,25 @@ public class OrderBy {
         this.isAsc = isAsc;
     }
 
-    public OrderBy(TableField tableField, boolean isAsc) {
+    public OrderBy(Field tableField, boolean isAsc) {
         this.tableField = tableField;
         this.isAsc = isAsc;
     }
 
     public String toClause() {
-        return tableField.getPrefixedColumnName() + " " + (isAsc ? "ASC" : "DESC");
+        String column;
+        if (tableField != null) {
+            column = tableField.getPrefixedPropertyName();
+        }
+        else {
+            column = columnName;
+        }
+        return column + " " + (isAsc ? "ASC" : "DESC");
     }
 
     public void setEntity(Entity<?> entity) {
         Validate.isTrue(tableField == null);
-        tableField = new TableField(entity, columnName);
+        tableField = new Field(entity, columnName);
     }
 
     @Override
@@ -38,7 +45,7 @@ public class OrderBy {
         return CommonUtils.isEquals(this, that, o -> new Object[] { o.columnName, o.isAsc });
     }
 
-    public TableField getTableField() {
+    public Field getTableField() {
         return tableField;
     }
 

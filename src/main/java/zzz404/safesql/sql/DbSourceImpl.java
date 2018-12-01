@@ -7,7 +7,7 @@ import java.util.Map;
 
 import zzz404.safesql.DbSource;
 import zzz404.safesql.Entity;
-import zzz404.safesql.TableField;
+import zzz404.safesql.Field;
 import zzz404.safesql.util.CommonUtils;
 
 public class DbSourceImpl extends DbSource {
@@ -60,7 +60,7 @@ public class DbSourceImpl extends DbSource {
         }
     }
 
-    public void revise(TableField field) {
+    public void revise(Field field) {
         if (snakeFormCompatable) {
             TableSchema schema = getSchema(field.getEntity().getVirtualTableName());
             schema.revise(field);

@@ -88,9 +88,9 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
     }
 
     private Tuple3<T, U, V> rsToTuple(QuietResultSet rs) {
-        T t = entity1.mapToObject(rs, getTableFieldsOfEntity(entity1));
-        U u = entity2.mapToObject(rs, getTableFieldsOfEntity(entity2));
-        V v = entity3.mapToObject(rs, getTableFieldsOfEntity(entity3));
+        T t = entity1.mapToObject(rs, getFieldsOfEntity(entity1));
+        U u = entity2.mapToObject(rs, getFieldsOfEntity(entity2));
+        V v = entity3.mapToObject(rs, getFieldsOfEntity(entity3));
         return new Tuple3<>(t, u, v);
     }
 

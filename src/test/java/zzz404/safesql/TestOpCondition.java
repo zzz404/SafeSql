@@ -11,7 +11,7 @@ import zzz404.safesql.helper.UtilsForTest;
 
 class TestOpCondition {
 
-    private static final TableField column_zzz = UtilsForTest.createSimpleField("zzz");
+    private static final Field column_zzz = UtilsForTest.createSimpleField("zzz");
 
     @Test
     void test_toClause() {

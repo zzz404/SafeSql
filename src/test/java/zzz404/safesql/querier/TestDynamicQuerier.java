@@ -1,6 +1,7 @@
 package zzz404.safesql.querier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -10,10 +11,11 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.AbstractCondition;
 import zzz404.safesql.Entity;
+import zzz404.safesql.MutualCondition;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
-import zzz404.safesql.TableField;
+import zzz404.safesql.Field;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.DbSourceImpl;
@@ -33,12 +35,12 @@ class TestDynamicQuerier {
 
     @Test
     void test_onSelectScope() {
-        TableField field = mock(TableField.class);
+        Field field = mock(Field.class);
         MyDynamicQuerier q = new MyDynamicQuerier();
         q.onSelectScope(() -> {
             QueryContext.get().addTableField(field);
         });
-        assertEquals(Arrays.asList(field), q.tableFields);
+        assertEquals(Arrays.asList(field), q.fields);
     }
 
     @Test
@@ -53,7 +55,7 @@ class TestDynamicQuerier {
 
     @Test
     void test_onGroupByScope() {
-        TableField field = mock(TableField.class);
+        Field field = mock(Field.class);
         MyDynamicQuerier q = new MyDynamicQuerier();
         q.onGroupByScope(() -> {
             QueryContext.get().addTableField(field);
@@ -91,7 +93,7 @@ class TestDynamicQuerier {
         Entity<User> entity3 = new Entity<>(3, User.class);
         q.entities.add(entity3);
 
-        q.tableFields = Arrays.asList(new TableField(entity2, ""), new TableField(entity3, ""));
+        q.fields = Arrays.asList(new Field(entity2, ""), new Field(entity3, ""));
 
         assertEquals("Document t2, User t3", q.getTablesClause());
     }
@@ -106,8 +108,8 @@ class TestDynamicQuerier {
         Entity<User> entity3 = new Entity<>(3, User.class);
         q.entities.add(entity3);
 
-        q.tableFields = Arrays.asList(new TableField(entity1, ""));
-        q.conditions = Arrays.asList(AbstractCondition.of(new TableField(entity2, ""), "=", 1));
+        q.fields = Arrays.asList(new Field(entity1, ""));
+        q.conditions = Arrays.asList(AbstractCondition.of(new Field(entity2, ""), "=", 1));
 
         assertEquals("Object t1, Document t2", q.getTablesClause());
     }
@@ -122,8 +124,8 @@ class TestDynamicQuerier {
         Entity<User> entity3 = new Entity<>(3, User.class);
         q.entities.add(entity3);
 
-        q.tableFields = Arrays.asList(new TableField(entity1, ""));
-        q.groupBys = Arrays.asList(new TableField(entity3, ""));
+        q.fields = Arrays.asList(new Field(entity1, ""));
+        q.groupBys = Arrays.asList(new Field(entity3, ""));
 
         assertEquals("Object t1, User t3", q.getTablesClause());
     }
@@ -138,10 +140,125 @@ class TestDynamicQuerier {
         Entity<User> entity3 = new Entity<>(3, User.class);
         q.entities.add(entity3);
 
-        q.tableFields = Arrays.asList(new TableField(entity2, ""));
-        q.orderBys = Arrays.asList(new OrderBy(new TableField(entity3, ""), true));
+        q.fields = Arrays.asList(new Field(entity2, ""));
+        q.orderBys = Arrays.asList(new OrderBy(new Field(entity3, ""), true));
 
         assertEquals("Document t2, User t3", q.getTablesClause());
+    }
+
+    @Test
+    void test_reviseOrderBys_hasEntity_feedBack() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        q.entities.add(new Entity<>(1, Object.class));
+        q.entities.add(new Entity<>(2, Document.class));
+        q.entities.add(new Entity<>(3, User.class));
+
+        q.orderBys = Arrays.asList(new OrderBy("title", true),
+                new OrderBy(new Field(q.entities.get(2), "account"), false));
+
+        DbSourceImpl ds = q.dbSource = mock(DbSourceImpl.class);
+        when(ds.chooseEntity(anyList(), anyString())).then(info -> {
+            List<Entity<?>> entities = info.getArgument(0);
+            return entities.get(1);
+        });
+
+        q.reviseOrderBys();
+
+        assertEquals("t2.title ASC, t3.account DESC", q.getOrderByClause());
+    }
+
+    @Test
+    void test_reviseOrderBys_noEntity_noEffect() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        q.entities.add(new Entity<>(1, Object.class));
+        q.entities.add(new Entity<>(2, Document.class));
+        q.entities.add(new Entity<>(3, User.class));
+
+        q.orderBys = Arrays.asList(new OrderBy("title", true),
+                new OrderBy(new Field(q.entities.get(2), "account"), false));
+
+        DbSourceImpl ds = q.dbSource = mock(DbSourceImpl.class);
+        when(ds.chooseEntity(anyList(), anyString())).thenReturn(null);
+
+        q.reviseOrderBys();
+
+        assertEquals("title ASC, t3.account DESC", q.getOrderByClause());
+    }
+
+    @Test
+    void test_getColumnsClause_noFields_selectAll() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        assertEquals("*", q.getColumnsClause());
+    }
+
+    @Test
+    void test_getColumnsClause_hasFields() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        q.fields = Arrays.asList(new Field(new Entity<>(1, Document.class), "title"),
+                new Field(new Entity<>(2, User.class), "account"));
+        assertEquals("t1.title, t2.account", q.getColumnsClause());
+    }
+
+    @Test
+    void test_getConditionsClause_and_paramValues() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        q.conditions = Arrays.asList(
+                AbstractCondition.of(new Field(new Entity<>(1, Document.class), "title"), "=", "zzz"),
+                AbstractCondition.of(new Field(new Entity<>(2, User.class), "id"), "=", 123));
+        assertEquals("t1.title = ? AND t2.id = ?", q.getConditionsClause());
+        assertEquals(Arrays.asList("zzz", 123), Arrays.asList(q.paramValues()));
+    }
+
+    @Test
+    void test_getGroupByClause() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        q.groupBys = Arrays.asList(new Field(new Entity<>(1, Document.class), "title"),
+                new Field(new Entity<>(2, User.class), "account"));
+        assertEquals("t1.title, t2.account", q.getGroupByClause());
+    }
+
+    @Test
+    void test_sql_and__sql_for_queryCount__simple() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        q.entities.add(new Entity<>(1, Document.class));
+        assertEquals("SELECT * FROM Document t1", q.sql());
+        assertEquals("SELECT COUNT(*) FROM Document t1", q.sql_for_queryCount());
+    }
+
+    @Test
+    void test_sql_and__sql_for_queryCount() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        Entity<Document> docEntity = new Entity<>(1, Document.class);
+        Entity<User> userEntity = new Entity<>(2, User.class);
+        q.entities.add(docEntity);
+        q.entities.add(userEntity);
+        q.fields = Arrays.asList(new Field(docEntity, "title"), new Field(userEntity, "account"));
+        q.conditions = Arrays
+                .asList(new MutualCondition(new Field(docEntity, "ownerId"), "=", new Field(userEntity, "id")));
+        q.groupBys = Arrays.asList(new Field(userEntity, "account"));
+        q.orderBys = Arrays.asList(new OrderBy(new Field(docEntity, "id"), true));
+        String expectedSql = "SELECT t1.title, t2.account FROM Document t1, User t2"
+                + " WHERE t1.ownerId = t2.id GROUP BY t2.account ORDER BY t1.id ASC";
+        assertEquals(expectedSql, q.sql());
+        expectedSql = "SELECT COUNT(*) FROM Document t1, User t2" + " WHERE t1.ownerId = t2.id GROUP BY t2.account";
+        assertEquals(expectedSql, q.sql_for_queryCount());
+    }
+
+    @Test
+    void test_getFieldsOfEntity() {
+        MyDynamicQuerier q = new MyDynamicQuerier();
+        Entity<Document> docEntity = new Entity<>(1, Document.class);
+        Entity<User> userEntity = new Entity<>(2, User.class);
+        q.entities.add(docEntity);
+        q.entities.add(userEntity);
+
+        Field field_docId = new Field(docEntity, "id");
+        Field field_userAccount = new Field(userEntity, "account");
+        Field field_docTitle = new Field(docEntity, "title");
+        q.fields = Arrays.asList(field_docId, field_userAccount, field_docTitle);
+
+        assertEquals(Arrays.asList(field_docId, field_docTitle), q.getFieldsOfEntity(docEntity));
+        assertEquals(Arrays.asList(field_userAccount), q.getFieldsOfEntity(userEntity));
     }
 
     public static class MyDynamicQuerier extends DynamicQuerier {

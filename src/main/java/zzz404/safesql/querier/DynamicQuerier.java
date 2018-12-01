@@ -1,7 +1,6 @@
 package zzz404.safesql.querier;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -15,20 +14,20 @@ import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
-import zzz404.safesql.TableField;
+import zzz404.safesql.Field;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class DynamicQuerier extends SqlQuerier {
 
     protected List<Entity<?>> entities = new ArrayList<>();
-    protected List<TableField> tableFields = Collections.emptyList();
+    protected List<Field> fields = Collections.emptyList();
     protected List<AbstractCondition> conditions = Collections.emptyList();
-    protected List<TableField> groupBys = Collections.emptyList();
+    protected List<Field> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
     private Scope currentScope = null;
-    private transient Map<Entity<?>, List<TableField>> entity_fields_map = null;
+    private transient Map<Entity<?>, List<Field>> entity_fields_map = null;
 
     public DynamicQuerier(DbSourceImpl connFactory) {
         super(connFactory);
@@ -41,7 +40,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
 
             collectColumns.run();
 
-            this.tableFields = ctx.takeAllTableColumnsUniquely();
+            this.fields = ctx.takeAllTableFieldsUniquely();
         });
     }
 
@@ -69,7 +68,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
 
             collectColumns.run();
 
-            this.groupBys = ctx.takeAllTableColumnsUniquely();
+            this.groupBys = ctx.takeAllTableFieldsUniquely();
         });
     }
 
@@ -85,11 +84,43 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     String getTablesClause() {
-        List<Entity<?>> usedEntities = tableFields.isEmpty() ? entities
+        List<Entity<?>> usedEntities = fields.isEmpty() ? entities
                 : entities.stream().filter(entity -> !entity.getFields().isEmpty()).collect(Collectors.toList());
         return usedEntities.stream()
                 .map(entity -> dbSource.getRealTableName(entity.getVirtualTableName()) + " t" + entity.getIndex())
                 .collect(Collectors.joining(", "));
+    }
+
+    void reviseOrderBys() {
+        for (OrderBy orderBy : orderBys) {
+            if (orderBy.getTableField() == null) {
+                String columnName = orderBy.getColumnName();
+                Entity<?> entity = dbSource.chooseEntity(entities, columnName);
+                if (entity != null) {
+                    orderBy.setEntity(entity);
+                    dbSource.revise(orderBy.getTableField());
+                }
+            }
+        }
+    }
+
+    String getColumnsClause() {
+        if (fields.isEmpty()) {
+            return "*";
+        }
+        return CommonUtils.join(fields, ", ", Field::getPrefixedPropertyName);
+    }
+
+    String getConditionsClause() {
+        return this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
+    }
+
+    String getGroupByClause() {
+        return this.groupBys.stream().map(Field::getPrefixedPropertyName).collect(Collectors.joining(", "));
+    }
+
+    String getOrderByClause() {
+        return this.orderBys.stream().map(OrderBy::toClause).collect(Collectors.joining(", "));
     }
 
     public String sql() {
@@ -100,40 +131,23 @@ public abstract class DynamicQuerier extends SqlQuerier {
         if (!this.conditions.isEmpty()) {
             sql += " WHERE " + getConditionsClause();
         }
+        if (!this.groupBys.isEmpty()) {
+            sql += " GROUP BY " + getGroupByClause();
+        }
         if (!this.orderBys.isEmpty()) {
-            sql += " ORDER BY " + this.orderBys.stream().map(OrderBy::toClause).collect(Collectors.joining(", "));
+            sql += " ORDER BY " + getOrderByClause();
         }
         return sql;
     }
 
-    private void reviseOrderBys() {
-        for (OrderBy orderBy : orderBys) {
-            if (orderBy.getTableField() == null) {
-                String columnName = orderBy.getColumnName();
-                Entity<?> entity = dbSource.chooseEntity(entities, columnName);
-                orderBy.setEntity(entity);
-                dbSource.revise(orderBy.getTableField());
-            }
-        }
-    }
-
-    String getConditionsClause() {
-        return this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
-    }
-
-    String getColumnsClause() {
-        if (tableFields.isEmpty()) {
-            return "*";
-        }
-        return CommonUtils.join(tableFields, ", ", TableField::getPrefixedColumnName);
-    }
-
     public String sql_for_queryCount() {
-        String tableName = getTablesClause();
-        String sql = "SELECT COUNT(*) FROM " + tableName;
+        String sql = "SELECT COUNT(*) FROM " + getTablesClause();
         if (!this.conditions.isEmpty()) {
             sql += " WHERE "
                     + this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
+        }
+        if (!this.groupBys.isEmpty()) {
+            sql += " GROUP BY " + getGroupByClause();
         }
         return sql;
     }
@@ -147,9 +161,9 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return paramValues.toArray();
     }
 
-    protected List<TableField> getTableFieldsOfEntity(Entity<?> entity) {
+    protected List<Field> getFieldsOfEntity(Entity<?> entity) {
         if (entity_fields_map == null) {
-            entity_fields_map = tableFields.stream().collect(Collectors.groupingBy(TableField::getEntity));
+            entity_fields_map = fields.stream().collect(Collectors.groupingBy(Field::getEntity));
         }
         return entity_fields_map.get(entity);
     }

@@ -9,29 +9,29 @@ import org.apache.commons.lang3.Validate;
 
 public abstract class AbstractCondition implements Condition {
 
-    protected TableField tableField;
+    protected Field field;
 
-    protected AbstractCondition(TableField tableField) {
-        this.tableField = tableField;
+    protected AbstractCondition(Field field) {
+        this.field = field;
     }
 
-    public static <T> AbstractCondition of(TableField tableColumn, String operator, Object... values) {
+    public static <T> AbstractCondition of(Field tableField, String operator, Object... values) {
         if (operator.equals(BETWEEN)) {
             Validate.isTrue(values.length == 2);
-            return new BetweenCondition(tableColumn, values[0], values[1]);
+            return new BetweenCondition(tableField, values[0], values[1]);
         }
         else if (operator.equals(IN)) {
-            return new InCondition(tableColumn, values);
+            return new InCondition(tableField, values);
         }
         else {
             Validate.isTrue(values.length == 1);
-            return new OpCondition(tableColumn, operator, values[0]);
+            return new OpCondition(tableField, operator, values[0]);
         }
     }
 
     public <T> AbstractCondition or(T field, String operator, Object... values) {
         QueryContext ctx = QueryContext.get();
-        AbstractCondition cond = AbstractCondition.of(ctx.takeTableColumn(), operator, values);
+        AbstractCondition cond = AbstractCondition.of(ctx.takeTableField(), operator, values);
         cond = new OrCondition(this, cond);
 
         ctx.replaceLastCondition(cond);
@@ -43,18 +43,7 @@ public abstract class AbstractCondition implements Condition {
     public abstract void appendValuesTo(List<Object> paramValues);
 
     public void appendUsedEntitiesTo(Set<Entity<?>> entities) {
-        entities.add(tableField.getEntity());
-    }
-
-    public TableField getTableField() {
-        return tableField;
-    }
-
-    @Override
-    public <T> void as(T field) {
-        QueryContext ctx = QueryContext.get();
-        TableField column = ctx.takeTableColumn();
-        ctx.addColumnMapping(tableField.getPropertyName(), column.getPropertyName());
+        entities.add(field.getEntity());
     }
 
 }

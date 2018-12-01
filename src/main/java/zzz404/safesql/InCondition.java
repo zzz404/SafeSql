@@ -11,14 +11,14 @@ public class InCondition extends AbstractCondition {
 
     private Object[] values = new Object[0];
 
-    public InCondition(TableField tableColumn, Object... values) {
+    public InCondition(Field tableColumn, Object... values) {
         super(tableColumn);
         this.values = values;
     }
 
     @Override
     public String toString() {
-        return "InCondition [field=" + tableField + ", values=" + Arrays.toString(values) + "]";
+        return "InCondition [field=" + field + ", values=" + Arrays.toString(values) + "]";
     }
 
     @Override
@@ -27,7 +27,7 @@ public class InCondition extends AbstractCondition {
             return "0<>0";
         }
         else {
-            return tableField + " IN ("
+            return field + " IN ("
                     + Collections.nCopies(values.length, "?").stream().collect(Collectors.joining(", ")) + ")";
         }
     }
