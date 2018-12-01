@@ -72,12 +72,12 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
 
     @Override
     public List<Tuple3<T, U, V>> queryList() {
-        return queryList(rs -> rsToTuple(rs));
+        return queryList_by_mapEach(rs -> rsToTuple(rs));
     }
 
     @Override
     public Page<Tuple3<T, U, V>> queryPage() {
-        return queryPage(rs -> rsToTuple(rs));
+        return queryPage_by_mapEach(rs -> rsToTuple(rs));
     }
 
     public <E> E queryEntitiesStream(Function<Stream<Tuple3<T, U, V>>, E> tupleStreamReader) {
@@ -87,7 +87,7 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
         });
     }
 
-    private Tuple3<T, U, V> rsToTuple(QuietResultSet rs) {
+    protected Tuple3<T, U, V> rsToTuple(QuietResultSet rs) {
         T t = entity1.mapToObject(rs, getFieldsOfEntity(entity1));
         U u = entity2.mapToObject(rs, getFieldsOfEntity(entity2));
         V v = entity3.mapToObject(rs, getFieldsOfEntity(entity3));

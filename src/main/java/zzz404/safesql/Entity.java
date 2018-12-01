@@ -42,13 +42,6 @@ public class Entity<T> {
         return objClass.getSimpleName();
     }
 
-    public T mapToObject(QuietResultSet rs, Set<String> columns) {
-        if (orMapper == null) {
-            orMapper = new OrMapper<>(objClass, rs).selectColumns(columns);
-        }
-        return orMapper.mapToObject();
-    }
-
     public T mapToObject(QuietResultSet rs, List<Field> tableFields) {
         if (orMapper == null || rs != this.rs) {
             Set<String> columnNames = tableFields.stream().map(f -> f.realColumnName).collect(Collectors.toSet());

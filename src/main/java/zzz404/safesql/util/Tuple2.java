@@ -16,4 +16,9 @@ public class Tuple2<T, U> {
     public U getSecond() {
         return second;
     }
+
+    @Override
+    public boolean equals(Object that) {
+        return CommonUtils.isEquals(this, that, t -> new Object[] { t.first, t.second });
+    }
 }

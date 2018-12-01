@@ -102,7 +102,6 @@ public class QueryContext {
         if (orderBys == null) {
             orderBys = new ArrayList<>();
         }
-        //OrderBy orderBy = new OrderBy(prefixedColumnName, isAsc);
         orderBys.add(orderBy);
     }
 

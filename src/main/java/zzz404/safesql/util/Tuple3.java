@@ -22,4 +22,10 @@ public class Tuple3<T, U, V> {
     public V third() {
         return third;
     }
+
+    @Override
+    public boolean equals(Object that) {
+        return CommonUtils.isEquals(this, that, t -> new Object[] { t.first, t.second, t.third });
+    }
+
 }

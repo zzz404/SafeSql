@@ -28,6 +28,9 @@ public final class CommonUtils {
         if (o1.getClass() != o2.getClass()) {
             return false;
         }
+        else if (o1 == o2) {
+            return true;
+        }
         else {
             Object[] os1 = valueExtractor.extract(o1);
             if (os1 == null) {

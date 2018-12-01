@@ -20,7 +20,7 @@ import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
-import zzz404.safesql.helper.FakeConnectionFactory;
+import zzz404.safesql.helper.FakeDbSource;
 import zzz404.safesql.helper.UtilsForTest;
 
 class TestOneEntityQuerier {
@@ -68,12 +68,12 @@ class TestOneEntityQuerier {
     }
 
     private <T> OneEntityQuerier<T> createQuerier(Class<T> clazz) {
-        return new OneEntityQuerier<>(new FakeConnectionFactory(null), clazz);
+        return new OneEntityQuerier<>(new FakeDbSource(null), clazz);
     }
 
     @Test
     void test_queryOne() {
-        MyOneEntityQuerier q = new MyOneEntityQuerier(Document.class);
+        MyOneEntityQuerier<Document> q = new MyOneEntityQuerier<>(Document.class);
         q.queryOne();
         Map<String, Class<?>> map = UtilsForTest.newMap("queryOne", Document.class);
         assertEquals(map, q.map);
@@ -81,7 +81,7 @@ class TestOneEntityQuerier {
 
     @Test
     void test_queryList() {
-        MyOneEntityQuerier q = new MyOneEntityQuerier(Document.class);
+        MyOneEntityQuerier<Document> q = new MyOneEntityQuerier<>(Document.class);
         q.queryList();
         Map<String, Class<?>> map = UtilsForTest.newMap("queryList", Document.class);
         assertEquals(map, q.map);
@@ -89,7 +89,7 @@ class TestOneEntityQuerier {
 
     @Test
     void test_queryPage() {
-        MyOneEntityQuerier q = new MyOneEntityQuerier(Document.class);
+        MyOneEntityQuerier<Document> q = new MyOneEntityQuerier<>(Document.class);
         q.queryPage();
         Map<String, Class<?>> map = UtilsForTest.newMap("queryPage", Document.class);
         assertEquals(map, q.map);
@@ -97,7 +97,7 @@ class TestOneEntityQuerier {
 
     @Test
     void test_queryEntityStream() {
-        MyOneEntityQuerier q = new MyOneEntityQuerier(Document.class);
+        MyOneEntityQuerier<Document> q = new MyOneEntityQuerier<>(Document.class);
         q.queryEntityStream(stream -> null);
         Map<String, Class<?>> map = UtilsForTest.newMap("queryStream", Document.class);
         assertEquals(map, q.map);
@@ -108,34 +108,34 @@ class TestOneEntityQuerier {
         createQuerier(Document.class).offset(1).limit(1);
     }
 
-    public static class MyOneEntityQuerier extends OneEntityQuerier<Document> {
+    public static class MyOneEntityQuerier<T> extends OneEntityQuerier<T> {
 
         Map<String, Class<?>> map = new HashMap<>();
 
-        public MyOneEntityQuerier(Class<Document> clazz) {
-            super(new FakeConnectionFactory(null), clazz);
+        public MyOneEntityQuerier(Class<T> clazz) {
+            super(new FakeDbSource(null), clazz);
         }
 
         @Override
-        public <T> Optional<T> queryOne(Class<T> clazz) {
+        public <E> Optional<E> queryOne(Class<E> clazz) {
             map.put("queryOne", clazz);
             return null;
         }
 
         @Override
-        public <T> List<T> queryList(Class<T> clazz) {
+        public <E> List<E> queryList(Class<E> clazz) {
             map.put("queryList", clazz);
             return null;
         }
 
         @Override
-        public <T> Page<T> queryPage(Class<T> clazz) {
+        public <R> Page<R> queryPage(Class<R> clazz) {
             map.put("queryPage", clazz);
             return null;
         }
 
         @Override
-        public <T, R> R queryStream(Class<T> clazz, Function<Stream<T>, R> objStreamReader) {
+        public <E, R> R queryStream(Class<E> clazz, Function<Stream<E>, R> objStreamReader) {
             map.put("queryStream", clazz);
             return null;
         }

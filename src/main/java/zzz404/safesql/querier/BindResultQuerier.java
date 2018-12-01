@@ -52,14 +52,14 @@ public abstract class BindResultQuerier<R> {
     }
 
     public List<R> queryList() {
-        return querier.queryList(rs -> {
+        return querier.queryList_by_mapEach(rs -> {
             OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
             return orMapper.mapToObject(columnMap);
         });
     }
 
     public Page<R> queryPage() {
-        return querier.queryPage(rs -> {
+        return querier.queryPage_by_mapEach(rs -> {
             OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
             return orMapper.mapToObject(columnMap);
         });

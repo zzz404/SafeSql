@@ -3,11 +3,11 @@ package zzz404.safesql.helper;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.QuietConnection;
 
-public class FakeConnectionFactory extends DbSourceImpl {
+public class FakeDbSource extends DbSourceImpl {
 
     private FakeDatabase fakeDb;
 
-    public FakeConnectionFactory(FakeDatabase db) {
+    public FakeDbSource(FakeDatabase db) {
         super("");
         this.fakeDb = db;
     }

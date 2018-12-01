@@ -14,11 +14,11 @@ import zzz404.safesql.util.Tuple2;
 
 public class TwoEntityQuerier<T, U> extends DynamicQuerier {
 
-    Entity<T> entity1 = null;
-    Entity<U> entity2 = null;
+    protected Entity<T> entity1 = null;
+    protected Entity<U> entity2 = null;
 
-    public TwoEntityQuerier(DbSourceImpl connFactory, Class<T> class1, Class<U> class2) {
-        super(connFactory);
+    public TwoEntityQuerier(DbSourceImpl dbSource, Class<T> class1, Class<U> class2) {
+        super(dbSource);
         entities.add(entity1 = new Entity<>(1, class1));
         entities.add(entity2 = new Entity<>(2, class2));
     }
@@ -70,12 +70,12 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
 
     @Override
     public List<Tuple2<T, U>> queryList() {
-        return queryList(rs -> rsToTuple(rs));
+        return queryList_by_mapEach(rs -> rsToTuple(rs));
     }
 
     @Override
     public Page<Tuple2<T, U>> queryPage() {
-        return queryPage(rs -> rsToTuple(rs));
+        return queryPage_by_mapEach(rs -> rsToTuple(rs));
     }
 
     public <E> E queryEntitiesStream(Function<Stream<Tuple2<T, U>>, E> tupleStreamReader) {
@@ -85,7 +85,7 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
         });
     }
 
-    private Tuple2<T, U> rsToTuple(QuietResultSet rs) {
+    protected Tuple2<T, U> rsToTuple(QuietResultSet rs) {
         T t = entity1.mapToObject(rs, getFieldsOfEntity(entity1));
         U u = entity2.mapToObject(rs, getFieldsOfEntity(entity2));
         return new Tuple2<>(t, u);

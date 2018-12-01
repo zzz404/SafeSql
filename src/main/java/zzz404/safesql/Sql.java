@@ -7,8 +7,8 @@ import zzz404.safesql.querier.TwoEntityQuerier;
 public class Sql {
 
     public static final String BETWEEN = "between";
-    public static final String IN = "in";
-    public static final String LIKE = "like";
+    public static final String IN = "IN";
+    public static final String LIKE = "LIKE";
 
     private Sql() {
     }
@@ -72,23 +72,24 @@ public class Sql {
     }
 
     public static void asc(Object o) {
+        QueryContext.get().getScope().checkCommand("asc");
         addOrderBy(o, true);
     }
 
     private static void addOrderBy(Object o, boolean isAsc) {
         QueryContext ctx = QueryContext.get();
-        ctx.getScope().checkCommand("asc");
         String columnName;
         if (o instanceof String && !ctx.hasMoreColumn()) {
             columnName = (String) o;
-            ctx.addOrderBy(new OrderBy(columnName, true));
+            ctx.addOrderBy(new OrderBy(columnName, isAsc));
         }
         else {
-            ctx.addOrderBy(new OrderBy(ctx.takeTableField(), true));
+            ctx.addOrderBy(new OrderBy(ctx.takeTableField(), isAsc));
         }
     }
 
     public static void desc(Object o) {
+        QueryContext.get().getScope().checkCommand("desc");
         addOrderBy(o, false);
     }
 

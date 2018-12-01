@@ -85,7 +85,7 @@ public abstract class SqlQuerier {
         return count;
     }
 
-    public final <T> Optional<T> queryOne(Function<QuietResultSet, T> mapper) {
+    public <T> Optional<T> queryOne(Function<QuietResultSet, T> mapper) {
         return query_then_mapAll(rs -> {
             QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset, 1);
             if (iter.hasNext()) {
@@ -126,7 +126,7 @@ public abstract class SqlQuerier {
         });
     }
 
-    public <T> List<T> queryList(Function<QuietResultSet, T> mapper) {
+    public <T> List<T> queryList_by_mapEach(Function<QuietResultSet, T> mapper) {
         ArrayList<T> result = new ArrayList<>();
         query_then_consumeEach(rs -> {
             result.add(mapper.apply(rs));
@@ -135,17 +135,17 @@ public abstract class SqlQuerier {
     }
 
     public <T> List<T> queryList(Class<T> clazz) {
-        return queryList(rs -> rsToObject(rs, clazz));
+        return queryList_by_mapEach(rs -> rsToObject(rs, clazz));
     }
 
-    public <T> Page<T> queryPage(Function<QuietResultSet, T> mapper) {
+    public <T> Page<T> queryPage_by_mapEach(Function<QuietResultSet, T> mapper) {
         int totalCount = queryCount();
-        List<T> result = queryList(mapper);
+        List<T> result = queryList_by_mapEach(mapper);
         return new Page<>(totalCount, result);
     }
 
     public <T> Page<T> queryPage(Class<T> clazz) {
-        return queryPage(rs -> rsToObject(rs, clazz));
+        return queryPage_by_mapEach(rs -> rsToObject(rs, clazz));
     }
 
     public <T> T queryStream(Function<Stream<QuietResultSet>, T> rsStreamReader) {

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.ConnFactoryBackDoor;
 import zzz404.safesql.Page;
-import zzz404.safesql.helper.FakeConnectionFactory;
+import zzz404.safesql.helper.FakeDbSource;
 import zzz404.safesql.helper.FakeDatabase;
 
 class TestSqlQuerier {
@@ -105,7 +105,7 @@ class TestSqlQuerier {
 
     public static class MySqlQuerier extends SqlQuerier {
         public MySqlQuerier(FakeDatabase fakeDb) {
-            super(new FakeConnectionFactory(fakeDb));
+            super(new FakeDbSource(fakeDb));
         }
 
         @Override
