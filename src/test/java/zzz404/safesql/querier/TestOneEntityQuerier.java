@@ -3,147 +3,142 @@ package zzz404.safesql.querier;
 import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.AbstractCondition;
-import zzz404.safesql.BetweenCondition;
 import zzz404.safesql.Entity;
-import zzz404.safesql.InCondition;
-import zzz404.safesql.OpCondition;
-import zzz404.safesql.OrCondition;
-import zzz404.safesql.OrderBy;
 import zzz404.safesql.Field;
+import zzz404.safesql.OpCondition;
+import zzz404.safesql.OrderBy;
+import zzz404.safesql.Page;
 import zzz404.safesql.helper.Document;
+import zzz404.safesql.helper.DocumentVo;
 import zzz404.safesql.helper.FakeConnectionFactory;
+import zzz404.safesql.helper.UtilsForTest;
 
 class TestOneEntityQuerier {
 
     @Test
-    void test_select_withAssignedFields() {
+    void test_to() {
+        OneEntityQuerier<Document> q = createQuerier(Document.class);
+        OneEntityBindResultQuerier<Document, DocumentVo> q2 = q.to(DocumentVo.class);
+        assertEquals(q, q2.querier);
+        assertEquals(DocumentVo.class, q2.resultEntity.getObjClass());
+    }
+
+    @Test
+    void test_select() {
         OneEntityQuerier<Document> q = createQuerier(Document.class);
         q.select(d -> {
             d.getId();
-            d.getTitle();
-            d.setTitle("zzz");
         });
-        assertEquals("t1.id, t1.title", q.getColumnsClause());
+        assertEquals("t1.id", q.getColumnsClause());
     }
 
     @Test
-    void test_where_notCalled_meansNoCondition() {
-        OneEntityQuerier<Document> q = createQuerier(Document.class);
-        assertEquals(0, q.conditions.size());
-    }
-
-    @Test
-    void test_where_commonOperator() {
+    void test_where() {
         OneEntityQuerier<Document> q = createQuerier(Document.class).where(d -> {
             cond(d.getId(), "=", 3);
         });
-
-        assertEquals(1, q.conditions.size());
-        assertEquals(new OpCondition(field("id"), "=", 3), q.conditions.get(0));
-    }
-
-    static Field field(String name) {
-        return new Field(new Entity<Document>(1, Document.class), name);
+        assertEquals(Arrays.asList(new OpCondition(new Field(new Entity<Document>(1, Document.class), "id"), "=", 3)),
+                q.conditions);
     }
 
     @Test
-    void test_where_between() {
-        OneEntityQuerier<Document> q = createQuerier(Document.class).where(d -> {
-            cond(d.getId(), BETWEEN, 1, 3);
+    void test_groupBy() {
+        OneEntityQuerier<Document> q = createQuerier(Document.class).groupBy(d -> {
+            d.getId();
         });
-
-        assertEquals(1, q.conditions.size());
-        assertEquals(new BetweenCondition(field("id"), 1, 3), q.conditions.get(0));
-    }
-
-    @Test
-    void test_where_in() {
-        OneEntityQuerier<Document> q = createQuerier(Document.class).where(d -> {
-            cond(d.getId(), IN, 3, 1, 4, 1, 5, 9, 2, 6, 5, 3);
-        });
-
-        assertEquals(1, q.conditions.size());
-        assertEquals(new InCondition(field("id"), 3, 1, 4, 1, 5, 9, 2, 6, 5, 3), q.conditions.get(0));
-    }
-
-    @Test
-    void test_where_multiCondition() {
-        OneEntityQuerier<Document> q = createQuerier(Document.class).where(d -> {
-            cond(d.getId(), ">", 3);
-            cond(d.getTitle(), LIKE, "abc%");
-        });
-        assertEquals(2, q.conditions.size());
-        assertEquals(new OpCondition(field("id"), ">", 3), q.conditions.get(0));
-        assertEquals(new OpCondition(field("title"), "like", "abc%"), q.conditions.get(1));
-    }
-
-    @Test
-    void test_where_or() {
-        OneEntityQuerier<Document> q = createQuerier(Document.class).where(d -> {
-            cond(d.getId(), "<", 2).or(d.getId(), ">", 10).or(d.getOwnerId(), "=", 1);
-        });
-        assertEquals(1, q.conditions.size());
-        assertTrue(q.conditions.get(0) instanceof OrCondition);
-
-        OrCondition cond = (OrCondition) q.conditions.get(0);
-        List<AbstractCondition> conds = cond.subConditions;
-        assertEquals(3, conds.size());
-
-        assertEquals(new OpCondition(field("id"), "<", 2), conds.get(0));
-        assertEquals(new OpCondition(field("id"), ">", 10), conds.get(1));
-        assertEquals(new OpCondition(field("ownerId"), "=", 1), conds.get(2));
+        assertEquals(Arrays.asList(new Field(new Entity<>(1, Document.class), "id")), q.groupBys);
     }
 
     @Test
     void test_orderBy() {
         OneEntityQuerier<Document> q = createQuerier(Document.class).orderBy(d -> {
             asc(d.getId());
-            desc(d.getTitle());
         });
-
-        assertEquals(2, q.orderBys.size());
-        assertEquals(new OrderBy("t1.id", true), q.orderBys.get(0));
-        assertEquals(new OrderBy("t1.title", false), q.orderBys.get(1));
-    }
-
-    @Test
-    void test_buildSql() {
-        OneEntityQuerier<Document> q = createQuerier(Document.class).select(d -> {
-            d.getId();
-            d.getTitle();
-        }).where(d -> {
-            cond(d.getId(), ">", 12).or(d.getOwnerId(), "=", 1);
-            cond(d.getTitle(), LIKE, "cc%");
-        }).orderBy(d -> {
-            asc(d.getId());
-            desc(d.getTitle());
-        });
-
-        String sql = "SELECT t1.id, t1.title FROM Document t1"
-                + " WHERE (t1.id > ? OR t1.ownerId = ?) AND t1.title like ? ORDER BY t1.id ASC, t1.title DESC";
-        assertEquals(sql, q.sql());
-
-        sql = "SELECT COUNT(*) FROM Document t1 WHERE (t1.id > ? OR t1.ownerId = ?) AND t1.title like ?";
-        assertEquals(sql, q.sql_for_queryCount());
-    }
-
-    @Test
-    void test_buildSql_simple() {
-        OneEntityQuerier<Document> q = createQuerier(Document.class);
-        assertEquals("SELECT * FROM Document t1", q.sql());
-        assertEquals("SELECT COUNT(*) FROM Document t1", q.sql_for_queryCount());
+        assertEquals(Arrays.asList(new OrderBy(new Field(new Entity<>(1, Document.class), "id"), true)), q.orderBys);
     }
 
     private <T> OneEntityQuerier<T> createQuerier(Class<T> clazz) {
         return new OneEntityQuerier<>(new FakeConnectionFactory(null), clazz);
     }
 
+    @Test
+    void test_queryOne() {
+        MyOneEntityQuerier q = new MyOneEntityQuerier(Document.class);
+        q.queryOne();
+        Map<String, Class<?>> map = UtilsForTest.newMap("queryOne", Document.class);
+        assertEquals(map, q.map);
+    }
+
+    @Test
+    void test_queryList() {
+        MyOneEntityQuerier q = new MyOneEntityQuerier(Document.class);
+        q.queryList();
+        Map<String, Class<?>> map = UtilsForTest.newMap("queryList", Document.class);
+        assertEquals(map, q.map);
+    }
+
+    @Test
+    void test_queryPage() {
+        MyOneEntityQuerier q = new MyOneEntityQuerier(Document.class);
+        q.queryPage();
+        Map<String, Class<?>> map = UtilsForTest.newMap("queryPage", Document.class);
+        assertEquals(map, q.map);
+    }
+
+    @Test
+    void test_queryEntityStream() {
+        MyOneEntityQuerier q = new MyOneEntityQuerier(Document.class);
+        q.queryEntityStream(stream -> null);
+        Map<String, Class<?>> map = UtilsForTest.newMap("queryStream", Document.class);
+        assertEquals(map, q.map);
+    }
+
+    @Test
     void coverRest() {
         createQuerier(Document.class).offset(1).limit(1);
+    }
+
+    public static class MyOneEntityQuerier extends OneEntityQuerier<Document> {
+
+        Map<String, Class<?>> map = new HashMap<>();
+
+        public MyOneEntityQuerier(Class<Document> clazz) {
+            super(new FakeConnectionFactory(null), clazz);
+        }
+
+        @Override
+        public <T> Optional<T> queryOne(Class<T> clazz) {
+            map.put("queryOne", clazz);
+            return null;
+        }
+
+        @Override
+        public <T> List<T> queryList(Class<T> clazz) {
+            map.put("queryList", clazz);
+            return null;
+        }
+
+        @Override
+        public <T> Page<T> queryPage(Class<T> clazz) {
+            map.put("queryPage", clazz);
+            return null;
+        }
+
+        @Override
+        public <T, R> R queryStream(Class<T> clazz, Function<Stream<T>, R> objStreamReader) {
+            map.put("queryStream", clazz);
+            return null;
+        }
+
     }
 }

@@ -2,6 +2,8 @@ package zzz404.safesql.helper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
@@ -42,4 +44,9 @@ public class UtilsForTest {
         return new Field(new Entity<>(0, Object.class), field);
     }
 
+    public static <K, V> Map<K, V> newMap(K k, V v) {
+        HashMap<K, V> map = new HashMap<>();
+        map.put(k, v);
+        return map;
+    }
 }

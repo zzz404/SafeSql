@@ -5,7 +5,7 @@ import zzz404.safesql.reflection.TwoObjectPlayer;
 
 public class OneEntityBindResultQuerier<T, R> extends BindResultQuerier<R> {
 
-    private OneEntityQuerier<T> querier;
+    OneEntityQuerier<T> querier;
 
     public OneEntityBindResultQuerier(OneEntityQuerier<T> querier, Class<R> resultClass) {
         super(querier, resultClass);

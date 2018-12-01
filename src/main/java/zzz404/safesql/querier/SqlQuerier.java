@@ -112,11 +112,11 @@ public abstract class SqlQuerier {
         return (OrMapper<T>) this.orMapper;
     }
 
-    public final <T> Optional<T> queryOne(Class<T> clazz) {
+    public <T> Optional<T> queryOne(Class<T> clazz) {
         return queryOne(rs -> rsToObject(rs, clazz));
     }
 
-    public final void query_then_consumeEach(Consumer<QuietResultSet> consumer) {
+    public void query_then_consumeEach(Consumer<QuietResultSet> consumer) {
         query_then_mapAll(rs -> {
             QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset, limit);
             while (iter.hasNext()) {
@@ -126,7 +126,7 @@ public abstract class SqlQuerier {
         });
     }
 
-    public final <T> List<T> queryList(Function<QuietResultSet, T> mapper) {
+    public <T> List<T> queryList(Function<QuietResultSet, T> mapper) {
         ArrayList<T> result = new ArrayList<>();
         query_then_consumeEach(rs -> {
             result.add(mapper.apply(rs));
@@ -134,21 +134,21 @@ public abstract class SqlQuerier {
         return result;
     }
 
-    public final <T> List<T> queryList(Class<T> clazz) {
+    public <T> List<T> queryList(Class<T> clazz) {
         return queryList(rs -> rsToObject(rs, clazz));
     }
 
-    public final <T> Page<T> queryPage(Function<QuietResultSet, T> mapper) {
+    public <T> Page<T> queryPage(Function<QuietResultSet, T> mapper) {
         int totalCount = queryCount();
         List<T> result = queryList(mapper);
         return new Page<>(totalCount, result);
     }
 
-    public final <T> Page<T> queryPage(Class<T> clazz) {
+    public <T> Page<T> queryPage(Class<T> clazz) {
         return queryPage(rs -> rsToObject(rs, clazz));
     }
 
-    public final <T> T queryStream(Function<Stream<QuietResultSet>, T> rsStreamReader) {
+    public <T> T queryStream(Function<Stream<QuietResultSet>, T> rsStreamReader) {
         return query_then_mapAll(rs -> {
             QuietResultSetIterator iter = new QuietResultSetIterator(rs, offset, limit);
             Stream<QuietResultSet> stream = CommonUtils.iter_to_stream(iter);
@@ -156,7 +156,7 @@ public abstract class SqlQuerier {
         });
     }
 
-    public final <T, R> R queryStream(Class<T> clazz, Function<Stream<T>, R> objStreamReader) {
+    public <T, R> R queryStream(Class<T> clazz, Function<Stream<T>, R> objStreamReader) {
         return queryStream(rsStream -> {
             Stream<T> objStream = rsStream.map(rs -> rsToObject(rs, clazz));
             return objStreamReader.apply(objStream);

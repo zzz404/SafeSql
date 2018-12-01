@@ -14,8 +14,8 @@ public class OneEntityQuerier<T> extends DynamicQuerier {
 
     Entity<T> entity = null;
 
-    public OneEntityQuerier(DbSourceImpl connFactory, Class<T> clazz) {
-        super(connFactory);
+    public OneEntityQuerier(DbSourceImpl dbSource, Class<T> clazz) {
+        super(dbSource);
         entity = new Entity<>(1, clazz);
         entities.add(entity);
     }
