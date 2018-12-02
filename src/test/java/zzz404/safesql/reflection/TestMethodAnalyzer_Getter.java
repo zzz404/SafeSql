@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -32,6 +33,16 @@ class TestMethodAnalyzer_Getter {
             }
         }
         return null;
+    }
+
+    @Test
+    void test_getType() {
+        Method method = getMyMethod("getTitle");
+        MethodAnalyzer methodAnalyzer = new MethodAnalyzer(method);
+
+        assertEquals(method, methodAnalyzer.getMethod());
+
+        assertEquals(String.class, methodAnalyzer.getType());
     }
 
     /**
