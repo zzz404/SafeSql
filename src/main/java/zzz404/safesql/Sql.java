@@ -33,29 +33,34 @@ public class Sql {
         return use("").from(class1, class2);
     }
 
+    public static <T> Field field(T field) {
+        QueryContext ctx = QueryContext.get();
+        return ctx.getLastField();
+    }
+
     public static <T> void count() {
         QueryContext ctx = QueryContext.get();
         ctx.addTableField(Field.count());
     }
-    
+
     public static <T> void count(T field) {
         QueryContext ctx = QueryContext.get();
-        ctx.addTableField(Field.count(ctx.takeTableField()));
+        ctx.addTableField(Field.count(ctx.takeField()));
     }
 
     public static <T> void all(T mockedObject) {
         QueryContext ctx = QueryContext.get();
         ctx.addTableField(Field.all(mockedObject));
     }
-    
+
     @SafeVarargs
     public static <T> AbstractCondition cond(T field, String operator, T... values) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("cond");
-        Field tableColumn = ctx.takeTableField();
+        Field tableColumn = ctx.takeField();
         AbstractCondition cond;
         if (ctx.hasMoreColumn()) {
-            cond = new MutualCondition(tableColumn, operator, ctx.takeTableField());
+            cond = new MutualCondition(tableColumn, operator, ctx.takeField());
         }
         else {
             cond = AbstractCondition.of(tableColumn, operator, values);
@@ -67,7 +72,7 @@ public class Sql {
     public static <T> void innerJoin(T field1, String operator, T field2) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("innerJoin");
-        AbstractCondition cond = new MutualCondition(ctx.takeTableField(), operator, ctx.takeTableField());
+        AbstractCondition cond = new MutualCondition(ctx.takeField(), operator, ctx.takeField());
         ctx.addCondition(cond);
     }
 
@@ -84,7 +89,7 @@ public class Sql {
             ctx.addOrderBy(new OrderBy(columnName, isAsc));
         }
         else {
-            ctx.addOrderBy(new OrderBy(ctx.takeTableField(), isAsc));
+            ctx.addOrderBy(new OrderBy(ctx.takeField(), isAsc));
         }
     }
 

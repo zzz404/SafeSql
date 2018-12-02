@@ -14,7 +14,7 @@ public class ShortType extends ValueType<Short> {
         return primitiveToObject(rs.getShort(columnName), rs);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Short value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Short value) {
         pstmt.setShort(index, value);
     }
 

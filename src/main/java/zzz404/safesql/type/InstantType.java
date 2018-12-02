@@ -31,7 +31,7 @@ public class InstantType extends ValueType<Instant> {
         return toInstant(rs.getTimestamp(column));
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Instant value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Instant value) {
         pstmt.setTimestamp(index, Timestamp.from(value));
     }
 

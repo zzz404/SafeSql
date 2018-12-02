@@ -14,7 +14,7 @@ public class LongType extends ValueType<Long> {
         return primitiveToObject(rs.getLong(columnName), rs);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Long value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Long value) {
         pstmt.setLong(index, value);
     }
 

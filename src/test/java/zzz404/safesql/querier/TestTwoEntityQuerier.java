@@ -18,7 +18,6 @@ import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Document;
-import zzz404.safesql.helper.FakeDbSource;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.Tuple2;
@@ -26,7 +25,7 @@ import zzz404.safesql.util.Tuple2;
 class TestTwoEntityQuerier {
 
     private <T, U> TwoEntityQuerier<T, U> createQuerier(Class<T> class1, Class<U> class2) {
-        return new TwoEntityQuerier<>(new FakeDbSource(null), class1, class2);
+        return new TwoEntityQuerier<>(null, class1, class2);
     }
 
     @Test
@@ -112,8 +111,7 @@ class TestTwoEntityQuerier {
 
     @Test
     void rsToTuple() {
-        TwoEntityQuerier<Document, User> q = new TwoEntityQuerier<Document, User>(new FakeDbSource(null),
-                Document.class, User.class);
+        TwoEntityQuerier<Document, User> q = new TwoEntityQuerier<Document, User>(null, Document.class, User.class);
         Document doc = new Document();
         User user = new User();
         q.entity1 = new MyEntity<>(1, Document.class).setT(doc);
@@ -153,7 +151,7 @@ class TestTwoEntityQuerier {
 
         @SuppressWarnings("unchecked")
         public MyTwoEntityQuerier(T t, U u) {
-            super(new FakeDbSource(null), (Class<T>) t.getClass(), (Class<U>) u.getClass());
+            super(null, (Class<T>) t.getClass(), (Class<U>) u.getClass());
             this.tuple = new Tuple2<>(t, u);
         }
 

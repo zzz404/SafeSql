@@ -22,7 +22,7 @@ public class TimeType extends ValueType<Time> {
     }
 
     @Override
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Time value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Time value) {
         pstmt.setTime(index, value);
     }
 

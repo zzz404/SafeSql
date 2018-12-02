@@ -1,6 +1,5 @@
 package zzz404.safesql.reflection;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;

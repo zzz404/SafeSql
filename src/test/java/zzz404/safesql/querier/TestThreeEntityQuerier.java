@@ -19,7 +19,6 @@ import zzz404.safesql.Field;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
-import zzz404.safesql.helper.FakeDbSource;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.Tuple3;
@@ -27,7 +26,7 @@ import zzz404.safesql.util.Tuple3;
 class TestThreeEntityQuerier {
 
     private <T, U, V> ThreeEntityQuerier<T, U, V> createQuerier(Class<T> class1, Class<U> class2, Class<V> class3) {
-        return new ThreeEntityQuerier<>(new FakeDbSource(null), class1, class2, class3);
+        return new ThreeEntityQuerier<>(null, class1, class2, class3);
     }
 
     @Test
@@ -122,8 +121,8 @@ class TestThreeEntityQuerier {
 
     @Test
     void rsToTuple() {
-        ThreeEntityQuerier<Document, User, Category> q = new ThreeEntityQuerier<Document, User, Category>(
-                new FakeDbSource(null), Document.class, User.class, Category.class);
+        ThreeEntityQuerier<Document, User, Category> q = new ThreeEntityQuerier<Document, User, Category>(null,
+                Document.class, User.class, Category.class);
         Document doc = new Document();
         User user = new User();
         Category cat = new Category();
@@ -165,7 +164,7 @@ class TestThreeEntityQuerier {
 
         @SuppressWarnings("unchecked")
         public MyThreeEntityQuerier(T t, U u, V v) {
-            super(new FakeDbSource(null), (Class<T>) t.getClass(), (Class<U>) u.getClass(), (Class<V>) v.getClass());
+            super(null, (Class<T>) t.getClass(), (Class<U>) u.getClass(), (Class<V>) v.getClass());
             this.tuple = new Tuple3<>(t, u, v);
         }
 

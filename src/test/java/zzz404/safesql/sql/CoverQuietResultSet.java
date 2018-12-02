@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.UtilsForTest;
-import zzz404.safesql.sql.QuietResultSet;
 
 public class CoverQuietResultSet {
 

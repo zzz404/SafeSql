@@ -25,6 +25,10 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
         entities.add(entity3 = new Entity<>(3, class3));
     }
 
+    public <R> ThreeEntityBindResultQuerier<T, U, V, R> to(Class<R> clazz) {
+        return new ThreeEntityBindResultQuerier<>(this, clazz);
+    }
+
     public ThreeEntityQuerier<T, U, V> select(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onSelectScope(() -> {
             columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject(), entity3.getMockedObject());

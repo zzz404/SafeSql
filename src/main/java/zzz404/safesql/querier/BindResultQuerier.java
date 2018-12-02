@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
-import zzz404.safesql.sql.OrMapper;
+import zzz404.safesql.util.NoisyRunnable;
 
 public abstract class BindResultQuerier<R> {
 
@@ -24,7 +24,7 @@ public abstract class BindResultQuerier<R> {
         resultEntity = new Entity<>(0, resultClass);
     }
 
-    protected void onSelectScope(Runnable collectColumns) {
+    protected void onSelectScope(NoisyRunnable collectColumns) {
         querier.onSelectScope(() -> {
             collectColumns.run();
             this.columnMap = QueryContext.get().getColumnMap();
@@ -45,34 +45,19 @@ public abstract class BindResultQuerier<R> {
     }
 
     public Optional<R> queryOne() {
-        return querier.queryOne(rs -> {
-            OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
-            return orMapper.mapToObject(columnMap);
-        });
+        return querier.queryOne(resultEntity.getObjClass());
     }
 
     public List<R> queryList() {
-        return querier.queryList_by_mapEach(rs -> {
-            OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
-            return orMapper.mapToObject(columnMap);
-        });
+        return querier.queryList(resultEntity.getObjClass());
     }
 
     public Page<R> queryPage() {
-        return querier.queryPage_by_mapEach(rs -> {
-            OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
-            return orMapper.mapToObject(columnMap);
-        });
+        return querier.queryPage(resultEntity.getObjClass());
     }
 
     public <E> E queryEntityStream(Function<Stream<R>, E> streamReader) {
-        return querier.queryStream(stream -> {
-            Stream<R> objStream = stream.map(rs -> {
-                OrMapper<R> orMapper = querier.getOrMapper(rs, resultEntity.getObjClass());
-                return orMapper.mapToObject(columnMap);
-            });
-            return streamReader.apply(objStream);
-        });
+        return querier.queryStream(resultEntity.getObjClass(), streamReader);
     }
 
 }

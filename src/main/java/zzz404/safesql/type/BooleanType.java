@@ -13,7 +13,7 @@ public class BooleanType extends ValueType<Boolean> {
         return primitiveToObject(rs.getBoolean(columnName), rs);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Boolean value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Boolean value) {
         pstmt.setBoolean(index, value);
     }
 

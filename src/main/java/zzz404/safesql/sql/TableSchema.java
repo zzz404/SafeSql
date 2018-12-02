@@ -31,7 +31,7 @@ public class TableSchema {
     }
 
     public boolean hasColumn(String propertyName, boolean snakeFormCompatable) {
-        if(!snakeFormCompatable) {
+        if (!snakeFormCompatable) {
             return realColumnNames.contains(propertyName);
         }
         else {

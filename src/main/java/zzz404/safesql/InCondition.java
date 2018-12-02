@@ -27,8 +27,8 @@ public class InCondition extends AbstractCondition {
             return "0<>0";
         }
         else {
-            return field + " IN ("
-                    + Collections.nCopies(values.length, "?").stream().collect(Collectors.joining(", ")) + ")";
+            return field + " IN (" + Collections.nCopies(values.length, "?").stream().collect(Collectors.joining(", "))
+                    + ")";
         }
     }
 

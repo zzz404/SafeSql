@@ -20,7 +20,7 @@ public class TimestampType extends ValueType<Timestamp> {
         return rs.getTimestamp(columnName);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Timestamp value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Timestamp value) {
         pstmt.setTimestamp(index, value);
     }
 

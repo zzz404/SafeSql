@@ -10,7 +10,7 @@ import zzz404.safesql.sql.QuietResultSet;
 public class SqlDateType extends ValueType<Date> {
 
     public static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-    
+
     @Override
     public Date readFromRs(QuietResultSet rs, int index) {
         return rs.getDate(index);
@@ -21,7 +21,7 @@ public class SqlDateType extends ValueType<Date> {
         return rs.getDate(columnName);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Date value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Date value) {
         pstmt.setDate(index, value);
     }
 

@@ -14,7 +14,7 @@ public class StringType extends ValueType<String> {
         return rs.getString(columnName);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, String value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, String value) {
         pstmt.setString(index, value);
     }
 

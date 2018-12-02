@@ -20,7 +20,6 @@ import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
-import zzz404.safesql.helper.FakeDbSource;
 import zzz404.safesql.helper.UtilsForTest;
 
 class TestOneEntityQuerier {
@@ -68,7 +67,7 @@ class TestOneEntityQuerier {
     }
 
     private <T> OneEntityQuerier<T> createQuerier(Class<T> clazz) {
-        return new OneEntityQuerier<>(new FakeDbSource(null), clazz);
+        return new OneEntityQuerier<>(null, clazz);
     }
 
     @Test
@@ -113,7 +112,7 @@ class TestOneEntityQuerier {
         Map<String, Class<?>> map = new HashMap<>();
 
         public MyOneEntityQuerier(Class<T> clazz) {
-            super(new FakeDbSource(null), clazz);
+            super(null, clazz);
         }
 
         @Override

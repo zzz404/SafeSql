@@ -14,7 +14,7 @@ public class FloatType extends ValueType<Float> {
         return primitiveToObject(rs.getFloat(columnName), rs);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Float value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Float value) {
         pstmt.setFloat(index, value);
     }
 

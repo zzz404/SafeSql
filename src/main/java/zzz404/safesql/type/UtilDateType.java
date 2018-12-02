@@ -21,7 +21,7 @@ public class UtilDateType extends ValueType<Date> {
         return rs.getTimestamp(columnName);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Date value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Date value) {
         pstmt.setTimestamp(index, new Timestamp(value.getTime()));
     }
 

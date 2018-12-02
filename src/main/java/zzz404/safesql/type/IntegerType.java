@@ -14,7 +14,7 @@ public class IntegerType extends ValueType<Integer> {
         return primitiveToObject(rs.getInt(columnName), rs);
     }
 
-    public void setToPstmt(QuietPreparedStatement pstmt, int index, Integer value)  {
+    public void setToPstmt(QuietPreparedStatement pstmt, int index, Integer value) {
         pstmt.setInt(index, value);
     }
 

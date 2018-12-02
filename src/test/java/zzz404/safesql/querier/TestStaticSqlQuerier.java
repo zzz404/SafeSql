@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-import zzz404.safesql.querier.StaticSqlQuerier;
 import zzz404.safesql.sql.QuietPreparedStatement;
 
 class TestStaticSqlQuerier {

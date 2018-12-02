@@ -23,6 +23,10 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
         entities.add(entity2 = new Entity<>(2, class2));
     }
 
+    public <R> TwoEntityBindResultQuerier<T, U, R> to(Class<R> clazz) {
+        return new TwoEntityBindResultQuerier<>(this, clazz);
+    }
+
     public TwoEntityQuerier<T, U> select(TwoObjectPlayer<T, U> columnsCollector) {
         onSelectScope(() -> {
             columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject());

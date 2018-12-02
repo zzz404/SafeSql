@@ -34,10 +34,10 @@ public class Field {
         return result;
     }
 
-    public void as(Object field) {
+    public void as(Object o) {
         QueryContext ctx = QueryContext.get();
-        Field tableField = ctx.takeTableField();
-        ctx.addColumnMapping(propertyName, tableField.getPropertyName());
+        Field field = ctx.takeLastField();
+        ctx.addColumnMapping(propertyName, field.getPropertyName());
     }
 
     @Override

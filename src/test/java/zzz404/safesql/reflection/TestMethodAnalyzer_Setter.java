@@ -76,5 +76,4 @@ class TestMethodAnalyzer_Setter {
         return this;
     }
 
-
 }

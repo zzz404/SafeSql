@@ -7,7 +7,6 @@ import java.sql.Connection;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.UtilsForTest;
-import zzz404.safesql.sql.QuietConnection;
 
 public class CoverQuietConnection {
 

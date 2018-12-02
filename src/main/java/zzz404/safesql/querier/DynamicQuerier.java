@@ -10,13 +10,14 @@ import org.apache.commons.lang3.Validate;
 
 import zzz404.safesql.AbstractCondition;
 import zzz404.safesql.Entity;
+import zzz404.safesql.Field;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
-import zzz404.safesql.Field;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.util.CommonUtils;
+import zzz404.safesql.util.NoisyRunnable;
 
 public abstract class DynamicQuerier extends SqlQuerier {
 
@@ -29,16 +30,16 @@ public abstract class DynamicQuerier extends SqlQuerier {
     private Scope currentScope = null;
     private transient Map<Entity<?>, List<Field>> entity_fields_map = null;
 
-    public DynamicQuerier(DbSourceImpl connFactory) {
-        super(connFactory);
+    public DynamicQuerier(DbSourceImpl dbSource) {
+        super(dbSource);
     }
 
-    protected void onSelectScope(Runnable collectColumns) {
+    protected void onSelectScope(NoisyRunnable collectColumns) {
         checkScope(Scope.select);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.select);
 
-            collectColumns.run();
+            NoisyRunnable.runQuietly(() -> collectColumns.run());
 
             this.fields = ctx.takeAllTableFieldsUniquely();
         });
@@ -50,34 +51,34 @@ public abstract class DynamicQuerier extends SqlQuerier {
         currentScope = scope;
     }
 
-    protected void onWhereScope(Runnable collectConditions) {
+    protected void onWhereScope(NoisyRunnable collectConditions) {
         checkScope(Scope.where);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.where);
 
-            collectConditions.run();
+            NoisyRunnable.runQuietly(() -> collectConditions.run());
 
             this.conditions = ctx.getConditions();
         });
     }
 
-    protected void onGroupByScope(Runnable collectColumns) {
+    protected void onGroupByScope(NoisyRunnable collectColumns) {
         checkScope(Scope.groupBy);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.groupBy);
 
-            collectColumns.run();
+            NoisyRunnable.runQuietly(() -> collectColumns.run());
 
             this.groupBys = ctx.takeAllTableFieldsUniquely();
         });
     }
 
-    protected void onOrderByScope(Runnable collectColumns) {
+    protected void onOrderByScope(NoisyRunnable collectColumns) {
         checkScope(Scope.orderBy);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.orderBy);
 
-            collectColumns.run();
+            NoisyRunnable.runQuietly(() -> collectColumns.run());
 
             this.orderBys = ctx.getOrderBys();
         });

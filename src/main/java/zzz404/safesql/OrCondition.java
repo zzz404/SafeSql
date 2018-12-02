@@ -20,7 +20,7 @@ public class OrCondition extends AbstractCondition {
 
     public <T> OrCondition or(T field, String operator, Object... values) {
         QueryContext ctx = QueryContext.get();
-        AbstractCondition cond = AbstractCondition.of(ctx.takeTableField(), operator, values);
+        AbstractCondition cond = AbstractCondition.of(ctx.takeField(), operator, values);
         subConditions.add(cond);
         return this;
     }

@@ -8,8 +8,6 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.ResultSetFactory;
-import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.sql.QuietResultSetIterator;
 
 public class TestQuietResultSetIterator {
 

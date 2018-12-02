@@ -31,10 +31,10 @@ public abstract class AbstractCondition implements Condition {
 
     public <T> AbstractCondition or(T field, String operator, Object... values) {
         QueryContext ctx = QueryContext.get();
-        AbstractCondition cond = AbstractCondition.of(ctx.takeTableField(), operator, values);
+        AbstractCondition cond = AbstractCondition.of(ctx.takeField(), operator, values);
         cond = new OrCondition(this, cond);
 
-        ctx.replaceLastCondition(cond);
+        ctx.addCondition(cond);
         return cond;
     }
 

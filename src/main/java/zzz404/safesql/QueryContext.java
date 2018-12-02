@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.Validate;
@@ -17,7 +16,7 @@ public class QueryContext {
     private static final ThreadLocal<QueryContext> container = new ThreadLocal<>();
 
     private Scope scope;
-    private Queue<Field> fields = null;
+    private LinkedList<Field> fields = null;
     private List<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
 
@@ -50,9 +49,14 @@ public class QueryContext {
         fields.offer(field);
     }
 
-    public Field takeTableField() {
+    public Field takeField() {
         Validate.notNull(fields);
         return fields.poll();
+    }
+
+    public Field takeLastField() {
+        Validate.notNull(fields);
+        return fields.removeLast();
     }
 
     public List<Field> takeAllTableFieldsUniquely() {
@@ -62,6 +66,10 @@ public class QueryContext {
         ArrayList<Field> result = new ArrayList<>(new LinkedHashSet<>(fields));
         fields.clear();
         return result;
+    }
+
+    public Field getLastField() {
+        return fields.getLast();
     }
 
     public void addColumnMapping(String fromColumn, String toColumn) {
@@ -80,10 +88,6 @@ public class QueryContext {
             conditions = new ArrayList<>();
         }
         conditions.add(cond);
-    }
-
-    public void replaceLastCondition(AbstractCondition cond) {
-        conditions.set(conditions.size() - 1, cond);
     }
 
     public List<AbstractCondition> getConditions() {
