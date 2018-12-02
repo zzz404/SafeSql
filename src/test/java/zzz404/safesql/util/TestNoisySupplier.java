@@ -26,7 +26,7 @@ public class TestNoisySupplier {
     }
 
     @Test
-    void coverRest() {
+    void cover_rest() {
         NoisySupplier.getQuietly(() -> null);
         Supplier<?> supplier = NoisySupplier.shutUp(() -> null);
         supplier.get();

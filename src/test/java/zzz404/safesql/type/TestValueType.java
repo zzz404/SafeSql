@@ -3,13 +3,16 @@ package zzz404.safesql.type;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
+import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.NoisySupplier;
 
 public class TestValueType {
@@ -228,12 +231,177 @@ public class TestValueType {
 
     @Test
     void test_valueToString_Object() {
-        assertEquals("To be? Or not to be? It's a question.", ValueType.valueToString(new TestValueType()));
+        String s = "To be? Or not to be? It's a question.";
+        class Zzz {
+            @Override
+            public String toString() {
+                return s;
+            }
+        }
+        assertEquals(s, ValueType.valueToString(new Zzz()));
     }
 
-    @Override
-    public String toString() {
-        return "To be? Or not to be? It's a question.";
+    @Test
+    void test_mapRsRowToObject_Integer() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+
+        when(rs.getInt(1)).thenReturn(3);
+        assertEquals(new Integer(3), ValueType.mapRsRowToObject(rs, Integer.class));
+        assertEquals(new Integer(3), ValueType.mapRsRowToObject(rs, int.class));
+
+        when(rs.getInt("zzz")).thenReturn(5);
+        assertEquals(new Integer(5), ValueType.get(Integer.class).readFromRs(rs, "zzz"));
+        assertEquals(new Integer(5), ValueType.get(int.class).readFromRs(rs, "zzz"));
+
+        when(rs.getInt(1)).thenReturn(0);
+        when(rs.wasNull()).thenReturn(true);
+        assertNull(ValueType.mapRsRowToObject(rs, Integer.class));
+        assertNull(ValueType.mapRsRowToObject(rs, int.class));
+    }
+
+    @Test
+    void test_mapRsRowToObject_String() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+
+        when(rs.getString(1)).thenReturn("zxc");
+        assertEquals("zxc", ValueType.mapRsRowToObject(rs, String.class));
+
+        when(rs.getString("zzz")).thenReturn("zxc");
+        assertEquals("zxc", ValueType.get(String.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Boolean() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+
+        when(rs.getBoolean(1)).thenReturn(true);
+        assertEquals(Boolean.TRUE, ValueType.mapRsRowToObject(rs, Boolean.class));
+        assertEquals(Boolean.TRUE, ValueType.mapRsRowToObject(rs, boolean.class));
+
+        when(rs.getBoolean("zzz")).thenReturn(false);
+        assertEquals(Boolean.FALSE, ValueType.get(Boolean.class).readFromRs(rs, "zzz"));
+        assertEquals(Boolean.FALSE, ValueType.get(boolean.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Date() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+        Date date = new Date(System.currentTimeMillis());
+
+        when(rs.getDate(1)).thenReturn(date);
+        assertEquals(date, ValueType.mapRsRowToObject(rs, Date.class));
+
+        when(rs.getDate("zzz")).thenReturn(date);
+        assertEquals(date, ValueType.get(Date.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Double() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+
+        when(rs.getDouble(1)).thenReturn(1.2);
+        assertEquals(new Double(1.2), ValueType.mapRsRowToObject(rs, Double.class));
+        assertEquals(new Double(1.2), ValueType.mapRsRowToObject(rs, double.class));
+
+        when(rs.getDouble("zzz")).thenReturn(2.1);
+        assertEquals(new Double(2.1), ValueType.get(Double.class).readFromRs(rs, "zzz"));
+        assertEquals(new Double(2.1), ValueType.get(double.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Float() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+
+        when(rs.getFloat(1)).thenReturn(1.2f);
+        assertEquals(new Float(1.2f), ValueType.mapRsRowToObject(rs, Float.class));
+        assertEquals(new Float(1.2f), ValueType.mapRsRowToObject(rs, float.class));
+
+        when(rs.getFloat("zzz")).thenReturn(2.1f);
+        assertEquals(new Float(2.1f), ValueType.get(Float.class).readFromRs(rs, "zzz"));
+        assertEquals(new Float(2.1f), ValueType.get(float.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Long() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+
+        when(rs.getLong(1)).thenReturn(3L);
+        assertEquals(new Long(3), ValueType.mapRsRowToObject(rs, Long.class));
+        assertEquals(new Long(3), ValueType.mapRsRowToObject(rs, long.class));
+
+        when(rs.getLong("zzz")).thenReturn(7L);
+        assertEquals(new Long(7), ValueType.get(Long.class).readFromRs(rs, "zzz"));
+        assertEquals(new Long(7), ValueType.get(long.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Short() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+
+        when(rs.getShort(1)).thenReturn((short) 3);
+        assertEquals(new Short((short) 3), ValueType.mapRsRowToObject(rs, Short.class));
+        assertEquals(new Short((short) 3), ValueType.mapRsRowToObject(rs, short.class));
+
+        when(rs.getShort("zzz")).thenReturn((short) 2);
+        assertEquals(new Short((short) 2), ValueType.get(Short.class).readFromRs(rs, "zzz"));
+        assertEquals(new Short((short) 2), ValueType.get(short.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Time() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+        Time time = new Time(System.currentTimeMillis());
+
+        when(rs.getTime(1)).thenReturn(time);
+        assertEquals(time, ValueType.mapRsRowToObject(rs, Time.class));
+
+        when(rs.getTime("zzz")).thenReturn(time);
+        assertEquals(time, ValueType.get(Time.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Timestamp() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        when(rs.getTimestamp(1)).thenReturn(timestamp);
+        assertEquals(timestamp, ValueType.mapRsRowToObject(rs, Timestamp.class));
+
+        when(rs.getTimestamp("zzz")).thenReturn(timestamp);
+        assertEquals(timestamp, ValueType.get(Timestamp.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_utilDate() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        when(rs.getTimestamp(1)).thenReturn(timestamp);
+        assertEquals(timestamp, ValueType.mapRsRowToObject(rs, java.util.Date.class));
+
+        when(rs.getTimestamp("zzz")).thenReturn(timestamp);
+        assertEquals(timestamp, ValueType.get(java.util.Date.class).readFromRs(rs, "zzz"));
+    }
+
+    @Test
+    void test_mapRsRowToObject_Instant() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        when(rs.getTimestamp(1)).thenReturn(timestamp);
+        assertEquals(timestamp.toInstant(), ValueType.mapRsRowToObject(rs, Instant.class));
+
+        when(rs.getTimestamp("zzz")).thenReturn(timestamp);
+        assertEquals(timestamp.toInstant(), ValueType.get(Instant.class).readFromRs(rs, "zzz"));
+
+        when(rs.getTimestamp(1)).thenReturn(null);
+        assertNull(ValueType.mapRsRowToObject(rs, Instant.class));
+    }
+
+    @Test
+    void test_mapRsRowToObject_unknownType() {
+        QuietResultSet rs = mock(QuietResultSet.class);
+        assertNull(ValueType.mapRsRowToObject(rs, this.getClass()));
     }
 
 }

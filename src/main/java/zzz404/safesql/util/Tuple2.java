@@ -9,11 +9,11 @@ public class Tuple2<T, U> {
         this.second = u;
     }
 
-    public T getFirst() {
+    public T first() {
         return first;
     }
 
-    public U getSecond() {
+    public U second() {
         return second;
     }
 

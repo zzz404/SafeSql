@@ -37,7 +37,7 @@ class TestInCondition {
     }
 
     @Test
-    void coverRest() {
+    void cover_rest() {
         new InCondition(UtilsForTest.createSimpleField(""), "", "").toString();
     }
 }

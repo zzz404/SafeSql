@@ -41,7 +41,7 @@ class TestStaticSqlQuerier {
     }
 
     @Test
-    void coverRest() {
+    void cover_rest() {
         new StaticSqlQuerier(null).sql("Hello").offset(0).limit(0);
     }
 }

@@ -27,7 +27,7 @@ class TestBetweenCondition {
     }
 
     @Test
-    void coverRest() {
+    void cover_rest() {
         new BetweenCondition(UtilsForTest.createSimpleField("zzz"), 123, 456).toString();
     }
 }

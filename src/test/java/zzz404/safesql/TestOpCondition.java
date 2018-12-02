@@ -30,7 +30,7 @@ class TestOpCondition {
     }
 
     @Test
-    void coverRest() {
+    void cover_rest() {
         new OpCondition(column_zzz, "", "").toString();
     }
 }

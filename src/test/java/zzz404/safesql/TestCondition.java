@@ -23,9 +23,9 @@ class TestCondition {
     }
 
     @Test
-    void coverRest() {
-        UtilsForTest.pass(() -> AbstractCondition.of(column_z, "=", 1, 2));
-        UtilsForTest.pass(() -> AbstractCondition.of(column_z, BETWEEN, 1));
+    void test_of_errorArguments() {
+        assertThrows(IllegalArgumentException.class, () -> AbstractCondition.of(column_z, "=", 1, 2));
+        assertThrows(IllegalArgumentException.class, () -> AbstractCondition.of(column_z, BETWEEN, 1));
     }
 
 }

@@ -50,18 +50,18 @@ public abstract class ValueType<T> {
         }
     }
 
-    public abstract T readFromRs(QuietResultSet rs, String columnName);
+    public abstract void setToPstmt(QuietPreparedStatement pstmt, int index, T value);
 
     public abstract T readFromRs(QuietResultSet rs, int index);
 
-    public T readFirstFromRs(QuietResultSet rs) {
-        return readFromRs(rs, 1);
-    }
-
-    public abstract void setToPstmt(QuietPreparedStatement pstmt, int index, T value);
+    public abstract T readFromRs(QuietResultSet rs, String columnName);
 
     public String toString(T value) {
         return value.toString();
+    }
+
+    public T readFirstFromRs(QuietResultSet rs) {
+        return readFromRs(rs, 1);
     }
 
     public static <T> String valueToString(T value) {

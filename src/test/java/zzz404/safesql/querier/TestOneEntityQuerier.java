@@ -103,7 +103,7 @@ class TestOneEntityQuerier {
     }
 
     @Test
-    void coverRest() {
+    void cover_rest() {
         createQuerier(Document.class).offset(1).limit(1);
     }
 

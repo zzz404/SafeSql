@@ -32,7 +32,7 @@ class TestOrCondition {
     }
 
     @Test
-    void coverRest() {
+    void cover_rest() {
         OrCondition orCond = new OrCondition(cond1, cond2);
         orCond.toString();
         orCond.equals(orCond);
