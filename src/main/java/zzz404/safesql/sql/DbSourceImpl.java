@@ -1,14 +1,13 @@
 package zzz404.safesql.sql;
 
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import zzz404.safesql.DbSource;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
-import zzz404.safesql.util.CommonUtils;
 
 public class DbSourceImpl extends DbSource {
 
@@ -18,13 +17,14 @@ public class DbSourceImpl extends DbSource {
         super(name);
     }
 
-    public QuietConnection getQuietConnection() {
-        return new QuietConnection(connectionProvider.getConnection());
-    }
-
-    public void closeConnection(QuietConnection conn) {
-        if (willCloseConnAfterQuery.get()) {
-            conn.close();
+    public <T> T underQuietConnection(Function<QuietConnection, T> func) {
+        if (connectionManager != null) {
+            return connectionManager.underConnection(conn -> func.apply(new QuietConnection(conn)));
+        }
+        else {
+            try (QuietConnection conn = new QuietConnection(connectionProvider.getConnection())) {
+                return func.apply(conn);
+            }
         }
     }
 
@@ -37,15 +37,18 @@ public class DbSourceImpl extends DbSource {
         }
     }
 
+    public QuietConnection getQuietConnection() {
+        return new QuietConnection(connectionProvider.getConnection());
+    }
+
     public TableSchema getSchema(String virtualTableName) {
         TableSchema schema = tableSchema_map.get(virtualTableName);
         if (schema == null) {
-            try (QuietConnection conn = getQuietConnection(); Statement stmt = conn.createStatement();) {
-                schema = TableSchema.query(virtualTableName, snakeFormCompatable, stmt);
-            }
-            catch (Exception e) {
-                throw CommonUtils.wrapToRuntime(e);
-            }
+            schema = underQuietConnection(conn -> {
+                try (QuietStatement stmt = conn.createStatement()) {
+                    return TableSchema.createByQuery(virtualTableName, snakeFormCompatable, stmt);
+                }
+            });
             tableSchema_map.put(virtualTableName, schema);
         }
         return schema;

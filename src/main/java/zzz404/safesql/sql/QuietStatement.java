@@ -1,53 +1,22 @@
 package zzz404.safesql.sql;
 
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.SQLClientInfoException;
+import java.sql.ResultSet;
 import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
 import java.sql.Statement;
-import java.sql.Struct;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Executor;
 
 import zzz404.safesql.util.CommonUtils;
 
-public class QuietConnection implements Connection {
-    private Connection conn;
+public class QuietStatement implements Statement {
+    private Statement stmt = null;
 
-    public QuietConnection(Connection conn) {
-        this.conn = conn;
+    public QuietStatement(Statement stmt) {
+        this.stmt = stmt;
     }
 
     public void close() {
         try {
-            conn.close();
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public QuietStatement createStatement() {
-        try {
-            return new QuietStatement(conn.createStatement());
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public QuietPreparedStatement prepareStatement(String sql) {
-        try {
-            return new QuietPreparedStatement(conn.prepareStatement(sql));
+            stmt.close();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
@@ -56,7 +25,16 @@ public class QuietConnection implements Connection {
 
     public <T> T unwrap(Class<T> iface) {
         try {
-            return conn.unwrap(iface);
+            return stmt.unwrap(iface);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
+    public ResultSet executeQuery(String sql) {
+        try {
+            return stmt.executeQuery(sql);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
@@ -65,133 +43,88 @@ public class QuietConnection implements Connection {
 
     public boolean isWrapperFor(Class<?> iface) {
         try {
-            return conn.isWrapperFor(iface);
+            return stmt.isWrapperFor(iface);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public CallableStatement prepareCall(String sql) {
+    public int executeUpdate(String sql) {
         try {
-            return conn.prepareCall(sql);
+            return stmt.executeUpdate(sql);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public String nativeSQL(String sql) {
+    public int getMaxFieldSize() {
         try {
-            return conn.nativeSQL(sql);
+            return stmt.getMaxFieldSize();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void setAutoCommit(boolean autoCommit) {
+    public void setMaxFieldSize(int max) {
         try {
-            conn.setAutoCommit(autoCommit);
+            stmt.setMaxFieldSize(max);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public boolean getAutoCommit() {
+    public int getMaxRows() {
         try {
-            return conn.getAutoCommit();
+            return stmt.getMaxRows();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void commit() {
+    public void setMaxRows(int max) {
         try {
-            conn.commit();
+            stmt.setMaxRows(max);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void rollback() {
+    public void setEscapeProcessing(boolean enable) {
         try {
-            conn.rollback();
+            stmt.setEscapeProcessing(enable);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public boolean isClosed() {
+    public int getQueryTimeout() {
         try {
-            return conn.isClosed();
+            return stmt.getQueryTimeout();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public DatabaseMetaData getMetaData() {
+    public void setQueryTimeout(int seconds) {
         try {
-            return conn.getMetaData();
+            stmt.setQueryTimeout(seconds);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void setReadOnly(boolean readOnly) {
+    public void cancel() {
         try {
-            conn.setReadOnly(readOnly);
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public boolean isReadOnly() {
-        try {
-            return conn.isReadOnly();
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public void setCatalog(String catalog) {
-        try {
-            conn.setCatalog(catalog);
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public String getCatalog() {
-        try {
-            return conn.getCatalog();
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public void setTransactionIsolation(int level) {
-        try {
-            conn.setTransactionIsolation(level);
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public int getTransactionIsolation() {
-        try {
-            return conn.getTransactionIsolation();
+            stmt.cancel();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
@@ -200,7 +133,7 @@ public class QuietConnection implements Connection {
 
     public SQLWarning getWarnings() {
         try {
-            return conn.getWarnings();
+            return stmt.getWarnings();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
@@ -209,310 +142,343 @@ public class QuietConnection implements Connection {
 
     public void clearWarnings() {
         try {
-            conn.clearWarnings();
+            stmt.clearWarnings();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Statement createStatement(int resultSetType, int resultSetConcurrency) {
+    public void setCursorName(String name) {
         try {
-            return conn.createStatement(resultSetType, resultSetConcurrency);
+            stmt.setCursorName(name);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public QuietPreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) {
+    public boolean execute(String sql) {
         try {
-            return new QuietPreparedStatement(conn.prepareStatement(sql, resultSetType, resultSetConcurrency));
+            return stmt.execute(sql);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) {
+    public ResultSet getResultSet() {
         try {
-            return conn.prepareCall(sql, resultSetType, resultSetConcurrency);
+            return stmt.getResultSet();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Map<String, Class<?>> getTypeMap() {
+    public int getUpdateCount() {
         try {
-            return conn.getTypeMap();
+            return stmt.getUpdateCount();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void setTypeMap(Map<String, Class<?>> map) {
+    public boolean getMoreResults() {
         try {
-            conn.setTypeMap(map);
+            return stmt.getMoreResults();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void setHoldability(int holdability) {
+    public void setFetchDirection(int direction) {
         try {
-            conn.setHoldability(holdability);
+            stmt.setFetchDirection(direction);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public int getHoldability() {
+    public int getFetchDirection() {
         try {
-            return conn.getHoldability();
+            return stmt.getFetchDirection();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Savepoint setSavepoint() {
+    public void setFetchSize(int rows) {
         try {
-            return conn.setSavepoint();
+            stmt.setFetchSize(rows);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Savepoint setSavepoint(String name) {
+    public int getFetchSize() {
         try {
-            return conn.setSavepoint(name);
+            return stmt.getFetchSize();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void rollback(Savepoint savepoint) {
+    public int getResultSetConcurrency() {
         try {
-            conn.rollback(savepoint);
+            return stmt.getResultSetConcurrency();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void releaseSavepoint(Savepoint savepoint) {
+    public int getResultSetType() {
         try {
-            conn.releaseSavepoint(savepoint);
+            return stmt.getResultSetType();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
+    public void addBatch(String sql) {
         try {
-            return conn.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+            stmt.addBatch(sql);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
-            int resultSetHoldability) {
+    public void clearBatch() {
         try {
-            return conn.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+            stmt.clearBatch();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
-            int resultSetHoldability) {
+    public int[] executeBatch() {
         try {
-            return conn.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+            return stmt.executeBatch();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) {
+    public Connection getConnection() {
         try {
-            return conn.prepareStatement(sql, autoGeneratedKeys);
+            return stmt.getConnection();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public PreparedStatement prepareStatement(String sql, int[] columnIndexes) {
+    public boolean getMoreResults(int current) {
         try {
-            return conn.prepareStatement(sql, columnIndexes);
+            return stmt.getMoreResults(current);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public PreparedStatement prepareStatement(String sql, String[] columnNames) {
+    public ResultSet getGeneratedKeys() {
         try {
-            return conn.prepareStatement(sql, columnNames);
+            return stmt.getGeneratedKeys();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Clob createClob() {
+    public int executeUpdate(String sql, int autoGeneratedKeys) {
         try {
-            return conn.createClob();
+            return stmt.executeUpdate(sql, autoGeneratedKeys);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Blob createBlob() {
+    public int executeUpdate(String sql, int[] columnIndexes) {
         try {
-            return conn.createBlob();
+            return stmt.executeUpdate(sql, columnIndexes);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public NClob createNClob() {
+    public int executeUpdate(String sql, String[] columnNames) {
         try {
-            return conn.createNClob();
+            return stmt.executeUpdate(sql, columnNames);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public SQLXML createSQLXML() {
+    public boolean execute(String sql, int autoGeneratedKeys) {
         try {
-            return conn.createSQLXML();
+            return stmt.execute(sql, autoGeneratedKeys);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public boolean isValid(int timeout) {
+    public boolean execute(String sql, int[] columnIndexes) {
         try {
-            return conn.isValid(timeout);
+            return stmt.execute(sql, columnIndexes);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+    public boolean execute(String sql, String[] columnNames) {
         try {
-            conn.setClientInfo(name, value);
+            return stmt.execute(sql, columnNames);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+    public int getResultSetHoldability() {
         try {
-            conn.setClientInfo(properties);
+            return stmt.getResultSetHoldability();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public String getClientInfo(String name) {
+    public boolean isClosed() {
         try {
-            return conn.getClientInfo(name);
+            return stmt.isClosed();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Properties getClientInfo() {
+    public void setPoolable(boolean poolable) {
         try {
-            return conn.getClientInfo();
+            stmt.setPoolable(poolable);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Array createArrayOf(String typeName, Object[] elements) {
+    public boolean isPoolable() {
         try {
-            return conn.createArrayOf(typeName, elements);
+            return stmt.isPoolable();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public Struct createStruct(String typeName, Object[] attributes) {
+    public void closeOnCompletion() {
         try {
-            return conn.createStruct(typeName, attributes);
+            stmt.closeOnCompletion();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void setSchema(String schema) {
+    public boolean isCloseOnCompletion() {
         try {
-            conn.setSchema(schema);
+            return stmt.isCloseOnCompletion();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public String getSchema() {
+    public long getLargeUpdateCount() {
         try {
-            return conn.getSchema();
+            return stmt.getLargeUpdateCount();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void abort(Executor executor) {
+    public void setLargeMaxRows(long max) {
         try {
-            conn.abort(executor);
+            stmt.setLargeMaxRows(max);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public void setNetworkTimeout(Executor executor, int milliseconds) {
+    public long getLargeMaxRows() {
         try {
-            conn.setNetworkTimeout(executor, milliseconds);
+            return stmt.getLargeMaxRows();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public int getNetworkTimeout() {
+    public long[] executeLargeBatch() {
         try {
-            return conn.getNetworkTimeout();
+            return stmt.executeLargeBatch();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
+    public long executeLargeUpdate(String sql) {
+        try {
+            return stmt.executeLargeUpdate(sql);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
+    public long executeLargeUpdate(String sql, int autoGeneratedKeys) {
+        try {
+            return stmt.executeLargeUpdate(sql, autoGeneratedKeys);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
+    public long executeLargeUpdate(String sql, int[] columnIndexes) {
+        try {
+            return stmt.executeLargeUpdate(sql, columnIndexes);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
+    public long executeLargeUpdate(String sql, String[] columnNames) {
+        try {
+            return stmt.executeLargeUpdate(sql, columnNames);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
 }

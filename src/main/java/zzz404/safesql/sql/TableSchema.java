@@ -20,7 +20,7 @@ public class TableSchema {
     private Set<String> realColumnNames;
     private Map<String, String> columnMap;
 
-    public TableSchema(String virtualTableName, String realTableName) {
+    TableSchema(String virtualTableName, String realTableName) {
         this.virtualTableName = virtualTableName;
         this.realTableName = realTableName;
     }
@@ -39,7 +39,7 @@ public class TableSchema {
         }
     }
 
-    public static TableSchema query(String virtualTableName, boolean snakeFormCompatable, Statement stmt) {
+    public static TableSchema createByQuery(String virtualTableName, boolean snakeFormCompatable, Statement stmt) {
         TableSchema schema;
         ResultSet rs;
         try {

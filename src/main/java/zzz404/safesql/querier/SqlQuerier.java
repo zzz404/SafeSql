@@ -64,16 +64,14 @@ public abstract class SqlQuerier {
     }
 
     private <T> T query_then_mapAll(String sql, Function<QuietResultSet, T> func) {
-        QuietConnection conn = dbSource.getQuietConnection();
-        try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
-            setCondsValueToPstmt(pstmt);
-            QuietResultSet rs;
-            rs = new QuietResultSet(pstmt.executeQuery());
-            return func.apply(rs);
-        }
-        finally {
-            dbSource.closeConnection(conn);
-        }
+        return dbSource.underQuietConnection(conn -> {
+            try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
+                setCondsValueToPstmt(pstmt);
+                QuietResultSet rs;
+                rs = new QuietResultSet(pstmt.executeQuery());
+                return func.apply(rs);
+            }
+        });
     }
 
     public final int queryCount() {

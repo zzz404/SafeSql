@@ -3,7 +3,9 @@ package zzz404.safesql.helper;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
@@ -42,6 +44,13 @@ public class UtilsForTest {
 
     public static Field createSimpleField(String field) {
         return new Field(new Entity<>(0, Object.class), field);
+    }
+
+    public static <V> Set<V> newSet(V v1, V v2) {
+        Set<V> set = new HashSet<>();
+        set.add(v1);
+        set.add(v2);
+        return set;
     }
 
     public static <K, V> Map<K, V> newMap(K k, V v) {

@@ -3,20 +3,19 @@ package zzz404.safesql;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang3.Validate;
 
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.util.NoisySupplier;
 
 /**
- * for Spring :
- * ConnectionFactory.create(name).setConnectionPrivider(()->{
- *   return DataSourceUtils.getConnection(dataSource);
- * }).willCloseConnAfterQuery(()->{
- *   return !TransactionSynchronizationManager.isActualTransactionActive();
- * });
+ *  for Spring : 
+ *  ConnectionFactory.create(name).useConnectionManager(new ConnectionManager() {
+ *      @Override
+ *      public <T> T underConnection(Function<Connection, T> func) {
+ *          return jdbcTemplate.execute((Connection conn) -> func.apply(conn));
+ *      }
+ *  });
  */
 public abstract class DbSource {
 
@@ -26,29 +25,33 @@ public abstract class DbSource {
     protected boolean useTablePrefix;
     protected boolean snakeFormCompatable;
     protected ConnectionProvider connectionProvider;
-    protected Supplier<Boolean> willCloseConnAfterQuery = (() -> true);
+    protected ConnectionManager connectionManager;
 
-    public static synchronized DbSource create(ConnectionProvider connectionProvider) {
-        return create("", connectionProvider);
+    public static synchronized DbSource create() {
+        return create("");
     }
 
     public DbSource(String name) {
         this.name = name;
     }
 
-    public static synchronized DbSource create(String name, ConnectionProvider connectionProvider) {
+    public static synchronized DbSource create(String name) {
         Validate.notNull(name);
-        Validate.notNull(connectionProvider);
         if (map.containsKey(name)) {
             throw new ConfigException("ConnectionFactory name:" + name + " conflict!");
         }
-        DbSourceImpl factory = new DbSourceImpl(name);
-        map.put(name, factory);
-        factory.connectionProvider = connectionProvider;
-        return factory;
+        DbSourceImpl ds = new DbSourceImpl(name);
+        map.put(name, ds);
+        return ds;
     }
 
-    public DbSource setConnectionPrivider() {
+    public DbSource useConnectionPrivider(ConnectionProvider connectionProvider) {
+        this.connectionProvider = connectionProvider;
+        return this;
+    }
+
+    public DbSource useConnectionManager(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
         return this;
     }
 
@@ -62,12 +65,7 @@ public abstract class DbSource {
         return this;
     }
 
-    public DbSource willCloseConnAfterQuery(NoisySupplier<Boolean> closeConnAfterQuery) {
-        this.willCloseConnAfterQuery = NoisySupplier.shutUp(closeConnAfterQuery);
-        return this;
-    }
-
-    public static DbSourceImpl get(String name) {
+    static DbSourceImpl get(String name) {
         return map.get(name);
     }
 

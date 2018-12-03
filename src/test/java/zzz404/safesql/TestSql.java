@@ -25,10 +25,10 @@ public class TestSql {
     void test_use() {
         assertThrows(RuntimeException.class, () -> use("aaa"));
 
-        DbSource.create("bbb", () -> null);
+        DbSource.create("bbb");
         assertThrows(RuntimeException.class, () -> use("aaa"));
 
-        DbSource.create("aaa", () -> null);
+        DbSource.create("aaa");
         QuerierFactory factory = use("aaa");
         assertEquals("aaa", factory.connFactory.name);
     }
@@ -37,7 +37,7 @@ public class TestSql {
     void test_useDefault() {
         assertThrows(RuntimeException.class, () -> use());
 
-        DbSource.create(() -> null);
+        DbSource.create();
         QuerierFactory factory = use();
         assertEquals("", factory.connFactory.name);
     }
@@ -46,7 +46,7 @@ public class TestSql {
     void test_sql_useDefault() {
         assertThrows(RuntimeException.class, () -> sql("hi"));
 
-        DbSource.create("", () -> null);
+        DbSource.create("");
         assertEquals("", QuerierBackDoor.getDbSource(sql("hi")).name);
     }
 
@@ -54,7 +54,7 @@ public class TestSql {
     void test_from_useDefault() {
         assertThrows(RuntimeException.class, () -> from(Object.class));
 
-        DbSource.create("", () -> null);
+        DbSource.create("");
         assertEquals("", QuerierBackDoor.getDbSource(from(Object.class)).name);
     }
 
