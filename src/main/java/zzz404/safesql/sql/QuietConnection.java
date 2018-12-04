@@ -21,6 +21,7 @@ import java.util.concurrent.Executor;
 import zzz404.safesql.util.CommonUtils;
 
 public class QuietConnection implements Connection {
+
     private Connection conn;
 
     public QuietConnection(Connection conn) {
@@ -36,18 +37,36 @@ public class QuietConnection implements Connection {
         }
     }
 
-    public QuietStatement createStatement() {
+    public Statement createStatement() {
         try {
-            return new QuietStatement(conn.createStatement());
+            return conn.createStatement();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
         }
     }
 
-    public QuietPreparedStatement prepareStatement(String sql) {
+    public Statement createStatement(int resultSetType, int resultSetConcurrency) {
         try {
-            return new QuietPreparedStatement(conn.prepareStatement(sql));
+            return conn.createStatement(resultSetType, resultSetConcurrency);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
+    public PreparedStatement prepareStatement(String sql) {
+        try {
+            return conn.prepareStatement(sql);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) {
+        try {
+            return conn.prepareStatement(sql, resultSetType, resultSetConcurrency);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
@@ -210,24 +229,6 @@ public class QuietConnection implements Connection {
     public void clearWarnings() {
         try {
             conn.clearWarnings();
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public Statement createStatement(int resultSetType, int resultSetConcurrency) {
-        try {
-            return conn.createStatement(resultSetType, resultSetConcurrency);
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public QuietPreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) {
-        try {
-            return new QuietPreparedStatement(conn.prepareStatement(sql, resultSetType, resultSetConcurrency));
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);

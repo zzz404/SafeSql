@@ -8,13 +8,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import zzz404.safesql.DbSourceContext;
+import zzz404.safesql.DbSourceImpl;
 import zzz404.safesql.Page;
-import zzz404.safesql.sql.DbSourceImpl;
+import zzz404.safesql.sql.EnhancedConnection;
 import zzz404.safesql.sql.OrMapper;
-import zzz404.safesql.sql.QuietConnection;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.QuietResultSetIterator;
+import zzz404.safesql.sql.QuietStatement;
 import zzz404.safesql.type.ValueType;
 import zzz404.safesql.util.CommonUtils;
 
@@ -49,29 +51,46 @@ public abstract class SqlQuerier {
         }
     }
 
-    private QuietPreparedStatement prepareStatement(String sql, QuietConnection conn) {
-        if (offset > 0) {
-            return conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        }
-        else {
-            return conn.prepareStatement(sql);
-        }
-    }
-
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
         String sql = sql();
         return query_then_mapAll(sql, func);
     }
 
     private <T> T query_then_mapAll(String sql, Function<QuietResultSet, T> func) {
-        return dbSource.underQuietConnection(conn -> {
-            try (QuietPreparedStatement pstmt = prepareStatement(sql, conn)) {
+        Object[] paramValues = paramValues();
+
+        return DbSourceContext.withConnection(dbSource, conn -> {
+            if (paramValues.length == 0) {
+                QuietStatement stmt = createStatement(conn);
+                QuietResultSet rs = new QuietResultSet(stmt.executeQuery(sql));
+                return func.apply(rs);
+            }
+            else {
+                QuietPreparedStatement pstmt = prepareStatement(sql, conn);
                 setCondsValueToPstmt(pstmt);
                 QuietResultSet rs;
                 rs = new QuietResultSet(pstmt.executeQuery());
                 return func.apply(rs);
             }
         });
+    }
+
+    private QuietStatement createStatement(EnhancedConnection conn) {
+        if (offset > 0) {
+            return conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        }
+        else {
+            return conn.createStatement();
+        }
+    }
+
+    private QuietPreparedStatement prepareStatement(String sql, EnhancedConnection conn) {
+        if (offset > 0) {
+            return conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        }
+        else {
+            return conn.prepareStatement(sql);
+        }
     }
 
     public final int queryCount() {

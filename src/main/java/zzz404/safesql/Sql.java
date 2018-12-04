@@ -2,7 +2,9 @@ package zzz404.safesql;
 
 import zzz404.safesql.querier.OneEntityQuerier;
 import zzz404.safesql.querier.StaticSqlQuerier;
+import zzz404.safesql.querier.ThreeEntityQuerier;
 import zzz404.safesql.querier.TwoEntityQuerier;
+import zzz404.safesql.util.NoisySupplier;
 
 public class Sql {
 
@@ -31,6 +33,10 @@ public class Sql {
 
     public static <T, U> TwoEntityQuerier<T, U> from(Class<T> class1, Class<U> class2) {
         return use("").from(class1, class2);
+    }
+
+    public static <T, U, V> ThreeEntityQuerier<T, U, V> from(Class<T> class1, Class<U> class2, Class<V> class3) {
+        return use("").from(class1, class2, class3);
     }
 
     public static <T> Field field(T field) {
@@ -98,4 +104,32 @@ public class Sql {
         addOrderBy(o, false);
     }
 
+    public static class QuerierFactory {
+
+        DbSourceImpl dbSource;
+
+        public QuerierFactory(String name) {
+            dbSource = DbSource.get(name);
+        }
+
+        public StaticSqlQuerier sql(String sql) {
+            return new StaticSqlQuerier(dbSource).sql(sql);
+        }
+
+        public <T> OneEntityQuerier<T> from(Class<T> clazz) {
+            return new OneEntityQuerier<>(dbSource, clazz);
+        }
+
+        public <T, U> TwoEntityQuerier<T, U> from(Class<T> class1, Class<U> class2) {
+            return new TwoEntityQuerier<>(dbSource, class1, class2);
+        }
+
+        public <T, U, V> ThreeEntityQuerier<T, U, V> from(Class<T> class1, Class<U> class2, Class<V> class3) {
+            return new ThreeEntityQuerier<>(dbSource, class1, class2, class3);
+        }
+
+        public <T> T withTheSameConnection(NoisySupplier<T> supplier) {
+            return DbSourceContext.withDbSource(dbSource, NoisySupplier.shutUp(supplier));
+        }
+    }
 }

@@ -2,7 +2,7 @@ package zzz404.safesql.querier;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.sql.DbSourceImpl;
+import zzz404.safesql.DbSourceImpl;
 
 public class StaticSqlQuerier extends SqlQuerier {
 

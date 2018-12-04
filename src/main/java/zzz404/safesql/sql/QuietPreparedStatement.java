@@ -32,27 +32,36 @@ public class QuietPreparedStatement implements PreparedStatement {
         this.pstmt = pstmt;
     }
 
+    public void close() {
+        try {
+            pstmt.close();
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
+    public ResultSet executeQuery(String sql) {
+        try {
+            return pstmt.executeQuery(sql);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
+    public ResultSet executeQuery() {
+        try {
+            return pstmt.executeQuery();
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
     public <T> T unwrap(Class<T> iface) {
         try {
             return pstmt.unwrap(iface);
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public QuietResultSet executeQuery(String sql) {
-        try {
-            return new QuietResultSet(pstmt.executeQuery(sql));
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public QuietResultSet executeQuery() {
-        try {
-            return new QuietResultSet(pstmt.executeQuery());
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
@@ -89,15 +98,6 @@ public class QuietPreparedStatement implements PreparedStatement {
     public void setNull(int parameterIndex, int sqlType) {
         try {
             pstmt.setNull(parameterIndex, sqlType);
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public void close() {
-        try {
-            pstmt.close();
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);

@@ -6,8 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.sql.DbSourceImpl;
-
 /**
  *  for Spring : 
  *  ConnectionFactory.create(name).useConnectionManager(new ConnectionManager() {

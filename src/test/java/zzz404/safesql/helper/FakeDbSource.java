@@ -1,7 +1,9 @@
 package zzz404.safesql.helper;
 
-import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.QuietConnection;
+import java.util.function.Function;
+
+import zzz404.safesql.DbSourceImpl;
+import zzz404.safesql.sql.EnhancedConnection;
 
 public class FakeDbSource extends DbSourceImpl {
 
@@ -13,8 +15,8 @@ public class FakeDbSource extends DbSourceImpl {
     }
 
     @Override
-    public QuietConnection getQuietConnection() {
-        return new QuietConnection(fakeDb.getConnection());
+    public <T> T withConnection(Function<EnhancedConnection, T> func) {
+        return func.apply(new EnhancedConnection(fakeDb.getConnection()));
     }
 
 }

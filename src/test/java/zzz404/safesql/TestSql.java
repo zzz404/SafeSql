@@ -29,8 +29,8 @@ public class TestSql {
         assertThrows(RuntimeException.class, () -> use("aaa"));
 
         DbSource.create("aaa");
-        QuerierFactory factory = use("aaa");
-        assertEquals("aaa", factory.connFactory.name);
+        QuerierFactory qf = use("aaa");
+        assertEquals("aaa", qf.dbSource.name);
     }
 
     @Test
@@ -38,8 +38,8 @@ public class TestSql {
         assertThrows(RuntimeException.class, () -> use());
 
         DbSource.create();
-        QuerierFactory factory = use();
-        assertEquals("", factory.connFactory.name);
+        QuerierFactory qf = use();
+        assertEquals("", qf.dbSource.name);
     }
 
     @Test

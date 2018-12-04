@@ -1,13 +1,13 @@
-package zzz404.safesql.sql;
+package zzz404.safesql;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import zzz404.safesql.DbSource;
-import zzz404.safesql.Entity;
-import zzz404.safesql.Field;
+import zzz404.safesql.sql.EnhancedConnection;
+import zzz404.safesql.sql.QuietStatement;
+import zzz404.safesql.sql.TableSchema;
 
 public class DbSourceImpl extends DbSource {
 
@@ -17,12 +17,12 @@ public class DbSourceImpl extends DbSource {
         super(name);
     }
 
-    public <T> T underQuietConnection(Function<QuietConnection, T> func) {
+    protected <T> T withConnection(Function<EnhancedConnection, T> func) {
         if (connectionManager != null) {
-            return connectionManager.underConnection(conn -> func.apply(new QuietConnection(conn)));
+            return connectionManager.underConnection(conn -> func.apply(new EnhancedConnection(conn)));
         }
         else {
-            try (QuietConnection conn = new QuietConnection(connectionProvider.getConnection())) {
+            try (EnhancedConnection conn = new EnhancedConnection(connectionProvider.getConnection())) {
                 return func.apply(conn);
             }
         }
@@ -37,14 +37,10 @@ public class DbSourceImpl extends DbSource {
         }
     }
 
-    public QuietConnection getQuietConnection() {
-        return new QuietConnection(connectionProvider.getConnection());
-    }
-
     public TableSchema getSchema(String virtualTableName) {
         TableSchema schema = tableSchema_map.get(virtualTableName);
         if (schema == null) {
-            schema = underQuietConnection(conn -> {
+            schema = withConnection(conn -> {
                 try (QuietStatement stmt = conn.createStatement()) {
                     return TableSchema.createByQuery(virtualTableName, snakeFormCompatable, stmt);
                 }

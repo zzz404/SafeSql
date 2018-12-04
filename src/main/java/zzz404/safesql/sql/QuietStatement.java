@@ -14,6 +14,15 @@ public class QuietStatement implements Statement {
         this.stmt = stmt;
     }
 
+    public ResultSet executeQuery(String sql) {
+        try {
+            return stmt.executeQuery(sql);
+        }
+        catch (Exception e) {
+            throw CommonUtils.wrapToRuntime(e);
+        }
+    }
+
     public void close() {
         try {
             stmt.close();
@@ -26,15 +35,6 @@ public class QuietStatement implements Statement {
     public <T> T unwrap(Class<T> iface) {
         try {
             return stmt.unwrap(iface);
-        }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
-    }
-
-    public ResultSet executeQuery(String sql) {
-        try {
-            return stmt.executeQuery(sql);
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);
