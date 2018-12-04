@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -14,6 +15,7 @@ import zzz404.safesql.util.NoisyRunnable;
 public class FakeDatabase {
     private Connection conn = mock(Connection.class);
     private PreparedStatement pstmt = mock(PreparedStatement.class);
+    private Statement stmt = mock(Statement.class);
     private ResultSet rs = mock(ResultSet.class);
 
     protected int row = -1;
@@ -24,6 +26,15 @@ public class FakeDatabase {
             when(conn.prepareStatement(anyString())).thenReturn(pstmt);
             when(conn.prepareStatement(anyString(), anyInt(), anyInt())).thenReturn(pstmt);
             when(pstmt.executeQuery()).then(info -> {
+                rs = mock(ResultSet.class);
+                Record[] records = data.poll();
+                Record.bindData(rs, records);
+                return rs;
+            });
+
+            when(conn.createStatement()).thenReturn(stmt);
+            when(conn.createStatement(anyInt(), anyInt())).thenReturn(stmt);
+            when(stmt.executeQuery(anyString())).then(info -> {
                 rs = mock(ResultSet.class);
                 Record[] records = data.poll();
                 Record.bindData(rs, records);

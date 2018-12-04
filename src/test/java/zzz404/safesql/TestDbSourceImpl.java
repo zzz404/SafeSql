@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-public class TestConnectionFactory {
+public class TestDbSourceImpl {
 
     @AfterEach
     public void tearDown() {
@@ -14,10 +14,9 @@ public class TestConnectionFactory {
 
     @Test
     public void test_create_then_get() {
-        DbSource factory = DbSource.get("ds1");
-        assertNull(factory);
+        assertThrows(NullPointerException.class, () -> DbSource.get("ds1"));
 
-        factory = DbSource.create("ds1");
+        DbSource factory = DbSource.create("ds1");
         assertNotNull(factory);
 
         DbSource factory2 = DbSource.get("ds1");

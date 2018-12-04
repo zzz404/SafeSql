@@ -8,7 +8,6 @@ import java.util.Map;
 import zzz404.safesql.util.CommonUtils;
 
 public class EnhancedConnection extends QuietConnection {
-    private Connection conn;
     private QuietStatement stmt;
     private Map<String, QuietPreparedStatement> map = new HashMap<>();
 

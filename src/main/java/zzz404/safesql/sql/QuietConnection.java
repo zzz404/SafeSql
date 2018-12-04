@@ -22,7 +22,7 @@ import zzz404.safesql.util.CommonUtils;
 
 public class QuietConnection implements Connection {
 
-    private Connection conn;
+    protected Connection conn;
 
     public QuietConnection(Connection conn) {
         this.conn = conn;

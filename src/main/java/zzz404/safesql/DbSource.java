@@ -64,7 +64,9 @@ public abstract class DbSource {
     }
 
     static DbSourceImpl get(String name) {
-        return map.get(name);
+        DbSourceImpl dbSource = map.get(name);
+        Validate.notNull(dbSource);
+        return dbSource;
     }
 
 }
