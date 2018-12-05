@@ -1,7 +1,10 @@
 package zzz404.safesql.querier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +106,42 @@ class TestSqlQuerier {
         assertEquals("a,b,c", text);
     }
 
+    @Test
+    void test_statementCreated_noOffset() throws SQLException {
+        SqlQuerier q = new MySqlQuerier(fakeDb);
+        q.queryList(Integer.class);
+        verify(fakeDb.conn, times(1)).createStatement();
+        verify(fakeDb.stmt, times(1)).executeQuery("");
+    }
+
+    @Test
+    void test_statementCreated_withOffset() throws SQLException {
+        SqlQuerier q = new MySqlQuerier(fakeDb);
+        q.offset(3).queryList(Integer.class);
+        verify(fakeDb.conn, times(1)).createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        verify(fakeDb.stmt, times(1)).executeQuery("");
+    }
+
+    @Test
+    void test_preparedStatementCreated_noOffset() throws SQLException {
+        SqlQuerier q = new MySqlQuerier(fakeDb).paramValues(1, 2);
+        q.queryList(Integer.class);
+        verify(fakeDb.conn, times(1)).prepareStatement("");
+        verify(fakeDb.pstmt, times(1)).executeQuery();
+    }
+
+    @Test
+    void test_preparedStatementCreated_withOffset() throws SQLException {
+        SqlQuerier q = new MySqlQuerier(fakeDb).paramValues(1, 2);
+        q.offset(3).queryList(Integer.class);
+        verify(fakeDb.conn, times(1)).prepareStatement("", ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        verify(fakeDb.pstmt, times(1)).executeQuery();
+    }
+
     public static class MySqlQuerier extends SqlQuerier {
+        private Object[] paramValues = new Object[0];
+
         public MySqlQuerier(FakeDatabase fakeDb) {
             super(new FakeDbSource(fakeDb));
         }
@@ -120,7 +158,12 @@ class TestSqlQuerier {
 
         @Override
         protected Object[] paramValues() {
-            return new Object[0];
+            return paramValues;
+        }
+
+        public MySqlQuerier paramValues(Object... paramValues) {
+            this.paramValues = paramValues;
+            return this;
         }
     }
 }

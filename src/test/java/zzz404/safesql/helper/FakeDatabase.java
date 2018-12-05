@@ -13,10 +13,10 @@ import java.util.Queue;
 import zzz404.safesql.util.NoisyRunnable;
 
 public class FakeDatabase {
-    private Connection conn = mock(Connection.class);
-    private PreparedStatement pstmt = mock(PreparedStatement.class);
-    private Statement stmt = mock(Statement.class);
-    private ResultSet rs = mock(ResultSet.class);
+    public Connection conn = mock(Connection.class);
+    public PreparedStatement pstmt = mock(PreparedStatement.class);
+    public Statement stmt = mock(Statement.class);
+    public ResultSet rs = mock(ResultSet.class);
 
     protected int row = -1;
     protected Queue<Record[]> data = new LinkedList<>();

@@ -1,8 +1,6 @@
 package zzz404.safesql.sql;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,8 +15,8 @@ public class TableSchema {
 
     private String virtualTableName;
     private String realTableName;
-    private Set<String> realColumnNames;
-    private Map<String, String> columnMap;
+    Set<String> realColumnNames;
+    Map<String, String> columnMap;
 
     TableSchema(String virtualTableName, String realTableName) {
         this.virtualTableName = virtualTableName;
@@ -39,25 +37,20 @@ public class TableSchema {
         }
     }
 
-    public static TableSchema createByQuery(String virtualTableName, boolean snakeFormCompatable, Statement stmt) {
+    public static TableSchema createByQuery(String virtualTableName, boolean snakeFormCompatable, QuietStatement stmt) {
         TableSchema schema;
         ResultSet rs;
         try {
             rs = stmt.executeQuery("SELECT * FROM " + virtualTableName);
             schema = new TableSchema(virtualTableName, virtualTableName);
         }
-        catch (SQLException e) {
+        catch (RuntimeException e) {
             if (!snakeFormCompatable) {
-                throw new RuntimeException(e);
+                throw e;
             }
             else {
                 String snakeTableName = CommonUtils.camelForm_to_snakeForm(virtualTableName);
-                try {
-                    rs = stmt.executeQuery("SELECT * FROM " + snakeTableName);
-                }
-                catch (SQLException e1) {
-                    throw new RuntimeException(e);
-                }
+                rs = stmt.executeQuery("SELECT * FROM " + snakeTableName);
                 schema = new TableSchema(virtualTableName, snakeTableName);
             }
         }
