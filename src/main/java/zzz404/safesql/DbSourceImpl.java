@@ -67,21 +67,18 @@ public class DbSourceImpl extends DbSource {
     }
 
     public Entity<?> chooseEntity(List<Entity<?>> entities, String propertyName) {
+        int minDistance = Integer.MAX_VALUE;
+        Entity<?> choosedEntity = null;
         for (Entity<?> entity : entities) {
             TableSchema schema = getSchema(entity.getVirtualTableName());
-            if (schema.hasColumn(propertyName, false)) {
-                return entity;
+            String matchedRealColumn = schema.getMatchedRealColumn(propertyName);
+            int distance = Math.abs(propertyName.length() - matchedRealColumn.length());
+            if (distance < minDistance) {
+                minDistance = distance;
+                choosedEntity = entity;
             }
         }
-        if (snakeFormCompatable) {
-            for (Entity<?> entity : entities) {
-                TableSchema schema = getSchema(entity.getVirtualTableName());
-                if (schema.hasColumn(propertyName, true)) {
-                    return entity;
-                }
-            }
-        }
-        return null;
+        return choosedEntity;
     }
 
 }

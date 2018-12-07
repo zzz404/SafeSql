@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
 import zzz404.safesql.Field;
 import zzz404.safesql.util.CommonUtils;
 
@@ -16,33 +14,42 @@ public class TableSchema {
     private String virtualTableName;
     private String realTableName;
     Set<String> realColumnNames;
-    Map<String, String> columnMap;
+    Map<String, String> prop_real_map = new HashMap<>();
+    Map<String, String> snake_real_map = new HashMap<>();
+    boolean snakeFormCompatable;
 
-    TableSchema(String virtualTableName, String realTableName) {
+    TableSchema(String virtualTableName, String realTableName, boolean snakeFormCompatable) {
         this.virtualTableName = virtualTableName;
         this.realTableName = realTableName;
+        this.snakeFormCompatable = snakeFormCompatable;
     }
 
     public void revise(Field field) {
         String propName = field.getPropertyName();
-        field.setRealColumnName(columnMap.get(propName.toLowerCase()));
+        String matchedColumn = getMatchedRealColumn(propName.toLowerCase());
+        if (matchedColumn != null) {
+            field.setRealColumnName(matchedColumn);
+        }
     }
 
-    public boolean hasColumn(String propertyName, boolean snakeFormCompatable) {
-        if (!snakeFormCompatable) {
-            return realColumnNames.contains(propertyName);
+    public String getMatchedRealColumn(String propertyName) {
+        String prop_lower = propertyName.toLowerCase();
+        if (snakeFormCompatable && !prop_real_map.containsKey(prop_lower)) {
+            String snake = CommonUtils.camelForm_to_snakeForm(propertyName);
+            String real = snake_real_map.get(snake);
+            if (real != null) {
+                prop_real_map.put(prop_lower, real);
+            }
+            return real;
         }
-        else {
-            return columnMap.containsKey(propertyName);
-        }
+        return prop_real_map.get(prop_lower);
     }
 
     public static TableSchema createByQuery(String virtualTableName, boolean snakeFormCompatable, QuietStatement stmt) {
-        TableSchema schema;
+        TableSchema schema = new TableSchema(virtualTableName, virtualTableName, snakeFormCompatable);
         ResultSet rs;
         try {
             rs = stmt.executeQuery("SELECT * FROM " + virtualTableName);
-            schema = new TableSchema(virtualTableName, virtualTableName);
         }
         catch (RuntimeException e) {
             if (!snakeFormCompatable) {
@@ -51,29 +58,25 @@ public class TableSchema {
             else {
                 String snakeTableName = CommonUtils.camelForm_to_snakeForm(virtualTableName);
                 rs = stmt.executeQuery("SELECT * FROM " + snakeTableName);
-                schema = new TableSchema(virtualTableName, snakeTableName);
+                schema.realTableName = snakeTableName;
             }
         }
         schema.realColumnNames = getLowerColumnsOfResultSet(new QuietResultSet(rs));
-        if (snakeFormCompatable) {
-            schema.setColumnMap(schema.realColumnNames);
-        }
-        return schema;
-    }
-
-    private void setColumnMap(Set<String> realColumnNames) {
-        columnMap = new HashMap<>();
-        for (String realColumnName : realColumnNames) {
-            if (!realColumnName.contains("_")) {
-                columnMap.put(realColumnName, realColumnName);
-            }
-            else {
-                String noSnake = StringUtils.replace(realColumnName, "_", "");
-                if (!columnMap.containsKey(noSnake)) {
-                    columnMap.put(noSnake, realColumnName);
+        schema.realColumnNames.forEach(real_columnName -> {
+            schema.prop_real_map.put(real_columnName, real_columnName);
+            if (snakeFormCompatable) {
+                String snake_columnName = CommonUtils.camelForm_to_snakeForm(real_columnName);
+                if (schema.snake_real_map.containsKey(snake_columnName)) {
+                    String pattern = "Columns %s, %s of Table %s are ambiguous on snakeFormCompatable mode!";
+                    throw new TableSchemeException(String.format(pattern, schema.snake_real_map.get(snake_columnName),
+                            real_columnName, schema.realTableName));
+                }
+                else {
+                    schema.snake_real_map.put(snake_columnName, real_columnName);
                 }
             }
-        }
+        });
+        return schema;
     }
 
     public static Set<String> getLowerColumnsOfResultSet(QuietResultSet rs) {

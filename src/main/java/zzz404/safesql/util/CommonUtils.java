@@ -1,7 +1,9 @@
 package zzz404.safesql.util;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Function;
@@ -44,15 +46,6 @@ public final class CommonUtils {
             }
             return builder.isEquals();
         }
-    }
-
-    public static <T> int hashCode(Object... args) {
-        final int prime = 31;
-        int result = 1;
-        for (Object arg : args) {
-            result = prime * result + ((arg == null) ? 0 : arg.hashCode());
-        }
-        return result;
     }
 
     public static <T> Stream<T> iter_to_stream(Iterator<T> iter) {
@@ -105,6 +98,15 @@ public final class CommonUtils {
             }
         }
         return sb.toString();
+    }
+
+    @SafeVarargs
+    public static <V> Set<V> newSet(V... vs) {
+        Set<V> set = new HashSet<>();
+        for (V v : vs) {
+            set.add(v);
+        }
+        return set;
     }
 
 }

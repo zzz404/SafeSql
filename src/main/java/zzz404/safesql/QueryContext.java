@@ -7,9 +7,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
-
-import org.apache.commons.lang3.Validate;
 
 public class QueryContext {
 
@@ -38,7 +37,7 @@ public class QueryContext {
 
     public static QueryContext get() {
         QueryContext ctx = container.get();
-        Validate.notNull(ctx);
+        Objects.requireNonNull(ctx);
         return ctx;
     }
 
@@ -50,12 +49,12 @@ public class QueryContext {
     }
 
     public Field takeField() {
-        Validate.notNull(fields);
+        Objects.requireNonNull(fields);
         return fields.poll();
     }
 
     public Field takeLastField() {
-        Validate.notNull(fields);
+        Objects.requireNonNull(fields);
         return fields.removeLast();
     }
 

@@ -2,6 +2,7 @@ package zzz404.safesql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -78,7 +79,7 @@ public class Entity<T> {
 
     @Override
     public int hashCode() {
-        return CommonUtils.hashCode(index, objClass);
+        return Objects.hash(index, objClass);
     }
 
 }

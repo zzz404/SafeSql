@@ -3,8 +3,7 @@ package zzz404.safesql;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.Validate;
+import java.util.Objects;
 
 /**
  *  for Spring : 
@@ -34,7 +33,7 @@ public abstract class DbSource {
     }
 
     public static synchronized DbSource create(String name) {
-        Validate.notNull(name);
+        Objects.requireNonNull(name);
         if (map.containsKey(name)) {
             throw new ConfigException("ConnectionFactory name:" + name + " conflict!");
         }
@@ -65,7 +64,7 @@ public abstract class DbSource {
 
     static DbSourceImpl get(String name) {
         DbSourceImpl dbSource = map.get(name);
-        Validate.notNull(dbSource);
+        Objects.requireNonNull(dbSource);
         return dbSource;
     }
 

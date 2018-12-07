@@ -88,10 +88,4 @@ public class TestCommonUtils {
         assertEquals(camelForm, CommonUtils.snakeForm_to_camelForm(snakeForm));
     }
 
-    @Test
-    void cover_hashCode() {
-        CommonUtils.hashCode(1, "");
-        CommonUtils.hashCode(1, null);
-    }
-
 }

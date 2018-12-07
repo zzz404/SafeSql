@@ -35,6 +35,7 @@ public class DbSourceContext {
 
     static <T> T withDbSource(DbSourceImpl dbSource, Supplier<T> supplier) {
         Validate.isTrue(container.get() == null);
+        
         DbSourceContext ctx = new DbSourceContext(dbSource);
         return ctx.dbSource.withConnection(conn -> {
             try {
