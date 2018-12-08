@@ -12,14 +12,11 @@ public interface NoisyRunnable {
         }
     }
 
-    //    public static Runnable shutUp(NoisyRunnable runnable) {
-    //        return () -> {
-    //            try {
-    //                runnable.run();
-    //            }
-    //            catch (Exception e) {
-    //                throw CommonUtils.wrapToRuntime(e);
-    //            }
-    //        };
-    //    }
+    public static void runIgnoreException(NoisyRunnable runnable) {
+        try {
+            runnable.run();
+        }
+        catch (Exception ignored) {
+        }
+    }
 }

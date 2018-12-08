@@ -8,7 +8,7 @@ import java.sql.Statement;
 import zzz404.safesql.util.CommonUtils;
 
 public class QuietStatement implements Statement {
-    private Statement stmt = null;
+    Statement stmt = null;
 
     public QuietStatement(Statement stmt) {
         this.stmt = stmt;

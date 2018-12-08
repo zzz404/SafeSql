@@ -5,11 +5,11 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import zzz404.safesql.util.CommonUtils;
+import zzz404.safesql.util.NoisyRunnable;
 
 public class EnhancedConnection extends QuietConnection {
-    private QuietStatement stmt;
-    private Map<String, QuietPreparedStatement> map = new HashMap<>();
+    QuietStatement stmt;
+    Map<String, QuietPreparedStatement> map = new HashMap<>();
 
     public EnhancedConnection(Connection conn) {
         super(conn);
@@ -22,11 +22,9 @@ public class EnhancedConnection extends QuietConnection {
         for (QuietPreparedStatement pstmt : map.values()) {
             closeStatement(pstmt);
         }
-        try {
+        NoisyRunnable.runQuietly(() -> {
             conn.close();
-        }
-        catch (Exception ignored) {
-        }
+        });
     }
 
     void closeStatement(Statement stmt) {
@@ -38,57 +36,50 @@ public class EnhancedConnection extends QuietConnection {
     }
 
     public QuietStatement createStatement() {
-        try {
-            if (stmt == null) {
-                stmt = new QuietStatement(conn.createStatement());
-                stmt.getResultSetType();
-            }
-            return stmt;
+        if (stmt == null) {
+            stmt = new QuietStatement(super.createStatement());
         }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
+        return stmt;
     }
 
     public QuietStatement createStatement(int resultSetType, int resultSetConcurrency) {
-        try {
-            if (stmt == null) {
-                stmt = new QuietStatement(conn.createStatement(resultSetType, resultSetConcurrency));
-                stmt.getResultSetType();
-            }
-            return stmt;
+        if (stmt == null) {
+            stmt = new QuietStatement(super.createStatement(resultSetType, resultSetConcurrency));
         }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
+        else if (resultSetType > this.stmt.getResultSetType()
+                || resultSetConcurrency > this.stmt.getResultSetConcurrency()) {
+            NoisyRunnable.runIgnoreException(() -> stmt.close());
+            resultSetType = Math.max(resultSetType, this.stmt.getResultSetType());
+            resultSetConcurrency = Math.max(resultSetConcurrency, this.stmt.getResultSetConcurrency());
+            stmt = new QuietStatement(super.createStatement(resultSetType, resultSetConcurrency));
         }
+        return stmt;
     }
 
     public QuietPreparedStatement prepareStatement(String sql) {
-        try {
-            QuietPreparedStatement pstmt = map.get(sql);
-            if (pstmt == null) {
-                pstmt = new QuietPreparedStatement(conn.prepareStatement(sql));
-                map.put(sql, pstmt);
-            }
-            return pstmt;
+        QuietPreparedStatement pstmt = map.get(sql);
+        if (pstmt == null) {
+            pstmt = new QuietPreparedStatement(super.prepareStatement(sql));
+            map.put(sql, pstmt);
         }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
-        }
+        return pstmt;
     }
 
     public QuietPreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) {
-        try {
-            QuietPreparedStatement pstmt = map.get(sql);
-            if (pstmt == null) {
-                pstmt = new QuietPreparedStatement(conn.prepareStatement(sql, resultSetType, resultSetConcurrency));
-                map.put(sql, pstmt);
-            }
-            return pstmt;
+        QuietPreparedStatement pstmt = map.get(sql);
+        if (pstmt == null) {
+            pstmt = new QuietPreparedStatement(super.prepareStatement(sql, resultSetType, resultSetConcurrency));
+            map.put(sql, pstmt);
         }
-        catch (Exception e) {
-            throw CommonUtils.wrapToRuntime(e);
+        else if (resultSetType > pstmt.getResultSetType() || resultSetConcurrency > pstmt.getResultSetConcurrency()) {
+            final QuietPreparedStatement pstmt2 = pstmt;
+            NoisyRunnable.runIgnoreException(() -> pstmt2.close());
+            resultSetType = Math.max(resultSetType, pstmt.getResultSetType());
+            resultSetConcurrency = Math.max(resultSetConcurrency, pstmt.getResultSetConcurrency());
+            pstmt = new QuietPreparedStatement(super.prepareStatement(sql, resultSetType, resultSetConcurrency));
+            map.put(sql, pstmt);
         }
+        return pstmt;
     }
 
 }

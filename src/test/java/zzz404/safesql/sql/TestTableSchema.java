@@ -29,7 +29,7 @@ public class TestTableSchema {
         TableSchema tableSchema = TableSchema.createByQuery("DocUser", false, new QuietStatement(stmt));
         assertEquals("DocUser", tableSchema.getVirtualTableName());
         assertEquals("DocUser", tableSchema.getRealTableName());
-        assertTrue(tableSchema.realColumnNames.isEmpty());
+        assertTrue(tableSchema.prop_real_map.isEmpty());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class TestTableSchema {
         TableSchema tableSchema = TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt));
         assertEquals("DocUser", tableSchema.getVirtualTableName());
         assertEquals("doc_user", tableSchema.getRealTableName());
-        assertTrue(tableSchema.realColumnNames.isEmpty());
+        assertTrue(tableSchema.prop_real_map.isEmpty());
     }
 
     @Test
@@ -55,38 +55,47 @@ public class TestTableSchema {
     }
 
     @Test
+    void test_createByQuery_snakeCompatable_columnConflict() throws SQLException {
+        Statement stmt = new StatementBuilder().addTable("DOC_USER", "userId", "user_id").build();
+
+        assertThrows(TableSchemeException.class,
+                () -> TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt)));
+    }
+
+    @Test
     void test_realColumnNames() throws SQLException {
-        Statement stmt = new StatementBuilder().addTable("DocUser", "userId", "docTitle", "user_ID", "DOC_title").build();
+        Statement stmt = new StatementBuilder().addTable("DocUser", "userId", "docTitle", "user_ID", "DOC_title")
+                .build();
         Set<String> columns = CommonUtils.newSet("userid", "doctitle", "user_id", "doc_title");
-        
+
         TableSchema tableSchema = TableSchema.createByQuery("DocUser", false, new QuietStatement(stmt));
-        assertEquals(columns, tableSchema.realColumnNames);
-        
+        assertEquals(columns, tableSchema.prop_real_map.keySet());
+
         tableSchema = TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt));
-        assertEquals(columns, tableSchema.realColumnNames);
+        assertEquals(columns, tableSchema.prop_real_map.keySet());
     }
 
     @Test
     void test__revise_for_snakeFormCompatable__sameColumnName() throws SQLException {
         Statement stmt = new StatementBuilder().addTable("DocUser", "userId", "doc_title").build();
         TableSchema tableSchema = TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt));
-        
-        Entity<?> entity = mock(Entity.class); 
+
+        Entity<?> entity = mock(Entity.class);
         Field field = new Field(entity, "userId");
         tableSchema.revise_for_snakeFormCompatable(field);
-        
-        assertEquals("userid", FieldBackDoor.getRealColumnName(field));
+
+        assertEquals("userId", FieldBackDoor.getRealColumnName(field));
     }
 
     @Test
     void test__revise_for_snakeFormCompatable__snakedColumnName() throws SQLException {
         Statement stmt = new StatementBuilder().addTable("DocUser", "userId", "doc_title").build();
         TableSchema tableSchema = TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt));
-        
-        Entity<?> entity = mock(Entity.class); 
+
+        Entity<?> entity = mock(Entity.class);
         Field field = new Field(entity, "docTitle");
         tableSchema.revise_for_snakeFormCompatable(field);
-        
+
         assertEquals("doc_title", FieldBackDoor.getRealColumnName(field));
     }
 
@@ -94,11 +103,11 @@ public class TestTableSchema {
     void test__revise_for_snakeFormCompatable__noColumnName() throws SQLException {
         Statement stmt = new StatementBuilder().addTable("DocUser", "userId", "doc_title").build();
         TableSchema tableSchema = TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt));
-        
-        Entity<?> entity = mock(Entity.class); 
+
+        Entity<?> entity = mock(Entity.class);
         Field field = new Field(entity, "docId");
         tableSchema.revise_for_snakeFormCompatable(field);
-        
+
         assertEquals("docId", FieldBackDoor.getRealColumnName(field));
     }
 

@@ -13,7 +13,6 @@ public class TableSchema {
 
     private String virtualTableName;
     private String realTableName;
-    Set<String> realColumnNames;
     Map<String, String> prop_real_map = new HashMap<>();
     Map<String, String> snake_real_map = new HashMap<>();
     boolean snakeFormCompatable;
@@ -55,9 +54,9 @@ public class TableSchema {
                 schema.realTableName = snakeTableName;
             }
         }
-        schema.realColumnNames = getLowerColumnsOfResultSet(new QuietResultSet(rs));
-        schema.realColumnNames.forEach(real_columnName -> {
-            schema.prop_real_map.put(real_columnName, real_columnName);
+        Set<String> realColumnNames = getColumnsOfResultSet(new QuietResultSet(rs));
+        realColumnNames.forEach(real_columnName -> {
+            schema.prop_real_map.put(real_columnName.toLowerCase(), real_columnName);
             if (snakeFormCompatable) {
                 String snake_columnName = CommonUtils.camelForm_to_snakeForm(real_columnName);
                 if (schema.snake_real_map.containsKey(snake_columnName)) {
@@ -73,11 +72,11 @@ public class TableSchema {
         return schema;
     }
 
-    public static Set<String> getLowerColumnsOfResultSet(QuietResultSet rs) {
+    public static Set<String> getColumnsOfResultSet(QuietResultSet rs) {
         HashSet<String> columnsOfResultSet = new HashSet<>();
         QuietResultSetMetaData metaData = rs.getMetaData();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            columnsOfResultSet.add(metaData.getColumnName(i).toLowerCase());
+            columnsOfResultSet.add(metaData.getColumnName(i));
         }
         return columnsOfResultSet;
     }

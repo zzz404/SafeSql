@@ -31,7 +31,7 @@ public class OrMapper<T> {
         return mapToObject(null);
     }
 
-    public T mapToObject(Map<String, String> columnMap) {
+    public T mapToObject(Map<String, String> realColumn_prop_map) {
         return NoisySupplier.getQuietly(() -> {
             T o = ValueType.mapRsRowToObject(rs, clazz);
             if (o != null) {
@@ -43,8 +43,8 @@ public class OrMapper<T> {
                     : getColumnsOfResultSet();
             for (String columnName : columnNames) {
                 String toColumnName = columnName;
-                if (columnMap != null) {
-                    toColumnName = columnMap.containsKey(columnName) ? columnMap.get(columnName) : columnName;
+                if (realColumn_prop_map != null) {
+                    toColumnName = realColumn_prop_map.containsKey(columnName) ? realColumn_prop_map.get(columnName) : columnName;
                 }
                 MethodAnalyzer analyzerOfSetter = classAnalyzer.find_setter_by_columnName(toColumnName);
                 if (analyzerOfSetter != null) {
@@ -63,7 +63,7 @@ public class OrMapper<T> {
 
     private Set<String> getColumnsOfResultSet() {
         if (CollectionUtils.isEmpty(columnsOfResultSet)) {
-            columnsOfResultSet = TableSchema.getLowerColumnsOfResultSet(rs);
+            columnsOfResultSet = TableSchema.getColumnsOfResultSet(rs);
         }
         return columnsOfResultSet;
     }

@@ -15,4 +15,11 @@ public class TestNoisyRunnable {
         });
     }
 
+    @Test
+    void test_runIgnoreException() {
+        NoisyRunnable.runIgnoreException(() -> {
+            throw new Exception();
+        });
+    }
+
 }

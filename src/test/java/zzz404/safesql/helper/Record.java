@@ -1,16 +1,13 @@
 package zzz404.safesql.helper;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-
-import org.mockito.Mockito;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Record {
-    private Object[] values;
+    private ArrayList<Object> values = new ArrayList<>();
+    private Map<String, Integer> col_pos_map = new HashMap<>();
 
     public static Record[] singleColumn(Object... values) {
         Record[] records = new Record[values.length];
@@ -21,7 +18,13 @@ public class Record {
     }
 
     public Record setValues(Object... values) {
-        this.values = values;
+        this.values.addAll(Arrays.asList(values));
+        return this;
+    }
+
+    public Record setValue(String columnName, Object value) {
+        this.col_pos_map.put(columnName, values.size());
+        this.values.add(value);
         return this;
     }
 
@@ -42,46 +45,20 @@ public class Record {
         return objectToInt(get(index));
     }
 
-    private Object get(int index) {
-        return values[index - 1];
+    private Object getValue(String columnName) {
+        return values.get(col_pos_map.get(columnName));
     }
 
-    public static void bindData(ResultSet rs, Record[] recs) throws SQLException {
-        Record[] records = (recs != null) ? recs : new Record[0];
-        Mockito.reset(rs);
-        int[] row = new int[] { -1 };
-        when(rs.next()).thenAnswer(i -> {
-            row[0]++;
-            return (row[0] < records.length);
-        });
-        when(rs.absolute(anyInt())).then(info -> {
-            int position = (Integer) info.getArguments()[0];
-            row[0] = position - 1;
-            return position > 0 && position <= records.length;
-        });
-        when(rs.getInt(anyInt())).thenAnswer(info -> {
-            int row0 = row[0];
-            int index = (Integer) info.getArguments()[0];
-            if (row0 >= 0 && row0 < records.length) {
-                return records[row0].getInt(index);
-            }
-            else {
-                throw new RuntimeException(new SQLException());
-            }
-        });
-        when(rs.getString(anyInt())).thenAnswer(info -> {
-            int row0 = row[0];
-            int index = (Integer) info.getArguments()[0];
-            if (row0 >= 0 && row0 < records.length) {
-                return records[row0].getString(index);
-            }
-            else {
-                throw new RuntimeException(new SQLException());
-            }
-        });
-        ResultSetMetaData meta = mock(ResultSetMetaData.class);
-        when(rs.getMetaData()).thenReturn(meta);
-        when(meta.getColumnCount()).thenReturn(0);
+    public String getString(String columnName) {
+        return getValue(columnName).toString();
+    }
+
+    public int getInt(String columnName) {
+        return objectToInt(getValue(columnName));
+    }
+
+    private Object get(int index) {
+        return values.get(index - 1);
     }
 
 }

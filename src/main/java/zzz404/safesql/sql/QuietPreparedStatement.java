@@ -26,7 +26,7 @@ import java.util.Calendar;
 import zzz404.safesql.util.CommonUtils;
 
 public class QuietPreparedStatement implements PreparedStatement {
-    private PreparedStatement pstmt;
+    PreparedStatement pstmt;
 
     public QuietPreparedStatement(PreparedStatement pstmt) {
         this.pstmt = pstmt;
