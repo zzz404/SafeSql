@@ -92,24 +92,11 @@ public abstract class DynamicQuerier extends SqlQuerier {
                 .collect(Collectors.joining(", "));
     }
 
-    void reviseOrderBys() {
-        for (OrderBy orderBy : orderBys) {
-            if (orderBy.getField() == null) {
-                String columnName = orderBy.getColumnName();
-                Entity<?> entity = dbSource.chooseEntity(entities, columnName);
-                if (entity != null) {
-                    orderBy.setEntity(entity);
-                    dbSource.revise(orderBy.getField());
-                }
-            }
-        }
-    }
-
     String getColumnsClause() {
         if (fields.isEmpty()) {
             return "*";
         }
-        return CommonUtils.join(fields, ", ", Field::getPrefixedPropertyName);
+        return CommonUtils.join(fields, ", ", Field::getPrefixedRealColumnName);
     }
 
     String getWhereClause() {
@@ -117,7 +104,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     String getGroupByClause() {
-        return this.groupBys.stream().map(Field::getPrefixedPropertyName).collect(Collectors.joining(", "));
+        return this.groupBys.stream().map(Field::getPrefixedRealColumnName).collect(Collectors.joining(", "));
     }
 
     String getOrderByClause() {
@@ -126,7 +113,6 @@ public abstract class DynamicQuerier extends SqlQuerier {
 
     public String sql() {
         dbSource.revise(entities);
-        reviseOrderBys();
         String tableName = getTablesClause();
         String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;
         if (!this.conditions.isEmpty()) {

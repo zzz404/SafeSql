@@ -14,7 +14,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.Entity;
+import zzz404.safesql.Field;
+import zzz404.safesql.FieldBackDoor;
 import zzz404.safesql.util.CommonUtils;
 
 public class TestTableSchema {
@@ -65,28 +67,39 @@ public class TestTableSchema {
     }
 
     @Test
-    void test_columnMap_snakeCompatable() throws SQLException {
-        Statement stmt = new StatementBuilder().addTable("Doc_User", "userId", "user_ID", "DOC_title").build();
+    void test__revise_for_snakeFormCompatable__sameColumnName() throws SQLException {
+        Statement stmt = new StatementBuilder().addTable("DocUser", "userId", "doc_title").build();
         TableSchema tableSchema = TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt));
-        assertEquals(UtilsForTest.newMap("userid", "userid", "doctitle", "doc_title"), tableSchema.prop_real_map);
+        
+        Entity<?> entity = mock(Entity.class); 
+        Field field = new Field(entity, "userId");
+        tableSchema.revise_for_snakeFormCompatable(field);
+        
+        assertEquals("userid", FieldBackDoor.getRealColumnName(field));
     }
 
     @Test
-    void test_getMatchedRealColumn_noSnakeCompatable() throws SQLException {
+    void test__revise_for_snakeFormCompatable__snakedColumnName() throws SQLException {
         Statement stmt = new StatementBuilder().addTable("DocUser", "userId", "doc_title").build();
+        TableSchema tableSchema = TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt));
         
-        TableSchema tableSchema = TableSchema.createByQuery("DocUser", false, new QuietStatement(stmt));
-        assertEquals("userid", tableSchema.getMatchedRealColumn("userId"));
-        assertNull(tableSchema.getMatchedRealColumn("docTitle"));
+        Entity<?> entity = mock(Entity.class); 
+        Field field = new Field(entity, "docTitle");
+        tableSchema.revise_for_snakeFormCompatable(field);
+        
+        assertEquals("doc_title", FieldBackDoor.getRealColumnName(field));
     }
 
     @Test
-    void test_getMatchedRealColumn_snakeCompatable() throws SQLException {
+    void test__revise_for_snakeFormCompatable__noColumnName() throws SQLException {
         Statement stmt = new StatementBuilder().addTable("DocUser", "userId", "doc_title").build();
+        TableSchema tableSchema = TableSchema.createByQuery("DocUser", true, new QuietStatement(stmt));
         
-        TableSchema tableSchema = TableSchema.createByQuery("DocUser", false, new QuietStatement(stmt));
-        assertEquals("userid", tableSchema.getMatchedRealColumn("userId"));
-        assertNull(tableSchema.getMatchedRealColumn("docTitle"));
+        Entity<?> entity = mock(Entity.class); 
+        Field field = new Field(entity, "docId");
+        tableSchema.revise_for_snakeFormCompatable(field);
+        
+        assertEquals("docId", FieldBackDoor.getRealColumnName(field));
     }
 
     public static class StatementBuilder {

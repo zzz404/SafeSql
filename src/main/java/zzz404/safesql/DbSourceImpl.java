@@ -54,7 +54,7 @@ public class DbSourceImpl extends DbSource {
         if (snakeFormCompatable) {
             for (Entity<?> entity : entities) {
                 TableSchema schema = getSchema(entity.getVirtualTableName());
-                entity.getFields().forEach(schema::revise);
+                entity.getFields().forEach(schema::revise_for_snakeFormCompatable);
             }
         }
     }
@@ -62,23 +62,8 @@ public class DbSourceImpl extends DbSource {
     public void revise(Field field) {
         if (snakeFormCompatable) {
             TableSchema schema = getSchema(field.getEntity().getVirtualTableName());
-            schema.revise(field);
+            schema.revise_for_snakeFormCompatable(field);
         }
-    }
-
-    public Entity<?> chooseEntity(List<Entity<?>> entities, String propertyName) {
-        int minDistance = Integer.MAX_VALUE;
-        Entity<?> choosedEntity = null;
-        for (Entity<?> entity : entities) {
-            TableSchema schema = getSchema(entity.getVirtualTableName());
-            String matchedRealColumn = schema.getMatchedRealColumn(propertyName);
-            int distance = Math.abs(propertyName.length() - matchedRealColumn.length());
-            if (distance < minDistance) {
-                minDistance = distance;
-                choosedEntity = entity;
-            }
-        }
-        return choosedEntity;
     }
 
 }

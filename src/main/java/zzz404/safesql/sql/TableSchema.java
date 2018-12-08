@@ -24,25 +24,19 @@ public class TableSchema {
         this.snakeFormCompatable = snakeFormCompatable;
     }
 
-    public void revise(Field field) {
+    public void revise_for_snakeFormCompatable(Field field) {
         String propName = field.getPropertyName();
-        String matchedColumn = getMatchedRealColumn(propName.toLowerCase());
-        if (matchedColumn != null) {
-            field.setRealColumnName(matchedColumn);
-        }
-    }
+        String prop_lower = propName.toLowerCase();
 
-    public String getMatchedRealColumn(String propertyName) {
-        String prop_lower = propertyName.toLowerCase();
-        if (snakeFormCompatable && !prop_real_map.containsKey(prop_lower)) {
-            String snake = CommonUtils.camelForm_to_snakeForm(propertyName);
-            String real = snake_real_map.get(snake);
-            if (real != null) {
-                prop_real_map.put(prop_lower, real);
-            }
-            return real;
+        if (!prop_real_map.containsKey(prop_lower)) {
+            String snaked_propName = CommonUtils.camelForm_to_snakeForm(propName);
+            String realColumnName = snake_real_map.get(snaked_propName);
+            prop_real_map.put(prop_lower, realColumnName);
         }
-        return prop_real_map.get(prop_lower);
+        String realColumnName = prop_real_map.get(prop_lower);
+        if (realColumnName != null) {
+            field.setRealColumnName(realColumnName);
+        }
     }
 
     public static TableSchema createByQuery(String virtualTableName, boolean snakeFormCompatable, QuietStatement stmt) {

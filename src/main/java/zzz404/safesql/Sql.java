@@ -83,29 +83,38 @@ public class Sql {
     }
 
     public static void asc(Object o) {
-        QueryContext.get().getScope().checkCommand("asc");
-        addOrderBy(o, true);
+        QueryContext ctx = QueryContext.get();
+        ctx.getScope().checkCommand("asc");
+        
+        Field field = ctx.takeField();
+        ctx.addOrderBy(new OrderBy(field, true));
     }
 
-    private static void addOrderBy(Object o, boolean isAsc) {
+    public static void asc(EntityGettable entityGettable, String propName) {
         QueryContext ctx = QueryContext.get();
-        String columnName;
-        if (o instanceof String && !ctx.hasMoreColumn()) {
-            columnName = (String) o;
-            ctx.addOrderBy(new OrderBy(columnName, isAsc));
-        }
-        else {
-            ctx.addOrderBy(new OrderBy(ctx.takeField(), isAsc));
-        }
+        ctx.getScope().checkCommand("asc");
+
+        Field field = new Field(entityGettable.getEntity(), propName);
+        ctx.addOrderBy(new OrderBy(field, true));
     }
 
     public static void desc(Object o) {
-        QueryContext.get().getScope().checkCommand("desc");
-        addOrderBy(o, false);
+        QueryContext ctx = QueryContext.get();
+        ctx.getScope().checkCommand("desc");
+        
+        Field field = ctx.takeField();
+        ctx.addOrderBy(new OrderBy(field, false));
+    }
+
+    public static void desc(EntityGettable entityGettable, String propName) {
+        QueryContext ctx = QueryContext.get();
+        ctx.getScope().checkCommand("desc");
+
+        Field field = new Field(entityGettable.getEntity(), propName);
+        ctx.addOrderBy(new OrderBy(field, false));
     }
 
     public static class QuerierFactory {
-
         DbSourceImpl dbSource;
 
         public QuerierFactory(String name) {

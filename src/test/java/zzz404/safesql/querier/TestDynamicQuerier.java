@@ -1,8 +1,6 @@
 package zzz404.safesql.querier;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -155,45 +153,6 @@ class TestDynamicQuerier {
         q.orderBys = Arrays.asList(new OrderBy(new Field(entity3, ""), true));
 
         assertEquals("Document t2, User t3", q.getTablesClause());
-    }
-
-    @Test
-    void test_reviseOrderBys_hasEntity_feedBack() {
-        MyDynamicQuerier q = new MyDynamicQuerier();
-        q.entities.add(new Entity<>(1, Object.class));
-        q.entities.add(new Entity<>(2, Document.class));
-        q.entities.add(new Entity<>(3, User.class));
-
-        q.orderBys = Arrays.asList(new OrderBy("title", true),
-                new OrderBy(new Field(q.entities.get(2), "account"), false));
-
-        DbSourceImpl ds = q.dbSource = mock(DbSourceImpl.class);
-        when(ds.chooseEntity(anyList(), anyString())).then(info -> {
-            List<Entity<?>> entities = info.getArgument(0);
-            return entities.get(1);
-        });
-
-        q.reviseOrderBys();
-
-        assertEquals("t2.title ASC, t3.account DESC", q.getOrderByClause());
-    }
-
-    @Test
-    void test_reviseOrderBys_noEntity_noEffect() {
-        MyDynamicQuerier q = new MyDynamicQuerier();
-        q.entities.add(new Entity<>(1, Object.class));
-        q.entities.add(new Entity<>(2, Document.class));
-        q.entities.add(new Entity<>(3, User.class));
-
-        q.orderBys = Arrays.asList(new OrderBy("title", true),
-                new OrderBy(new Field(q.entities.get(2), "account"), false));
-
-        DbSourceImpl ds = q.dbSource = mock(DbSourceImpl.class);
-        when(ds.chooseEntity(anyList(), anyString())).thenReturn(null);
-
-        q.reviseOrderBys();
-
-        assertEquals("title ASC, t3.account DESC", q.getOrderByClause());
     }
 
     @Test

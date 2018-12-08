@@ -23,7 +23,7 @@ public class Field {
         return propertyName;
     }
 
-    public String getPrefixedPropertyName() {
+    public String getPrefixedRealColumnName() {
         String result = realColumnName;
         if (entity.getIndex() > 0) {
             result = "t" + entity.getIndex() + "." + result;
@@ -47,7 +47,7 @@ public class Field {
 
     @Override
     public String toString() {
-        return getPrefixedPropertyName();
+        return getPrefixedRealColumnName();
     }
 
     public void setRealColumnName(String realColumnName) {

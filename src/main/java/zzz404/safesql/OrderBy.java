@@ -9,11 +9,6 @@ public class OrderBy {
     private String columnName;
     private boolean isAsc;
 
-    public OrderBy(String columnName, boolean isAsc) {
-        this.columnName = columnName;
-        this.isAsc = isAsc;
-    }
-
     public OrderBy(Field field, boolean isAsc) {
         this.field = field;
         this.isAsc = isAsc;
@@ -22,7 +17,7 @@ public class OrderBy {
     public String toClause() {
         String column;
         if (field != null) {
-            column = field.getPrefixedPropertyName();
+            column = field.getPrefixedRealColumnName();
         }
         else {
             column = columnName;
