@@ -1,26 +1,77 @@
 package zzz404.safesql.sql;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
 
-import zzz404.safesql.ConnFactoryBackDoor;
-import zzz404.safesql.helper.FakeDatabase;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+import zzz404.safesql.helper.Document;
+import zzz404.safesql.helper.DocumentVo;
+import zzz404.safesql.helper.Record;
+import zzz404.safesql.helper.RecordsResultBuilder;
+import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.util.CommonUtils;
 
 public class TestOrMapper {
-    private FakeDatabase fakeDb;
 
-    @BeforeEach
-    void beforeEach() {
-        fakeDb = new FakeDatabase();
+    @Test
+    void test_mapToObject() throws SQLException {
+        Record record = new Record().setValue("ownerId", 23).setValue("title", "ttt").setValue("tege", "regegr");
+        ResultSet rs = new RecordsResultBuilder(record).getResultSet();
+        rs.next();
+
+        OrMapper<Document> mapper = new OrMapper<>(Document.class, new QuietResultSet(rs));
+        Document doc = mapper.mapToObject();
+
+        assertNull(doc.getId());
+        assertEquals(new Integer(23), doc.getOwnerId());
+        assertEquals("ttt", doc.getTitle());
     }
 
-    @AfterEach
-    void afterEach() {
-        ConnFactoryBackDoor.removeAllFactories();
+    @Test
+    void test_mapToObject_limitedColumns() throws SQLException {
+        Record record = new Record().setValue("ownerId", 23).setValue("title", "ttt").setValue("tege", "regegr");
+        ResultSet rs = new RecordsResultBuilder(record).getResultSet();
+        rs.next();
+
+        OrMapper<Document> mapper = new OrMapper<>(Document.class, new QuietResultSet(rs))
+                .selectColumns(CommonUtils.newSet("title", "dfyh"));
+        Document doc = mapper.mapToObject();
+
+        assertNull(doc.getId());
+        assertNull(doc.getOwnerId());
+        assertEquals("ttt", doc.getTitle());
     }
 
-    void test_mapToObject() {
-        FakeDatabase fakeDb;
+    @Test
+    void test_mapToObject_mapColumn() throws SQLException {
+        Record record = new Record().setValue("ownerId", 23).setValue("title", "ttt").setValue("tege", "regegr")
+                .setValue("category", "zzz");
+        ResultSet rs = new RecordsResultBuilder(record).getResultSet();
+        rs.next();
 
+        OrMapper<DocumentVo> mapper = new OrMapper<>(DocumentVo.class, new QuietResultSet(rs));
+        DocumentVo doc = mapper.mapToObject(UtilsForTest.newMap("title", "title2"));
+
+        assertEquals(new Integer(23), doc.getOwnerId());
+        assertEquals("ttt", doc.getTitle2());
+        assertNull(doc.getCategory());
     }
+
+    @Test
+    void getColumnsOfResultSet() throws SQLException {
+        Record record = new Record().setValue("title", "ttt");
+        ResultSet rs = new RecordsResultBuilder(record).getResultSet();
+        rs.next();
+
+        OrMapper<DocumentVo> mapper = new OrMapper<>(DocumentVo.class, new QuietResultSet(rs));
+
+        Set<String> columns = mapper.getColumnsOfResultSet();
+        Set<String> columns2 = mapper.getColumnsOfResultSet();
+        assertTrue(columns == columns2);
+    }
+
 }

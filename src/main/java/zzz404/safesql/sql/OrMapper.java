@@ -42,11 +42,11 @@ public class OrMapper<T> {
             Set<String> columnNames = CollectionUtils.isNotEmpty(selectedColumns) ? selectedColumns
                     : getColumnsOfResultSet();
             for (String columnName : columnNames) {
-                String toColumnName = columnName;
+                String propertyName = columnName;
                 if (realColumn_prop_map != null) {
-                    toColumnName = realColumn_prop_map.containsKey(columnName) ? realColumn_prop_map.get(columnName) : columnName;
+                    propertyName = realColumn_prop_map.containsKey(columnName) ? realColumn_prop_map.get(columnName) : columnName;
                 }
-                MethodAnalyzer analyzerOfSetter = classAnalyzer.find_setter_by_columnName(toColumnName);
+                MethodAnalyzer analyzerOfSetter = classAnalyzer.find_setter_by_propertyName(propertyName);
                 if (analyzerOfSetter != null) {
                     Class<?> type = analyzerOfSetter.getType();
                     ValueType<?> vType = ValueType.get(type);
@@ -61,7 +61,7 @@ public class OrMapper<T> {
         });
     }
 
-    private Set<String> getColumnsOfResultSet() {
+    Set<String> getColumnsOfResultSet() {
         if (CollectionUtils.isEmpty(columnsOfResultSet)) {
             columnsOfResultSet = TableSchema.getColumnsOfResultSet(rs);
         }

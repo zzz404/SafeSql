@@ -12,7 +12,7 @@ public class MethodAnalyzer {
     private String methodName;
     private boolean isGetter = false;
     private boolean isSetter = false;
-    private String columnName;
+    private String propertyName;
     private Class<?> type;
 
     public MethodAnalyzer(Method method) {
@@ -43,7 +43,7 @@ public class MethodAnalyzer {
             if ((returnType == boolean.class) == expectPrimitiveBoolean) {
                 isGetter = true;
                 this.type = returnType;
-                this.columnName = evaluateColumnName(SETTER_PREFIX.length());
+                this.propertyName = evaluateColumnName(SETTER_PREFIX.length());
             }
         }
     }
@@ -53,7 +53,7 @@ public class MethodAnalyzer {
         if (paramTypes.length == 1) {
             isSetter = true;
             this.type = paramTypes[0];
-            this.columnName = evaluateColumnName(SETTER_PREFIX.length());
+            this.propertyName = evaluateColumnName(SETTER_PREFIX.length());
         }
     }
 
@@ -84,8 +84,8 @@ public class MethodAnalyzer {
         return isSetter;
     }
 
-    public String getColumnName() {
-        return columnName;
+    public String getPropertyName() {
+        return propertyName;
     }
 
     public Method getMethod() {

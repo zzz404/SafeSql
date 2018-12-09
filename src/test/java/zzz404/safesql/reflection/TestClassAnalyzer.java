@@ -16,7 +16,7 @@ public class TestClassAnalyzer {
 
         ClassAnalyzer<? extends TestClassAnalyzer> classAnalyzer = ClassAnalyzer.get(this.getClass());
         MethodAnalyzer methodAnalyzer = classAnalyzer.getMethodAnalyzer(setter);
-        assertEquals(methodAnalyzer, classAnalyzer.find_setter_by_columnName("abc"));
+        assertEquals(methodAnalyzer, classAnalyzer.find_setter_by_propertyName("abc"));
     }
 
     public void setAbc(String s) {

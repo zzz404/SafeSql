@@ -9,9 +9,17 @@ public class ClassAnalyzer<T> {
     private static Map<Class, ClassAnalyzer> classMap = new HashMap<>();
 
     private Map<Method, MethodAnalyzer> methodMap = new HashMap<>();
-    Map<String, MethodAnalyzer> columnName_analyzer_map = new HashMap<>();
+    Map<String, MethodAnalyzer> prop_setterAnalyzer_map = new HashMap<>();
 
     private ClassAnalyzer(Class<T> clazz) {
+        Method[] methods = clazz.getMethods();
+        for (Method method : methods) {
+            MethodAnalyzer analyzer = new MethodAnalyzer(method);
+            methodMap.put(method, analyzer);
+            if (analyzer.isSetter()) {
+                prop_setterAnalyzer_map.put(analyzer.getPropertyName(), analyzer);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -25,18 +33,10 @@ public class ClassAnalyzer<T> {
     }
 
     public MethodAnalyzer getMethodAnalyzer(Method method) {
-        MethodAnalyzer analyzer = methodMap.get(method);
-        if (analyzer == null) {
-            analyzer = new MethodAnalyzer(method);
-            methodMap.put(method, analyzer);
-            if (analyzer.isSetter()) {
-                columnName_analyzer_map.put(analyzer.getColumnName(), analyzer);
-            }
-        }
-        return analyzer;
+        return methodMap.get(method);
     }
 
-    public MethodAnalyzer find_setter_by_columnName(String columnName) {
-        return columnName_analyzer_map.get(columnName);
+    public MethodAnalyzer find_setter_by_propertyName(String propName) {
+        return prop_setterAnalyzer_map.get(propName);
     }
 }

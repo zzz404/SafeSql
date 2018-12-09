@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import zzz404.safesql.util.NoisyRunnable;
 
 public class RecordsResultBuilder {
@@ -15,7 +17,7 @@ public class RecordsResultBuilder {
     private ResultSet rs = mock(ResultSet.class);
     private ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-    public RecordsResultBuilder(Record[] recs) {
+    public RecordsResultBuilder(Record... recs) {
         this.recs = recs != null ? recs : new Record[0];
         NoisyRunnable.runQuietly(() -> simulate());
     }
@@ -28,7 +30,16 @@ public class RecordsResultBuilder {
 
     private void simulateMetaData() throws SQLException {
         when(rs.getMetaData()).thenReturn(meta);
-        when(meta.getColumnCount()).thenReturn(0);
+        if (ArrayUtils.isEmpty(recs)) {
+            when(meta.getColumnCount()).thenReturn(0);
+        }
+        else {
+            when(meta.getColumnCount()).thenReturn(recs[0].getColumnCount());
+            when(meta.getColumnName(anyInt())).then(info -> {
+                int index = (Integer) info.getArgument(0);
+                return recs[0].getColumnName(index);
+            });
+        }
     }
 
     private void simulateGet() throws SQLException {

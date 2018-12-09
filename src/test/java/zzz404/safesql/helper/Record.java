@@ -2,28 +2,21 @@ package zzz404.safesql.helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Record {
+    private ArrayList<String> columns = new ArrayList<>();
     private ArrayList<Object> values = new ArrayList<>();
-    private Map<String, Integer> col_pos_map = new HashMap<>();
 
     public static Record[] singleColumn(Object... values) {
         Record[] records = new Record[values.length];
         for (int i = 0; i < values.length; i++) {
-            records[i] = new Record().setValues(values[i]);
+            records[i] = new Record().setValue("", values[i]);
         }
         return records;
     }
 
-    public Record setValues(Object... values) {
-        this.values.addAll(Arrays.asList(values));
-        return this;
-    }
-
     public Record setValue(String columnName, Object value) {
-        this.col_pos_map.put(columnName, values.size());
+        this.columns.add(columnName);
         this.values.add(value);
         return this;
     }
@@ -37,6 +30,14 @@ public class Record {
         }
     }
 
+    public int getColumnCount() {
+        return columns.size();
+    }
+
+    public String getColumnName(int index) {
+        return columns.get(index - 1);
+    }
+
     public String getString(int index) {
         return get(index).toString();
     }
@@ -46,7 +47,8 @@ public class Record {
     }
 
     private Object getValue(String columnName) {
-        return values.get(col_pos_map.get(columnName));
+        int index = columns.indexOf(columnName);
+        return values.get(index);
     }
 
     public String getString(String columnName) {
