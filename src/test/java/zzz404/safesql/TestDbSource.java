@@ -5,8 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDbSourceImpl {
-
+public class TestDbSource {
     @AfterEach
     public void tearDown() {
         DbSource.map.clear();

@@ -38,6 +38,8 @@ class TestInCondition {
 
     @Test
     void cover_rest() {
-        new InCondition(UtilsForTest.createSimpleField(""), "", "").toString();
+        InCondition cond = new InCondition(UtilsForTest.createSimpleField(""), "", "");
+        cond.toString();
+        cond.equals("");
     }
 }

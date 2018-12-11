@@ -1,6 +1,5 @@
 package zzz404.safesql.sql;
 
-import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,8 +10,8 @@ import zzz404.safesql.util.CommonUtils;
 
 public class TableSchema {
 
-    private String virtualTableName;
-    private String realTableName;
+    String virtualTableName;
+    String realTableName;
     Map<String, String> prop_real_map = new HashMap<>();
     Map<String, String> snake_real_map = new HashMap<>();
     boolean snakeFormCompatable;
@@ -38,55 +37,43 @@ public class TableSchema {
         }
     }
 
-    public static TableSchema createByQuery(String virtualTableName, boolean snakeFormCompatable, QuietStatement stmt) {
-        TableSchema schema = new TableSchema(virtualTableName, virtualTableName, snakeFormCompatable);
-        ResultSet rs;
-        try {
-            rs = stmt.executeQuery("SELECT * FROM " + virtualTableName);
-        }
-        catch (RuntimeException e) {
-            if (!snakeFormCompatable) {
-                throw e;
-            }
-            else {
-                String snakeTableName = CommonUtils.camelForm_to_snakeForm(virtualTableName);
-                rs = stmt.executeQuery("SELECT * FROM " + snakeTableName);
-                schema.realTableName = snakeTableName;
-            }
-        }
-        Set<String> realColumnNames = getColumnsOfResultSet(new QuietResultSet(rs));
-        realColumnNames.forEach(real_columnName -> {
-            schema.prop_real_map.put(real_columnName.toLowerCase(), real_columnName);
+    public String getRealTableName() {
+        return realTableName;
+    }
+
+    void initColumns(QuietResultSetMetaData metaData) {
+        Set<String> columnsOfResultSet = getColumns(metaData);
+        columnsOfResultSet.forEach(real_columnName -> {
+            prop_real_map.put(real_columnName.toLowerCase(), real_columnName);
             if (snakeFormCompatable) {
                 String snake_columnName = CommonUtils.camelForm_to_snakeForm(real_columnName);
-                if (schema.snake_real_map.containsKey(snake_columnName)) {
+                if (snake_real_map.containsKey(snake_columnName)) {
                     String pattern = "Columns %s, %s of Table %s are ambiguous on snakeFormCompatable mode!";
-                    throw new TableSchemeException(String.format(pattern, schema.snake_real_map.get(snake_columnName),
-                            real_columnName, schema.realTableName));
+                    throw new TableSchemeException(String.format(pattern, snake_real_map.get(snake_columnName),
+                            real_columnName, realTableName));
                 }
                 else {
-                    schema.snake_real_map.put(snake_columnName, real_columnName);
+                    snake_real_map.put(snake_columnName, real_columnName);
                 }
             }
         });
-        return schema;
     }
 
-    public static Set<String> getColumnsOfResultSet(QuietResultSet rs) {
+    public static Set<String> getColumns(QuietResultSetMetaData metaData) {
         HashSet<String> columnsOfResultSet = new HashSet<>();
-        QuietResultSetMetaData metaData = rs.getMetaData();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             columnsOfResultSet.add(metaData.getColumnName(i));
         }
         return columnsOfResultSet;
     }
 
-    public String getVirtualTableName() {
-        return virtualTableName;
-    }
+    public static class NullTableSchema extends TableSchema {
+        NullTableSchema(String virtualTableName) {
+            super(virtualTableName, virtualTableName, false);
+        }
 
-    public String getRealTableName() {
-        return realTableName;
-    }
+        public void revise_for_snakeFormCompatable(Field field) {
+        }
 
+    }
 }

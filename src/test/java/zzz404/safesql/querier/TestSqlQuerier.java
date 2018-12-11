@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.ConnFactoryBackDoor;
+import zzz404.safesql.DbSourceBackDoor;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.FakeDbSource;
@@ -30,7 +30,7 @@ class TestSqlQuerier {
 
     @AfterEach
     void afterEach() {
-        ConnFactoryBackDoor.removeAllFactories();
+        DbSourceBackDoor.removeAllFactories();
     }
 
     @Test

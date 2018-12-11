@@ -5,10 +5,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import zzz404.safesql.DbSourceImpl;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.OneObjectPlayer;
+import zzz404.safesql.sql.DbSourceImpl;
 
 public class OneEntityQuerier<T> extends DynamicQuerier {
 

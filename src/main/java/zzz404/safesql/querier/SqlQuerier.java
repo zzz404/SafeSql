@@ -9,8 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import zzz404.safesql.DbSourceContext;
-import zzz404.safesql.DbSourceImpl;
 import zzz404.safesql.Page;
+import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.EnhancedConnection;
 import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.sql.QuietPreparedStatement;

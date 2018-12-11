@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.AbstractCondition;
-import zzz404.safesql.DbSourceImpl;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
 import zzz404.safesql.MutualCondition;
@@ -17,6 +16,7 @@ import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
+import zzz404.safesql.sql.DbSourceImpl;
 
 class TestDynamicQuerier {
 

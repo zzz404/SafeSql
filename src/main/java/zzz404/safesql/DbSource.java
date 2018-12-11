@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import zzz404.safesql.sql.DbSourceImpl;
+
 /**
  *  for Spring : 
  *  ConnectionFactory.create(name).useConnectionManager(new ConnectionManager() {
@@ -15,21 +17,20 @@ import java.util.Objects;
  *  });
  */
 public abstract class DbSource {
-
-    protected static Map<String, DbSourceImpl> map = Collections.synchronizedMap(new HashMap<>());
-
     protected String name;
     protected boolean useTablePrefix;
     protected boolean snakeFormCompatable;
     protected ConnectionProvider connectionProvider;
     protected ConnectionManager connectionManager;
 
-    public static synchronized DbSource create() {
-        return create("");
+    protected static Map<String, DbSourceImpl> map = Collections.synchronizedMap(new HashMap<>());
+
+    protected DbSource(String name) {
+        this.name = name;
     }
 
-    public DbSource(String name) {
-        this.name = name;
+    public static synchronized DbSource create() {
+        return create("");
     }
 
     public static synchronized DbSource create(String name) {
@@ -40,6 +41,12 @@ public abstract class DbSource {
         DbSourceImpl ds = new DbSourceImpl(name);
         map.put(name, ds);
         return ds;
+    }
+
+    static DbSourceImpl get(String name) {
+        DbSourceImpl dbSource = map.get(name);
+        Objects.requireNonNull(dbSource);
+        return dbSource;
     }
 
     public DbSource useConnectionPrivider(ConnectionProvider connectionProvider) {
@@ -60,12 +67,6 @@ public abstract class DbSource {
     public DbSource snakeFormCompatable(boolean snakeFormCompatable) {
         this.snakeFormCompatable = snakeFormCompatable;
         return this;
-    }
-
-    static DbSourceImpl get(String name) {
-        DbSourceImpl dbSource = map.get(name);
-        Objects.requireNonNull(dbSource);
-        return dbSource;
     }
 
 }

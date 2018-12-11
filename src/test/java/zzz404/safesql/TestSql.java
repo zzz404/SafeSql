@@ -18,7 +18,7 @@ public class TestSql {
 
     @AfterEach
     void afterEach() {
-        ConnFactoryBackDoor.removeAllFactories();
+        DbSourceBackDoor.removeAllFactories();
     }
 
     @Test

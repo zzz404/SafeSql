@@ -2,7 +2,7 @@ package zzz404.safesql.helper;
 
 import java.util.function.Function;
 
-import zzz404.safesql.DbSourceImpl;
+import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.EnhancedConnection;
 
 public class FakeDbSource extends DbSourceImpl {

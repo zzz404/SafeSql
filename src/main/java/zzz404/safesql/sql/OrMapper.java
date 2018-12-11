@@ -63,7 +63,7 @@ public class OrMapper<T> {
 
     Set<String> getColumnsOfResultSet() {
         if (CollectionUtils.isEmpty(columnsOfResultSet)) {
-            columnsOfResultSet = TableSchema.getColumnsOfResultSet(rs);
+            columnsOfResultSet = TableSchema.getColumns(rs.getMetaData());
         }
         return columnsOfResultSet;
     }
