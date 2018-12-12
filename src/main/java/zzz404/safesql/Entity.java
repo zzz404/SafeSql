@@ -20,7 +20,7 @@ public class Entity<T> {
     private List<Field> fields = new ArrayList<>();
 
     private transient QuietResultSet rs;
-    private transient OrMapper<T> orMapper;
+    transient OrMapper<T> orMapper;
 
     public Entity(int index, Class<T> clazz) {
         this.index = index;

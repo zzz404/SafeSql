@@ -29,6 +29,7 @@ import zzz404.safesql.DbSourceBackDoor;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
 import zzz404.safesql.helper.Category;
+import zzz404.safesql.helper.JdbcMocker;
 import zzz404.safesql.helper.User;
 
 public class TestDbSourceImpl {
@@ -92,11 +93,11 @@ public class TestDbSourceImpl {
     }
 
     private QuietConnection buildConnection(String... tableNames) throws SQLException {
-        ConnectionBuilder builder = new ConnectionBuilder();
+        MetaConnMocker mocker = new MetaConnMocker();
         for (String tableName : tableNames) {
-            builder.addTable(tableName);
+            mocker.addTable(tableName);
         }
-        return builder.build();
+        return mocker.mockQuietConnection();
     }
 
     @ParameterizedTest
@@ -125,8 +126,8 @@ public class TestDbSourceImpl {
 
     @Test
     void test_revise_snake() throws SQLException {
-        QuietConnection conn = new ConnectionBuilder().addTable("Document", "doc_title", "ownerId")
-                .addTable("User", "full_name").build();
+        QuietConnection conn = new MetaConnMocker().addTable("Document", "doc_title", "ownerId")
+                .addTable("User", "full_name").mockQuietConnection();
 
         DbSourceImpl ds = new DbSourceImpl("");
         ds.snakeFormCompatable(true).useConnectionPrivider(() -> conn);
@@ -151,8 +152,7 @@ public class TestDbSourceImpl {
 
     @Test
     void test_revise_noSnake() throws SQLException {
-        QuietConnection conn = new ConnectionBuilder().addTable("Document", "doc_title").build();
-
+        QuietConnection conn = new MetaConnMocker().addTable("Document", "doc_title").mockQuietConnection();
         DbSourceImpl ds = new DbSourceImpl("");
         ds.snakeFormCompatable(false).useConnectionPrivider(() -> conn);
 
@@ -173,23 +173,17 @@ public class TestDbSourceImpl {
         return entity;
     }
 
-    public static class ConnectionBuilder {
+    public static class MetaConnMocker {
         private Map<String, ResultSet> map = new HashMap<>();
 
-        public ConnectionBuilder addTable(String tableName, String... columnNames) throws SQLException {
-            ResultSet rs = mock(ResultSet.class);
-            ResultSetMetaData meta = mock(ResultSetMetaData.class);
-            when(rs.getMetaData()).thenReturn(meta);
-            when(meta.getColumnCount()).thenReturn(columnNames.length);
-            when(meta.getColumnName(anyInt())).thenAnswer(info -> {
-                int index = info.getArgument(0);
-                return columnNames[index - 1];
-            });
+        public MetaConnMocker addTable(String tableName, String... columnNames) throws SQLException {
+            ResultSetMetaData meta = JdbcMocker.mockMetaData(columnNames);
+            ResultSet rs = JdbcMocker.mockResultSet(meta);
             map.put(tableName.toLowerCase(), rs);
             return this;
         }
 
-        public QuietConnection build() throws SQLException {
+        public Connection mockConnection() throws SQLException {
             Connection conn = mock(Connection.class);
             Statement stmt = mock(Statement.class);
             when(conn.createStatement()).thenReturn(stmt);
@@ -203,8 +197,12 @@ public class TestDbSourceImpl {
                 }
                 throw new SQLException();
             });
-            return new QuietConnection(conn);
+            return conn;
         }
 
+        public QuietConnection mockQuietConnection() throws SQLException {
+            return new QuietConnection(mockConnection());
+        }
     }
+
 }

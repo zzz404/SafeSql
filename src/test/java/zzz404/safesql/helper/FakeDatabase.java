@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -17,33 +18,33 @@ public class FakeDatabase {
     public Statement stmt = mock(Statement.class);
 
     protected int row = -1;
-    protected Queue<Record[]> data = new LinkedList<>();
+    protected Queue<ResultSet> data = new LinkedList<>();
 
     public FakeDatabase() {
         NoisyRunnable.runQuietly(() -> {
             when(conn.prepareStatement(anyString())).thenReturn(pstmt);
             when(conn.prepareStatement(anyString(), anyInt(), anyInt())).thenReturn(pstmt);
             when(pstmt.executeQuery()).then(info -> {
-                Record[] records = data.poll();
-                return new RecordsResultBuilder(records).getResultSet();
+                return data.poll();
             });
 
             when(conn.createStatement()).thenReturn(stmt);
             when(conn.createStatement(anyInt(), anyInt())).thenReturn(stmt);
             when(stmt.executeQuery(anyString())).then(info -> {
-                Record[] records = data.poll();
-                return new RecordsResultBuilder(records).getResultSet();
+                return data.poll();
             });
         });
     }
 
     public void pushData(Object... values) {
         Record[] records = Record.singleColumn(values);
-        data.offer(records);
+        ResultSet rs = new RecordsResultBuilder(records).getResultSet();
+        data.offer(rs);
     }
 
     public void pushRecords(Record... records) {
-        data.offer(records);
+        ResultSet rs = new RecordsResultBuilder(records).getResultSet();
+        data.offer(rs);
     }
 
     public Connection getConnection() {

@@ -11,7 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import zzz404.safesql.util.NoisyRunnable;
 
-public class RecordsResultBuilder {
+class RecordsResultBuilder {
     private Record[] recs;
     private int position = -1;
     private ResultSet rs = mock(ResultSet.class);

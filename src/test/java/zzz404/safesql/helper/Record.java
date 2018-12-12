@@ -1,7 +1,6 @@
 package zzz404.safesql.helper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Record {
     private ArrayList<String> columns = new ArrayList<>();

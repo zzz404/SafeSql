@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
+import zzz404.safesql.helper.JdbcMocker;
 import zzz404.safesql.helper.Record;
-import zzz404.safesql.helper.RecordsResultBuilder;
 import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.util.CommonUtils;
 
@@ -20,7 +20,7 @@ public class TestOrMapper {
     @Test
     void test_mapToObject() throws SQLException {
         Record record = new Record().setValue("ownerId", 23).setValue("title", "ttt").setValue("tege", "regegr");
-        ResultSet rs = new RecordsResultBuilder(record).getResultSet();
+        ResultSet rs = JdbcMocker.mockResultSet(record);
         rs.next();
 
         OrMapper<Document> mapper = new OrMapper<>(Document.class, new QuietResultSet(rs));
@@ -34,7 +34,7 @@ public class TestOrMapper {
     @Test
     void test_mapToObject_limitedColumns() throws SQLException {
         Record record = new Record().setValue("ownerId", 23).setValue("title", "ttt").setValue("tege", "regegr");
-        ResultSet rs = new RecordsResultBuilder(record).getResultSet();
+        ResultSet rs = JdbcMocker.mockResultSet(record);
         rs.next();
 
         OrMapper<Document> mapper = new OrMapper<>(Document.class, new QuietResultSet(rs))
@@ -50,7 +50,7 @@ public class TestOrMapper {
     void test_mapToObject_mapColumn() throws SQLException {
         Record record = new Record().setValue("ownerId", 23).setValue("title", "ttt").setValue("tege", "regegr")
                 .setValue("category", "zzz");
-        ResultSet rs = new RecordsResultBuilder(record).getResultSet();
+        ResultSet rs = JdbcMocker.mockResultSet(record);
         rs.next();
 
         OrMapper<DocumentVo> mapper = new OrMapper<>(DocumentVo.class, new QuietResultSet(rs));
@@ -64,7 +64,7 @@ public class TestOrMapper {
     @Test
     void getColumnsOfResultSet() throws SQLException {
         Record record = new Record().setValue("title", "ttt");
-        ResultSet rs = new RecordsResultBuilder(record).getResultSet();
+        ResultSet rs = JdbcMocker.mockResultSet(record);
         rs.next();
 
         OrMapper<DocumentVo> mapper = new OrMapper<>(DocumentVo.class, new QuietResultSet(rs));

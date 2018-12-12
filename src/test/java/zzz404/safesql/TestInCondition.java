@@ -40,6 +40,7 @@ class TestInCondition {
     void cover_rest() {
         InCondition cond = new InCondition(UtilsForTest.createSimpleField(""), "", "");
         cond.toString();
-        cond.equals("");
+        InCondition cond2 = new InCondition(UtilsForTest.createSimpleField(""), "", "");
+        cond.equals(cond2);
     }
 }
