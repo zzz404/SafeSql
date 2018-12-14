@@ -1,18 +1,12 @@
 package zzz404.safesql.sql;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,7 +23,7 @@ import zzz404.safesql.DbSourceBackDoor;
 import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
 import zzz404.safesql.helper.Category;
-import zzz404.safesql.helper.JdbcMocker;
+import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;
 
 public class TestDbSourceImpl {
@@ -93,11 +87,8 @@ public class TestDbSourceImpl {
     }
 
     private QuietConnection buildConnection(String... tableNames) throws SQLException {
-        MetaConnMocker mocker = new MetaConnMocker();
-        for (String tableName : tableNames) {
-            mocker.addTable(tableName);
-        }
-        return mocker.mockQuietConnection();
+        Connection conn = new FakeSchemaBase().addTables(tableNames).getMockedConnection();
+        return new QuietConnection(conn);
     }
 
     @ParameterizedTest
@@ -126,11 +117,11 @@ public class TestDbSourceImpl {
 
     @Test
     void test_revise_snake() throws SQLException {
-        QuietConnection conn = new MetaConnMocker().addTable("Document", "doc_title", "ownerId")
-                .addTable("User", "full_name").mockQuietConnection();
+        Connection conn = new FakeSchemaBase().addTable("Document", "doc_title", "ownerId")
+                .addTable("User", "full_name").getMockedConnection();
 
         DbSourceImpl ds = new DbSourceImpl("");
-        ds.snakeFormCompatable(true).useConnectionPrivider(() -> conn);
+        ds.snakeFormCompatable(true).useConnectionPrivider(() -> new QuietConnection(conn));
 
         List<Entity<?>> entities = Arrays.asList(createEntity(1, Document.class, "docTitle", "ownerId"),
                 createEntity(2, User.class, "firstName", "fullName"), createEntity(3, Category.class, "parentId"));
@@ -152,9 +143,9 @@ public class TestDbSourceImpl {
 
     @Test
     void test_revise_noSnake() throws SQLException {
-        QuietConnection conn = new MetaConnMocker().addTable("Document", "doc_title").mockQuietConnection();
+        Connection conn = new FakeSchemaBase().addTable("Document", "doc_title").getMockedConnection();
         DbSourceImpl ds = new DbSourceImpl("");
-        ds.snakeFormCompatable(false).useConnectionPrivider(() -> conn);
+        ds.snakeFormCompatable(false).useConnectionPrivider(() -> new QuietConnection(conn));
 
         List<Entity<?>> entities = Arrays.asList(createEntity(1, Document.class, "docTitle"));
 
@@ -171,38 +162,6 @@ public class TestDbSourceImpl {
             new Field(entity, column);
         }
         return entity;
-    }
-
-    public static class MetaConnMocker {
-        private Map<String, ResultSet> map = new HashMap<>();
-
-        public MetaConnMocker addTable(String tableName, String... columnNames) throws SQLException {
-            ResultSetMetaData meta = JdbcMocker.mockMetaData(columnNames);
-            ResultSet rs = JdbcMocker.mockResultSet(meta);
-            map.put(tableName.toLowerCase(), rs);
-            return this;
-        }
-
-        public Connection mockConnection() throws SQLException {
-            Connection conn = mock(Connection.class);
-            Statement stmt = mock(Statement.class);
-            when(conn.createStatement()).thenReturn(stmt);
-            when(stmt.executeQuery(anyString())).thenAnswer(info -> {
-                String sql = info.getArgument(0);
-                sql = sql.toLowerCase();
-                for (String tableName : map.keySet()) {
-                    if (sql.endsWith(" " + tableName)) {
-                        return map.get(tableName);
-                    }
-                }
-                throw new SQLException();
-            });
-            return conn;
-        }
-
-        public QuietConnection mockQuietConnection() throws SQLException {
-            return new QuietConnection(mockConnection());
-        }
     }
 
 }

@@ -34,55 +34,56 @@ class TestSqlQuerier {
     }
 
     @Test
-    void test_queryCount() {
-        fakeDb.pushData(7);
+    void test_queryCount() throws SQLException {
+        fakeDb.pushSingleColumnData(7);
         SqlQuerier q = new MySqlQuerier(fakeDb);
         assertEquals(7, q.queryCount());
     }
 
     @Test
-    void test_queryOne_noData_returnNothing() {
+    void test_queryOne_noData_returnNothing() throws SQLException {
+        fakeDb.pushRecords();
         SqlQuerier q = new MySqlQuerier(fakeDb);
         Optional<Integer> result = q.queryOne(Integer.class);
         assertFalse(result.isPresent());
     }
 
     @Test
-    void test_queryOne_twoData_returnFirst() {
-        fakeDb.pushData(3, 6);
+    void test_queryOne_twoData_returnFirst() throws SQLException {
+        fakeDb.pushSingleColumnData(3, 6);
         SqlQuerier q = new MySqlQuerier(fakeDb);
         Optional<Integer> result = q.queryOne(Integer.class);
         assertEquals(3, result.get().intValue());
     }
 
     @Test
-    void test_queryOne_offset() {
-        fakeDb.pushData(3, 1, 4, 1, 5, 9);
+    void test_queryOne_offset() throws SQLException {
+        fakeDb.pushSingleColumnData(3, 1, 4, 1, 5, 9);
         SqlQuerier q = new MySqlQuerier(fakeDb).offset(4);
         Optional<Integer> result = q.queryOne(Integer.class);
         assertEquals(5, result.get().intValue());
     }
 
     @Test
-    void test_queryList() {
-        fakeDb.pushData(7, 5);
+    void test_queryList() throws SQLException {
+        fakeDb.pushSingleColumnData(7, 5);
         SqlQuerier q = new MySqlQuerier(fakeDb);
         List<Integer> result = q.queryList(Integer.class);
         assertEquals(Arrays.asList(7, 5), result);
     }
 
     @Test
-    void test_queryList_offset() {
-        fakeDb.pushData(3, 1, 4, 1, 5, 9);
+    void test_queryList_offset() throws SQLException {
+        fakeDb.pushSingleColumnData(3, 1, 4, 1, 5, 9);
         SqlQuerier q = new MySqlQuerier(fakeDb).offset(4).limit(5);
         List<Integer> result = q.queryList(Integer.class);
         assertEquals(Arrays.asList(5, 9), result);
     }
 
     @Test
-    void test_queryPage() {
-        fakeDb.pushData(6);
-        fakeDb.pushData(3, 1, 4, 1, 5, 9);
+    void test_queryPage() throws SQLException {
+        fakeDb.pushSingleColumnData(6);
+        fakeDb.pushSingleColumnData(3, 1, 4, 1, 5, 9);
         SqlQuerier q = new MySqlQuerier(fakeDb).offset(2).limit(3);
         Page<Integer> page = q.queryPage(Integer.class);
         assertEquals(6, page.getTotalCount());
@@ -91,16 +92,16 @@ class TestSqlQuerier {
     }
 
     @Test
-    void test_queryStream_of_ResultSet() {
-        fakeDb.pushData("a", "b", "c");
+    void test_queryStream_of_ResultSet() throws SQLException {
+        fakeDb.pushSingleColumnData("a", "b", "c");
         SqlQuerier q = new MySqlQuerier(fakeDb);
         String text = q.queryStream(stream -> stream.map(rs -> rs.getString(1)).collect(Collectors.joining(",")));
         assertEquals("a,b,c", text);
     }
 
     @Test
-    void test_queryStream_of_Object() {
-        fakeDb.pushData("a", "b", "c");
+    void test_queryStream_of_Object() throws SQLException {
+        fakeDb.pushSingleColumnData("a", "b", "c");
         SqlQuerier q = new MySqlQuerier(fakeDb);
         String text = q.queryStream(String.class, stream -> stream.collect(Collectors.joining(",")));
         assertEquals("a,b,c", text);
@@ -108,35 +109,40 @@ class TestSqlQuerier {
 
     @Test
     void test_statementCreated_noOffset() throws SQLException {
+        fakeDb.pushRecords();
         SqlQuerier q = new MySqlQuerier(fakeDb);
         q.queryList(Integer.class);
-        verify(fakeDb.conn, times(1)).createStatement();
-        verify(fakeDb.stmt, times(1)).executeQuery("");
+        verify(fakeDb.getMockedConnection(), times(1)).createStatement();
+        verify(fakeDb.getMockedStatement(), times(1)).executeQuery("");
     }
 
     @Test
     void test_statementCreated_withOffset() throws SQLException {
+        fakeDb.pushRecords();
         SqlQuerier q = new MySqlQuerier(fakeDb);
         q.offset(3).queryList(Integer.class);
-        verify(fakeDb.conn, times(1)).createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        verify(fakeDb.stmt, times(1)).executeQuery("");
+        verify(fakeDb.getMockedConnection(), times(1)).createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        verify(fakeDb.getMockedStatement(), times(1)).executeQuery("");
     }
 
     @Test
     void test_preparedStatementCreated_noOffset() throws SQLException {
+        fakeDb.pushRecords();
         SqlQuerier q = new MySqlQuerier(fakeDb).paramValues(1, 2);
         q.queryList(Integer.class);
-        verify(fakeDb.conn, times(1)).prepareStatement("");
-        verify(fakeDb.pstmt, times(1)).executeQuery();
+        verify(fakeDb.getMockedConnection(), times(1)).prepareStatement("");
+        verify(fakeDb.getMockedPreparedStatement(), times(1)).executeQuery();
     }
 
     @Test
     void test_preparedStatementCreated_withOffset() throws SQLException {
+        fakeDb.pushRecords();
         SqlQuerier q = new MySqlQuerier(fakeDb).paramValues(1, 2);
         q.offset(3).queryList(Integer.class);
-        verify(fakeDb.conn, times(1)).prepareStatement("", ResultSet.TYPE_SCROLL_INSENSITIVE,
+        verify(fakeDb.getMockedConnection(), times(1)).prepareStatement("", ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_READ_ONLY);
-        verify(fakeDb.pstmt, times(1)).executeQuery();
+        verify(fakeDb.getMockedPreparedStatement(), times(1)).executeQuery();
     }
 
     public static class MySqlQuerier extends SqlQuerier {

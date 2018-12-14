@@ -6,7 +6,15 @@ public class Record {
     private ArrayList<String> columns = new ArrayList<>();
     private ArrayList<Object> values = new ArrayList<>();
 
-    public static Record[] singleColumn(Object... values) {
+    public static Record[] singleColumn(int... values) {
+        Record[] records = new Record[values.length];
+        for (int i = 0; i < values.length; i++) {
+            records[i] = new Record().setValue("", values[i]);
+        }
+        return records;
+    }
+
+    public static Record[] singleColumn(String... values) {
         Record[] records = new Record[values.length];
         for (int i = 0; i < values.length; i++) {
             records[i] = new Record().setValue("", values[i]);

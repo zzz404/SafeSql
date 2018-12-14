@@ -2,17 +2,18 @@ package zzz404.safesql.sql;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.helper.ResultSetFactory;
+import zzz404.safesql.helper.FakeDatabase;
 
 public class TestQuietResultSetIterator {
 
     @Test
-    public void test_hasNext_noData_return_false() {
+    public void test_hasNext_noData_return_false() throws SQLException {
         QuietResultSet rs = fakeRs();
 
         QuietResultSetIterator iter = new QuietResultSetIterator(rs);
@@ -22,7 +23,7 @@ public class TestQuietResultSetIterator {
     }
 
     @Test
-    public void test_next_noData_throw_NoSuchElementException() {
+    public void test_next_noData_throw_NoSuchElementException() throws SQLException {
         QuietResultSet rs = fakeRs(new String[0]);
 
         QuietResultSetIterator iter = new QuietResultSetIterator(rs);
@@ -30,7 +31,7 @@ public class TestQuietResultSetIterator {
     }
 
     @Test
-    public void test_hasNext_hasData_alwaysReturn_true() {
+    public void test_hasNext_hasData_alwaysReturn_true() throws SQLException {
         QuietResultSet rs = fakeRs("aaa", "bbb");
 
         QuietResultSetIterator iter = new QuietResultSetIterator(rs);
@@ -90,7 +91,7 @@ public class TestQuietResultSetIterator {
     }
 
     @Test
-    public void test_hasNext_limited() {
+    public void test_hasNext_limited() throws SQLException {
         QuietResultSet rs = fakeRs("aaa", "bbb");
 
         QuietResultSetIterator iter = new QuietResultSetIterator(rs, 0, 1);
@@ -102,15 +103,16 @@ public class TestQuietResultSetIterator {
     }
 
     @Test
-    public void test_next_wrongRange_throw_NoSuchElementException() {
+    public void test_next_wrongRange_throw_NoSuchElementException() throws SQLException {
         QuietResultSet rs = fakeRs("aaa", "bbb");
 
         QuietResultSetIterator iter = new QuietResultSetIterator(rs, 10, 2);
         assertThrows(NoSuchElementException.class, () -> iter.next());
     }
 
-    private QuietResultSet fakeRs(String... values) {
-        return ResultSetFactory.singleColumn(values).createQuiet();
+    private QuietResultSet fakeRs(String... values) throws SQLException {
+        ResultSet rs = new FakeDatabase().pushSingleColumnData(values).getNextResultSet();
+        return new QuietResultSet(rs);
     }
 
     @Test
