@@ -171,7 +171,7 @@ public class TestValueType {
 
     @Test
     void test_valueToString_String() {
-        assertEquals("abc", ValueType.valueToString("abc"));
+        assertEquals("'abc'", ValueType.valueToString("abc"));
     }
 
     @Test

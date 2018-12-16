@@ -18,4 +18,8 @@ public class StringType extends ValueType<String> {
         pstmt.setString(index, value);
     }
 
+    public String toString(String value) {
+        return "'" + value + "'";
+    }
+
 }

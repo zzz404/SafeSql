@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import zzz404.safesql.DbSourceContext;
 import zzz404.safesql.Page;
+import zzz404.safesql.SqlQueryException;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.EnhancedConnection;
 import zzz404.safesql.sql.OrMapper;
@@ -59,20 +60,25 @@ public abstract class SqlQuerier {
     private <T> T query_then_mapAll(String sql, Function<QuietResultSet, T> func) {
         Object[] paramValues = paramValues();
 
-        return DbSourceContext.withConnection(dbSource, conn -> {
-            if (paramValues.length == 0) {
-                QuietStatement stmt = createStatement(conn);
-                QuietResultSet rs = new QuietResultSet(stmt.executeQuery(sql));
-                return func.apply(rs);
-            }
-            else {
-                QuietPreparedStatement pstmt = prepareStatement(sql, conn);
-                setCondsValueToPstmt(pstmt);
-                QuietResultSet rs;
-                rs = new QuietResultSet(pstmt.executeQuery());
-                return func.apply(rs);
-            }
-        });
+        try {
+            return DbSourceContext.withConnection(dbSource, conn -> {
+                if (paramValues.length == 0) {
+                    QuietStatement stmt = createStatement(conn);
+                    QuietResultSet rs = new QuietResultSet(stmt.executeQuery(sql));
+                    return func.apply(rs);
+                }
+                else {
+                    QuietPreparedStatement pstmt = prepareStatement(sql, conn);
+                    setCondsValueToPstmt(pstmt);
+                    QuietResultSet rs;
+                    rs = new QuietResultSet(pstmt.executeQuery());
+                    return func.apply(rs);
+                }
+            });
+        }
+        catch (RuntimeException e) {
+            throw new SqlQueryException(sql, paramValues, e.getCause());
+        }
     }
 
     private QuietStatement createStatement(EnhancedConnection conn) {

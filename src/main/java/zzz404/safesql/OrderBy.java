@@ -1,12 +1,9 @@
 package zzz404.safesql;
 
-import org.apache.commons.lang3.Validate;
-
 import zzz404.safesql.util.CommonUtils;
 
 public class OrderBy {
     private Field field;
-    private String columnName;
     private boolean isAsc;
 
     public OrderBy(Field field, boolean isAsc) {
@@ -15,19 +12,8 @@ public class OrderBy {
     }
 
     public String toClause() {
-        String column;
-        if (field != null) {
-            column = field.getPrefixedRealColumnName();
-        }
-        else {
-            column = columnName;
-        }
+        String column = field.getPrefixedRealColumnName();
         return column + " " + (isAsc ? "ASC" : "DESC");
-    }
-
-    public void setEntity(Entity<?> entity) {
-        Validate.isTrue(field == null);
-        field = new Field(entity, columnName);
     }
 
     @Override
@@ -37,15 +23,7 @@ public class OrderBy {
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> new Object[] { o.columnName, o.isAsc });
-    }
-
-    public Field getField() {
-        return field;
-    }
-
-    public String getColumnName() {
-        return columnName;
+        return CommonUtils.isEquals(this, that, o -> new Object[] { o.field, o.isAsc });
     }
 
 }

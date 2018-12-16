@@ -61,7 +61,8 @@ public class UtilsForTest {
         return map;
     }
 
-    public static <T> void assertEquals(List<T> list, T[] array) {
+    public static void assertEquals(List<?> list, Object[] array) {
         Assertions.assertEquals(list, Arrays.asList(array));
     }
+
 }

@@ -90,7 +90,7 @@ public class QueryContext {
     }
 
     public List<AbstractCondition> getConditions() {
-        return conditions;
+        return conditions != null ? conditions : Collections.emptyList();
     }
 
     public Scope getScope() {
@@ -109,7 +109,7 @@ public class QueryContext {
     }
 
     public List<OrderBy> getOrderBys() {
-        return orderBys;
+        return orderBys != null ? orderBys : Collections.emptyList();
     }
 
     public Map<String, String> getColumnMap() {

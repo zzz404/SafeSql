@@ -42,7 +42,8 @@ public class Field {
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, tc -> new Object[] { tc.entity, tc.propertyName, realColumnName });
+        return CommonUtils.isEquals(this, that,
+                tc -> new Object[] { tc.entity, tc.propertyName, tc.realColumnName, tc.function });
     }
 
     @Override
