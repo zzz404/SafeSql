@@ -28,6 +28,10 @@ class TestBetweenCondition {
 
     @Test
     void cover_rest() {
-        new BetweenCondition(UtilsForTest.createSimpleField("zzz"), 123, 456).toString();
+        BetweenCondition cond1 = new BetweenCondition(UtilsForTest.createSimpleField("zzz"), 123, 456);
+        cond1.toString();
+
+        BetweenCondition cond2 = new BetweenCondition(UtilsForTest.createSimpleField("zzz"), 123, 456);
+        assertEquals(cond1, cond2);
     }
 }

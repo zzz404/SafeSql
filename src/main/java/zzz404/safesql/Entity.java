@@ -1,6 +1,7 @@
 package zzz404.safesql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -43,9 +44,9 @@ public class Entity<T> {
         return objClass.getSimpleName();
     }
 
-    public T mapToObject(QuietResultSet rs, List<Field> tableFields) {
+    public T mapToObject(QuietResultSet rs, Field... tableFields) {
         if (orMapper == null || rs != this.rs) {
-            Set<String> columnNames = tableFields.stream().map(f -> f.realColumnName).collect(Collectors.toSet());
+            Set<String> columnNames = Arrays.stream(tableFields).map(f -> f.realColumnName).collect(Collectors.toSet());
             orMapper = new OrMapper<>(objClass, rs).selectColumns(columnNames);
             this.rs = rs;
         }

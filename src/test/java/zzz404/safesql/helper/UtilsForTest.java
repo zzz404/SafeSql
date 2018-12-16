@@ -2,8 +2,12 @@ package zzz404.safesql.helper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.junit.jupiter.api.Assertions;
 
 import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
@@ -55,5 +59,9 @@ public class UtilsForTest {
         map.put(k1, v1);
         map.put(k2, v2);
         return map;
+    }
+
+    public static <T> void assertEquals(List<T> list, T[] array) {
+        Assertions.assertEquals(list, Arrays.asList(array));
     }
 }

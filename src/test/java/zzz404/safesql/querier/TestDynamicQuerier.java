@@ -16,6 +16,7 @@ import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
+import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.DbSourceImpl;
 
 class TestDynamicQuerier {
@@ -195,8 +196,8 @@ class TestDynamicQuerier {
         Field field_docTitle = new Field(docEntity, "title");
         q.fields = Arrays.asList(field_docId, field_userAccount, field_docTitle);
 
-        assertEquals(Arrays.asList(field_docId, field_docTitle), q.getFieldsOfEntity(docEntity));
-        assertEquals(Arrays.asList(field_userAccount), q.getFieldsOfEntity(userEntity));
+        UtilsForTest.assertEquals(Arrays.asList(field_docId, field_docTitle), q.getFieldsOfEntity(docEntity));
+        UtilsForTest.assertEquals(Arrays.asList(field_userAccount), q.getFieldsOfEntity(userEntity));
     }
 
     public static class MyDynamicQuerier extends DynamicQuerier {

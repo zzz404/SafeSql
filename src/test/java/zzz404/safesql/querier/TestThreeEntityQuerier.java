@@ -1,8 +1,10 @@
 package zzz404.safesql.querier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static zzz404.safesql.Sql.*;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +21,10 @@ import zzz404.safesql.Field;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
+import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.QuietResultSetMetaData;
 import zzz404.safesql.util.Tuple3;
 
 class TestThreeEntityQuerier {
@@ -120,7 +124,7 @@ class TestThreeEntityQuerier {
     }
 
     @Test
-    void rsToTuple() {
+    void rsToTuple() throws SQLException {
         ThreeEntityQuerier<Document, User, Category> q = new ThreeEntityQuerier<Document, User, Category>(null,
                 Document.class, User.class, Category.class);
         Document doc = new Document();
@@ -130,7 +134,10 @@ class TestThreeEntityQuerier {
         q.entity2 = new MyEntity<>(2, User.class).setT(user);
         q.entity3 = new MyEntity<>(3, Category.class).setT(cat);
 
-        Tuple3<Document, User, Category> tuple = q.rsToTuple(null);
+        QuietResultSetMetaData metaData = new QuietResultSetMetaData(FakeSchemaBase.mockMetaData());
+        QuietResultSet rs = mock(QuietResultSet.class);
+        when(rs.getMetaData()).thenReturn(metaData);
+        Tuple3<Document, User, Category> tuple = q.rsToTuple(rs);
         assertEquals(new Tuple3<>(doc, user, cat), tuple);
     }
 
@@ -147,7 +154,7 @@ class TestThreeEntityQuerier {
         }
 
         @Override
-        public T mapToObject(QuietResultSet rs, List<Field> tableFields) {
+        public T mapToObject(QuietResultSet rs, Field... tableFields) {
             return t;
         }
 

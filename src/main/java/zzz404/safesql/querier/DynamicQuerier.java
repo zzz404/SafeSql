@@ -148,11 +148,12 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return paramValues.toArray();
     }
 
-    protected List<Field> getFieldsOfEntity(Entity<?> entity) {
+    protected Field[] getFieldsOfEntity(Entity<?> entity) {
         if (entity_fields_map == null) {
             entity_fields_map = fields.stream().collect(Collectors.groupingBy(Field::getEntity));
         }
-        return entity_fields_map.get(entity);
+        List<Field> fields = entity_fields_map.get(entity);
+        return fields == null ? new Field[0] : fields.toArray(new Field[fields.size()]);
     }
 
     public abstract Object queryOne();

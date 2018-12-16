@@ -134,7 +134,7 @@ class TestTwoEntityQuerier {
         }
 
         @Override
-        public T mapToObject(QuietResultSet rs, List<Field> tableFields) {
+        public T mapToObject(QuietResultSet rs, Field... tableFields) {
             return t;
         }
 
