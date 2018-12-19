@@ -25,4 +25,12 @@ public class TestQueryContext {
         assertThrows(NullPointerException.class, () -> QueryContext.get());
     }
 
+    @Test
+    void test_others() {
+        QueryContext.underQueryContext(ctx -> {
+            assertTrue(ctx.getConditions().isEmpty());
+            assertTrue(ctx.getOrderBys().isEmpty());
+        });
+    }
+
 }

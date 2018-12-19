@@ -12,7 +12,9 @@ public class Field {
         this.entity = entity;
         this.propertyName = propertyName;
         this.realColumnName = propertyName;
-        entity.addField(this);
+        if (entity != null) {
+            entity.addField(this);
+        }
     }
 
     public Entity<?> getEntity() {
@@ -25,7 +27,7 @@ public class Field {
 
     public String getPrefixedRealColumnName() {
         String result = realColumnName;
-        if (entity.getIndex() > 0) {
+        if (entity != null) {
             result = "t" + entity.getIndex() + "." + result;
         }
         if (function != null) {
@@ -61,13 +63,8 @@ public class Field {
         return field;
     }
 
-    public static Field count(Field field) {
-        field.function = "COUNT";
-        return field;
-    }
-
-    public static Field all(Object mockedObject) {
-        Entity<?> entity = ((EntityGettable) mockedObject).getEntity();
+    public static Field all(EntityGettable mockedObject) {
+        Entity<?> entity = mockedObject.entity();
         Field field = new Field(entity, "*");
         return field;
     }

@@ -3,7 +3,6 @@ package zzz404.safesql;
 import static zzz404.safesql.Sql.*;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 
@@ -29,21 +28,16 @@ public abstract class AbstractCondition implements Condition {
         }
     }
 
-    public <T> AbstractCondition or(T field, String operator, Object... values) {
+    public <T> OrCondition or(T field, String operator, Object... values) {
         QueryContext ctx = QueryContext.get();
         AbstractCondition cond = AbstractCondition.of(ctx.takeField(), operator, values);
-        cond = new OrCondition(this, cond);
-
-        ctx.addCondition(cond);
-        return cond;
+        OrCondition orCond = new OrCondition(this, cond);
+        ctx.reaplaceLastCondition(orCond);
+        return orCond;
     }
 
     public abstract String toClause();
 
     public abstract void appendValuesTo(List<Object> paramValues);
-
-    public void appendUsedEntitiesTo(Set<Entity<?>> entities) {
-        entities.add(field.getEntity());
-    }
 
 }

@@ -111,7 +111,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return this.orderBys.stream().map(OrderBy::toClause).collect(Collectors.joining(", "));
     }
 
-    public String sql() {
+    protected String sql() {
         dbSource.revise(entities);
         String tableName = getTablesClause();
         String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;
@@ -127,7 +127,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return sql;
     }
 
-    public String sql_for_queryCount() {
+    protected String sql_for_queryCount() {
         String sql = "SELECT COUNT(*) FROM " + getTablesClause();
         if (!this.conditions.isEmpty()) {
             sql += " WHERE "

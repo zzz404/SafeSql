@@ -1,7 +1,6 @@
 package zzz404.safesql;
 
 import java.util.List;
-import java.util.Set;
 
 import zzz404.safesql.util.CommonUtils;
 
@@ -33,16 +32,6 @@ public class MutualCondition extends AbstractCondition {
 
     @Override
     public void appendValuesTo(List<Object> paramValues) {
-    }
-
-    public Field getField2() {
-        return field2;
-    }
-
-    @Override
-    public void appendUsedEntitiesTo(Set<Entity<?>> entities) {
-        super.appendUsedEntitiesTo(entities);
-        entities.add(field2.getEntity());
     }
 
 }

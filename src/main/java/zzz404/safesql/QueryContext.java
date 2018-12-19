@@ -16,7 +16,7 @@ public class QueryContext {
 
     private Scope scope;
     private LinkedList<Field> fields = null;
-    private List<AbstractCondition> conditions = null;
+    private LinkedList<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
 
     private Map<String, String> columnMap = null;
@@ -84,8 +84,13 @@ public class QueryContext {
 
     public void addCondition(AbstractCondition cond) {
         if (conditions == null) {
-            conditions = new ArrayList<>();
+            conditions = new LinkedList<>();
         }
+        conditions.add(cond);
+    }
+
+    public void reaplaceLastCondition(OrCondition cond) {
+        conditions.removeLast();
         conditions.add(cond);
     }
 

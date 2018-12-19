@@ -32,6 +32,7 @@ public class Entity<T> {
     private T createMockedObject(Class<T> clazz, int index) {
         Enhancer en = new Enhancer();
         en.setSuperclass(clazz);
+        en.setInterfaces(new Class[] {EntityGettable.class});
         GetterTracer<T> getterLogger = new GetterTracer<>(this);
         en.setCallback(getterLogger);
 

@@ -13,7 +13,7 @@ class TestBetweenCondition {
     @Test
     void test_toClause() {
         BetweenCondition cond = new BetweenCondition(UtilsForTest.createSimpleField("zzz"), 123, 456);
-        assertEquals("zzz BETWEEN ? AND ?", cond.toClause());
+        assertEquals("t1.zzz BETWEEN ? AND ?", cond.toClause());
     }
 
     @Test

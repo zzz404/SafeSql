@@ -16,7 +16,7 @@ class TestOpCondition {
     @Test
     void test_toClause() {
         OpCondition cond = new OpCondition(column_zzz, "=", 123);
-        assertEquals("zzz = ?", cond.toClause());
+        assertEquals("t1.zzz = ?", cond.toClause());
     }
 
     @Test

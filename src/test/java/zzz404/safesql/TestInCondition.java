@@ -17,7 +17,7 @@ class TestInCondition {
     @Test
     void test_toClause() {
         InCondition cond = new InCondition(column_zzz, 1, 2, 3);
-        assertEquals("zzz IN (?, ?, ?)", cond.toClause());
+        assertEquals("t1.zzz IN (?, ?, ?)", cond.toClause());
     }
 
     @Test

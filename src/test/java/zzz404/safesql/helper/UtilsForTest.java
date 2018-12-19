@@ -45,7 +45,7 @@ public class UtilsForTest {
     }
 
     public static Field createSimpleField(String field) {
-        return new Field(new Entity<>(0, Object.class), field);
+        return new Field(new Entity<>(1, Object.class), field);
     }
 
     public static <K, V> Map<K, V> newMap(K k, V v) {

@@ -50,14 +50,9 @@ public class Sql {
         ctx.addTableField(Field.count());
     }
 
-    public static <T> void count(T field) {
+    public static <T> void all(Object mockedObject) {
         QueryContext ctx = QueryContext.get();
-        ctx.addTableField(Field.count(ctx.takeField()));
-    }
-
-    public static <T> void all(T mockedObject) {
-        QueryContext ctx = QueryContext.get();
-        ctx.addTableField(Field.all(mockedObject));
+        ctx.addTableField(Field.all((EntityGettable) mockedObject));
     }
 
     @SafeVarargs
@@ -86,33 +81,39 @@ public class Sql {
     public static void asc(Object o) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("asc");
-        
+
         Field field = ctx.takeField();
         ctx.addOrderBy(new OrderBy(field, true));
     }
 
-    public static void asc(EntityGettable entityGettable, String propName) {
+    public static void asc(Object o, String propName) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("asc");
 
-        Field field = new Field(entityGettable.getEntity(), propName);
+        EntityGettable entityGettable = (EntityGettable) o;
+        Field field = new Field(entityGettable.entity(), propName);
         ctx.addOrderBy(new OrderBy(field, true));
     }
 
     public static void desc(Object o) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("desc");
-        
+
         Field field = ctx.takeField();
         ctx.addOrderBy(new OrderBy(field, false));
     }
 
-    public static void desc(EntityGettable entityGettable, String propName) {
+    public static void desc(Object o, String propName) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("desc");
 
-        Field field = new Field(entityGettable.getEntity(), propName);
+        EntityGettable entityGettable = (EntityGettable) o;
+        Field field = new Field(entityGettable.entity(), propName);
         ctx.addOrderBy(new OrderBy(field, false));
+    }
+
+    public static <T> T withTheSameConnection(NoisySupplier<T> supplier) {
+        return use("").withTheSameConnection(supplier);
     }
 
     public static class QuerierFactory {

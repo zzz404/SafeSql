@@ -34,7 +34,7 @@ public class MethodAnalyzer {
     }
 
     private void analyzeGetter(boolean expectPrimitiveBoolean) {
-        if (method.getParameterTypes().length == 0) {
+        if (method.getParameterCount() == 0) {
             Class<?> returnType = method.getReturnType();
             if (returnType == void.class) {
                 isGetter = false;
