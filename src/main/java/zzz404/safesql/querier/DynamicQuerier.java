@@ -112,7 +112,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     protected String sql() {
-        dbSource.revise(entities);
+        dbSource.revise(entities.toArray(new Entity[entities.size()]));
         String tableName = getTablesClause();
         String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;
         if (!this.conditions.isEmpty()) {

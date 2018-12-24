@@ -2,7 +2,6 @@ package zzz404.safesql.sql;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -40,20 +39,20 @@ public class DbSourceImpl extends DbSource {
             return useTablePrefix ? name + virtualTableName : virtualTableName;
         }
         else {
-            TableSchema schema = getSchema_for_snakeCompatable(virtualTableName);
+            TableSchema schema = getSchema(virtualTableName);
             return schema.getRealTableName();
         }
     }
 
-    TableSchema getSchema_for_snakeCompatable(String virtualTableName) {
+    public TableSchema getSchema(String virtualTableName) {
         if (!tableSchema_map.containsKey(virtualTableName)) {
-            TableSchema schema = createSchema_for_snakeCompatable(virtualTableName);
+            TableSchema schema = createSchema(virtualTableName);
             tableSchema_map.put(virtualTableName, schema);
         }
         return tableSchema_map.get(virtualTableName);
     }
 
-    protected TableSchema createSchema_for_snakeCompatable(String virtualTableName) {
+    protected TableSchema createSchema(String virtualTableName) {
         return withConnection(conn -> {
             Tuple2<QuietResultSetMetaData, String> tuple;
             try {
@@ -82,6 +81,7 @@ public class DbSourceImpl extends DbSource {
                 tableName = name + tableName;
             }
             metaData = queryMetaData(tableName, stmt);
+
             return new Tuple2<>(metaData, tableName);
         }
     }
@@ -92,10 +92,10 @@ public class DbSourceImpl extends DbSource {
         return new QuietResultSet(rs).getMetaData();
     }
 
-    public void revise(List<Entity<?>> entities) {
+    public void revise(Entity<?>... entities) {
         if (snakeFormCompatable) {
             for (Entity<?> entity : entities) {
-                TableSchema schema = getSchema_for_snakeCompatable(entity.getVirtualTableName());
+                TableSchema schema = getSchema(entity.getVirtualTableName());
                 entity.getFields().forEach(schema::revise_for_snakeFormCompatable);
             }
         }

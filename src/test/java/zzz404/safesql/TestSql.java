@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.Sql.QuerierFactory;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;

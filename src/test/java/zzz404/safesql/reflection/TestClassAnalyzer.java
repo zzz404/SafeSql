@@ -14,7 +14,7 @@ public class TestClassAnalyzer {
     void test_getMethodAnalyzer() {
         Method setter = NoisySupplier.getQuietly(() -> this.getClass().getMethod("setAbc", String.class));
 
-        ClassAnalyzer<? extends TestClassAnalyzer> classAnalyzer = ClassAnalyzer.get(this.getClass());
+        ClassAnalyzer classAnalyzer = ClassAnalyzer.get(this.getClass());
         MethodAnalyzer methodAnalyzer = classAnalyzer.getMethodAnalyzer(setter);
         assertEquals(methodAnalyzer, classAnalyzer.find_setter_by_propertyName("abc"));
     }

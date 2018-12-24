@@ -9,8 +9,8 @@ public class OpCondition extends AbstractCondition {
     private String operator;
     private Object value;
 
-    public OpCondition(Field tableColumn, String operator, Object value) {
-        super(tableColumn);
+    public OpCondition(Field field, String operator, Object value) {
+        super(field);
         this.operator = operator;
         this.value = value;
     }
@@ -27,7 +27,7 @@ public class OpCondition extends AbstractCondition {
 
     @Override
     public String toClause() {
-        return field + " " + operator + " ?";
+        return field.getPrefixedRealColumnName() + " " + operator + " ?";
     }
 
     @Override

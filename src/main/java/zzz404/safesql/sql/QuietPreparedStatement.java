@@ -600,9 +600,9 @@ public class QuietPreparedStatement implements PreparedStatement {
         }
     }
 
-    public ResultSet getGeneratedKeys() {
+    public QuietResultSet getGeneratedKeys() {
         try {
-            return pstmt.getGeneratedKeys();
+            return new QuietResultSet(pstmt.getGeneratedKeys());
         }
         catch (Exception e) {
             throw CommonUtils.wrapToRuntime(e);

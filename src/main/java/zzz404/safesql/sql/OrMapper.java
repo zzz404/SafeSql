@@ -38,7 +38,7 @@ public class OrMapper<T> {
                 return o;
             }
             o = clazz.newInstance();
-            ClassAnalyzer<T> classAnalyzer = ClassAnalyzer.get(clazz);
+            ClassAnalyzer classAnalyzer = ClassAnalyzer.get(clazz);
             Set<String> columnNames = CollectionUtils.isNotEmpty(selectedColumns) ? selectedColumns
                     : getColumnsOfResultSet();
             for (String columnName : columnNames) {

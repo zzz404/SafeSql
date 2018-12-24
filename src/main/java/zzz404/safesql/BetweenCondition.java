@@ -22,7 +22,7 @@ public class BetweenCondition extends AbstractCondition {
 
     @Override
     public String toClause() {
-        return field + " BETWEEN ? AND ?";
+        return field.getPrefixedRealColumnName() + " BETWEEN ? AND ?";
     }
 
     @Override

@@ -41,7 +41,7 @@ public abstract class ValueType<T> {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public static <E> ValueType<E> get(Class<E> clazz) {
+    public static <E> ValueType<E> get(Class<? extends E> clazz) {
         if (map.containsKey(clazz)) {
             return map.get(clazz);
         }

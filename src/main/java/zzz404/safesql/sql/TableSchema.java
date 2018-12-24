@@ -15,6 +15,7 @@ public class TableSchema {
     Map<String, String> prop_real_map = new HashMap<>();
     Map<String, String> snake_real_map = new HashMap<>();
     boolean snakeFormCompatable;
+    String autoIncrementColumnName;
 
     TableSchema(String virtualTableName, String realTableName, boolean snakeFormCompatable) {
         this.virtualTableName = virtualTableName;
@@ -24,16 +25,9 @@ public class TableSchema {
 
     public void revise_for_snakeFormCompatable(Field field) {
         String propName = field.getPropertyName();
-        String prop_lower = propName.toLowerCase();
-
-        if (!prop_real_map.containsKey(prop_lower)) {
-            String snaked_propName = CommonUtils.camelForm_to_snakeForm(propName);
-            String realColumnName = snake_real_map.get(snaked_propName);
-            prop_real_map.put(prop_lower, realColumnName);
-        }
-        String realColumnName = prop_real_map.get(prop_lower);
+        String realColumnName = getRealColumnName(propName);
         if (realColumnName != null) {
-            field.setRealColumnName(realColumnName);
+            field.realColumnName = realColumnName;
         }
     }
 
@@ -41,8 +35,24 @@ public class TableSchema {
         return realTableName;
     }
 
+    public String getRealColumnName(String propName) {
+        String prop_lower = propName.toLowerCase();
+        if (!prop_real_map.containsKey(prop_lower)) {
+            String snaked_propName = CommonUtils.camelForm_to_snakeForm(propName);
+            String realColumnName = snake_real_map.get(snaked_propName);
+            prop_real_map.put(prop_lower, realColumnName);
+        }
+        return prop_real_map.get(prop_lower);
+    }
+    
     void initColumns(QuietResultSetMetaData metaData) {
         Set<String> columnsOfResultSet = getColumns(metaData);
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            if (metaData.isAutoIncrement(i)) {
+                autoIncrementColumnName = metaData.getColumnName(i);
+                break;
+            }
+        }
         columnsOfResultSet.forEach(real_columnName -> {
             prop_real_map.put(real_columnName.toLowerCase(), real_columnName);
             if (snakeFormCompatable) {
@@ -75,5 +85,9 @@ public class TableSchema {
         public void revise_for_snakeFormCompatable(Field field) {
         }
 
+    }
+
+    public String getAutoIncrementColumnName() {
+        return autoIncrementColumnName;
     }
 }

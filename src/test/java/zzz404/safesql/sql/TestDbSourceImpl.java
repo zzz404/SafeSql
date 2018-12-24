@@ -106,12 +106,12 @@ public class TestDbSourceImpl {
         DbSourceImpl ds = new DbSourceImpl("zzz");
         ds.useConnectionPrivider(() -> buildConnection());
 
-        TableSchema schema1 = ds.getSchema_for_snakeCompatable("aaa");
-        TableSchema schema2 = ds.getSchema_for_snakeCompatable("bbb");
+        TableSchema schema1 = ds.getSchema("aaa");
+        TableSchema schema2 = ds.getSchema("bbb");
 
         assertNotEquals(schema1, schema2);
 
-        TableSchema schema3 = ds.getSchema_for_snakeCompatable("aaa");
+        TableSchema schema3 = ds.getSchema("aaa");
         assertEquals(schema1, schema3);
     }
 
@@ -123,21 +123,20 @@ public class TestDbSourceImpl {
         DbSourceImpl ds = new DbSourceImpl("");
         ds.snakeFormCompatable(true).useConnectionPrivider(() -> new QuietConnection(conn));
 
-        List<Entity<?>> entities = Arrays.asList(createEntity(1, Document.class, "docTitle", "ownerId"),
-                createEntity(2, User.class, "firstName", "fullName"), createEntity(3, Category.class, "parentId"));
+        Entity<Document> docEntity = createEntity(1, Document.class, "docTitle", "ownerId");
+        Entity<User> userEntity = createEntity(2, User.class, "firstName", "fullName");
+        Entity<Category> cateEntity = createEntity(3, Category.class, "parentId");
 
-        ds.revise(entities);
+        ds.revise(docEntity, userEntity, cateEntity);
 
-        List<String> columns = entities.get(0).getFields().stream().map(Field::getPrefixedRealColumnName)
+        List<String> columns = docEntity.getFields().stream().map(Field::getPrefixedRealColumnName)
                 .collect(Collectors.toList());
         assertEquals(Arrays.asList("t1.doc_title", "t1.ownerId"), columns);
 
-        columns = entities.get(1).getFields().stream().map(Field::getPrefixedRealColumnName)
-                .collect(Collectors.toList());
+        columns = userEntity.getFields().stream().map(Field::getPrefixedRealColumnName).collect(Collectors.toList());
         assertEquals(Arrays.asList("t2.firstName", "t2.full_name"), columns);
 
-        columns = entities.get(2).getFields().stream().map(Field::getPrefixedRealColumnName)
-                .collect(Collectors.toList());
+        columns = cateEntity.getFields().stream().map(Field::getPrefixedRealColumnName).collect(Collectors.toList());
         assertEquals(Arrays.asList("t3.parentId"), columns);
     }
 
@@ -147,11 +146,10 @@ public class TestDbSourceImpl {
         DbSourceImpl ds = new DbSourceImpl("");
         ds.snakeFormCompatable(false).useConnectionPrivider(() -> new QuietConnection(conn));
 
-        List<Entity<?>> entities = Arrays.asList(createEntity(1, Document.class, "docTitle"));
+        Entity<Document> docEntity = createEntity(1, Document.class, "docTitle");
+        ds.revise(docEntity);
 
-        ds.revise(entities);
-
-        List<String> columns = entities.get(0).getFields().stream().map(Field::getPrefixedRealColumnName)
+        List<String> columns = docEntity.getFields().stream().map(Field::getPrefixedRealColumnName)
                 .collect(Collectors.toList());
         assertEquals(Arrays.asList("t1.docTitle"), columns);
     }

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum Scope {
-    select("field"), where("cond", "innerJoin"), groupBy, orderBy("asc", "desc");
+    select("field"), set, where("cond", "innerJoin"), groupBy, orderBy("asc", "desc");
 
     private Set<String> acceptedCommands;
 

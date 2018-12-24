@@ -5,13 +5,22 @@ import zzz404.safesql.util.CommonUtils;
 public class Field {
     private Entity<?> entity;
     private String propertyName;
-    String realColumnName;
+    public String realColumnName;
     private String function;
 
     public Field(Entity<?> entity, String propertyName) {
         this.entity = entity;
         this.propertyName = propertyName;
         this.realColumnName = propertyName;
+        if (entity != null) {
+            entity.addField(this);
+        }
+    }
+
+    public Field(Entity<?> entity, String propertyName, String realColumnName) {
+        this.entity = entity;
+        this.propertyName = propertyName;
+        this.realColumnName = realColumnName;
         if (entity != null) {
             entity.addField(this);
         }
@@ -27,7 +36,7 @@ public class Field {
 
     public String getPrefixedRealColumnName() {
         String result = realColumnName;
-        if (entity != null) {
+        if (entity != null && entity.getIndex() > 0) {
             result = "t" + entity.getIndex() + "." + result;
         }
         if (function != null) {
@@ -51,10 +60,6 @@ public class Field {
     @Override
     public String toString() {
         return getPrefixedRealColumnName();
-    }
-
-    public void setRealColumnName(String realColumnName) {
-        this.realColumnName = realColumnName;
     }
 
     public static Field count() {

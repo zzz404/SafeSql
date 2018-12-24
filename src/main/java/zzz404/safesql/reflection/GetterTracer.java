@@ -12,7 +12,7 @@ import zzz404.safesql.util.NoisySupplier;
 
 public class GetterTracer<T> implements MethodInterceptor {
 
-    private ClassAnalyzer<T> classAnalyzer;
+    private ClassAnalyzer classAnalyzer;
     private Entity<T> entity;
 
     private static Method entityGetter = NoisySupplier.getQuietly(() -> EntityGettable.class.getMethod("entity"));
