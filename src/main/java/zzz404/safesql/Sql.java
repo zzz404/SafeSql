@@ -3,9 +3,9 @@ package zzz404.safesql;
 import zzz404.safesql.querier.OneEntityQuerier;
 import zzz404.safesql.querier.SqlDeleter;
 import zzz404.safesql.querier.SqlUpdater;
-import zzz404.safesql.querier.StaticSqlQuerier;
 import zzz404.safesql.querier.ThreeEntityQuerier;
 import zzz404.safesql.querier.TwoEntityQuerier;
+import zzz404.safesql.sql.StaticSqlExecuter;
 import zzz404.safesql.util.NoisySupplier;
 
 public class Sql {
@@ -25,7 +25,7 @@ public class Sql {
         return new QuerierFactory(name);
     }
 
-    public static StaticSqlQuerier sql(String sql) {
+    public static StaticSqlExecuter sql(String sql) {
         return use("").sql(sql);
     }
 

@@ -18,6 +18,7 @@ import zzz404.safesql.DbSourceBackDoor;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.FakeDbSource;
+import zzz404.safesql.sql.SqlQuerier;
 
 class TestSqlQuerier {
 

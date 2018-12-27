@@ -87,7 +87,7 @@ public class TableSchema {
 
     }
 
-    public String getAutoIncrementColumnName() {
+    public String getRealColumnName_of_autoIncrement() {
         return autoIncrementColumnName;
     }
 }

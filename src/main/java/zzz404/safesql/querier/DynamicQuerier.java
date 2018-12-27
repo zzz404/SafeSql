@@ -16,6 +16,7 @@ import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
 import zzz404.safesql.sql.DbSourceImpl;
+import zzz404.safesql.sql.SqlQuerier;
 import zzz404.safesql.util.CommonUtils;
 import zzz404.safesql.util.NoisyRunnable;
 

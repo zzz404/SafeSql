@@ -43,12 +43,6 @@ public abstract class DbSource {
         return ds;
     }
 
-    static DbSourceImpl get(String name) {
-        DbSourceImpl dbSource = map.get(name);
-        Objects.requireNonNull(dbSource);
-        return dbSource;
-    }
-
     public DbSource useConnectionPrivider(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;
         return this;

@@ -23,7 +23,7 @@ public class TestOrMapper {
         ResultSet rs = new FakeDatabase().pushRecords(record).getNextResultSet();
         rs.next();
 
-        OrMapper<Document> mapper = new OrMapper<>(Document.class, new QuietResultSet(rs));
+        OrMapper2<Document> mapper = new OrMapper2<>(Document.class, new QuietResultSet(rs));
         Document doc = mapper.mapToObject();
 
         assertNull(doc.getId());
@@ -37,7 +37,7 @@ public class TestOrMapper {
         ResultSet rs = new FakeDatabase().pushRecords(record).getNextResultSet();
         rs.next();
 
-        OrMapper<Document> mapper = new OrMapper<>(Document.class, new QuietResultSet(rs))
+        OrMapper2<Document> mapper = new OrMapper2<>(Document.class, new QuietResultSet(rs))
                 .selectColumns(CommonUtils.newSet("title", "dfyh"));
         Document doc = mapper.mapToObject();
 
@@ -53,7 +53,7 @@ public class TestOrMapper {
         ResultSet rs = new FakeDatabase().pushRecords(record).getNextResultSet();
         rs.next();
 
-        OrMapper<DocumentVo> mapper = new OrMapper<>(DocumentVo.class, new QuietResultSet(rs));
+        OrMapper2<DocumentVo> mapper = new OrMapper2<>(DocumentVo.class, new QuietResultSet(rs));
         DocumentVo doc = mapper.mapToObject(UtilsForTest.newMap("title", "title2"));
 
         assertEquals(new Integer(23), doc.getOwnerId());
@@ -67,7 +67,7 @@ public class TestOrMapper {
         ResultSet rs = new FakeDatabase().pushRecords(record).getNextResultSet();
         rs.next();
 
-        OrMapper<DocumentVo> mapper = new OrMapper<>(DocumentVo.class, new QuietResultSet(rs));
+        OrMapper2<DocumentVo> mapper = new OrMapper2<>(DocumentVo.class, new QuietResultSet(rs));
 
         Set<String> columns = mapper.getColumnsOfResultSet();
         Set<String> columns2 = mapper.getColumnsOfResultSet();

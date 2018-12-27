@@ -3,6 +3,7 @@ package zzz404.safesql.sql;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import zzz404.safesql.DbSource;
@@ -18,6 +19,12 @@ public class DbSourceImpl extends DbSource {
 
     public DbSourceImpl(String name) {
         super(name);
+    }
+
+    public static DbSourceImpl get(String name) {
+        DbSourceImpl dbSource = map.get(name);
+        Objects.requireNonNull(dbSource);
+        return dbSource;
     }
 
     public <T> T withConnection(Function<EnhancedConnection, T> func) {
@@ -99,6 +106,10 @@ public class DbSourceImpl extends DbSource {
                 entity.getFields().forEach(schema::revise_for_snakeFormCompatable);
             }
         }
+    }
+
+    public String getName() {
+        return name;
     }
 
 }

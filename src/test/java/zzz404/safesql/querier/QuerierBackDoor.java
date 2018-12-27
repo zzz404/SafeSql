@@ -4,6 +4,7 @@ import java.util.List;
 
 import zzz404.safesql.AbstractCondition;
 import zzz404.safesql.sql.DbSourceImpl;
+import zzz404.safesql.sql.SqlQuerier;
 
 public class QuerierBackDoor {
     public static DbSourceImpl getDbSource(SqlQuerier q) {

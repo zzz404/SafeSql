@@ -7,30 +7,31 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
+import zzz404.safesql.sql.StaticSqlExecuter;
 
 class TestStaticSqlQuerier {
 
     @Test
     void test_buildSql() {
         String sql = "aaa";
-        StaticSqlQuerier q = new StaticSqlQuerier(null).sql(sql);
+        StaticSqlExecuter q = new StaticSqlExecuter(null).sql(sql);
         assertEquals(sql, q.sql());
     }
 
     @Test
     void test_buildSql_for_queryCount() {
         String sql_hasOrderBy = "select aaa,bbb, ccc FROM ddd where aaa=1 order BY eee";
-        StaticSqlQuerier q = new StaticSqlQuerier(null).sql(sql_hasOrderBy);
+        StaticSqlExecuter q = new StaticSqlExecuter(null).sql(sql_hasOrderBy);
         assertEquals("SELECT COUNT(*) FROM ddd where aaa=1", q.sql_for_queryCount());
 
         String sql_noOrderBy = "select aaa,bbb, ccc FROM ddd where aaa=1 ";
-        q = new StaticSqlQuerier(null).sql(sql_noOrderBy);
+        q = new StaticSqlExecuter(null).sql(sql_noOrderBy);
         assertEquals("SELECT COUNT(*) FROM ddd where aaa=1 ", q.sql_for_queryCount());
     }
 
     @Test
     void test_setCondValueToPstmt() {
-        StaticSqlQuerier q = new StaticSqlQuerier(null).sql("Hello").paramValues(123, "zzz");
+        StaticSqlExecuter q = new StaticSqlExecuter(null).sql("Hello").paramValues(123, "zzz");
         QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
 
         q.setCondsValueToPstmt(pstmt);
@@ -42,6 +43,6 @@ class TestStaticSqlQuerier {
 
     @Test
     void cover_rest() {
-        new StaticSqlQuerier(null).sql("Hello").offset(0).limit(0);
+        new StaticSqlExecuter(null).sql("Hello").offset(0).limit(0);
     }
 }

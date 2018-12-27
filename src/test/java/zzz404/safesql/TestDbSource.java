@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.sql.DbSourceImpl;
+
 public class TestDbSource {
     @AfterEach
     public void tearDown() {
@@ -13,12 +15,12 @@ public class TestDbSource {
 
     @Test
     public void test_create_then_get() {
-        assertThrows(NullPointerException.class, () -> DbSource.get("ds1"));
+        assertThrows(NullPointerException.class, () -> DbSourceImpl.get("ds1"));
 
         DbSource factory = DbSource.create("ds1");
         assertNotNull(factory);
 
-        DbSource factory2 = DbSource.get("ds1");
+        DbSource factory2 = DbSourceImpl.get("ds1");
         assertTrue(factory == factory2);
     }
 

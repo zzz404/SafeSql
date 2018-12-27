@@ -1,9 +1,8 @@
 package zzz404.safesql.reflection;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ClassAnalyzer {
@@ -13,7 +12,6 @@ public class ClassAnalyzer {
     private Map<Method, MethodAnalyzer> methodMap = new HashMap<>();
     Map<String, MethodAnalyzer> prop_setterAnalyzer_map = new HashMap<>();
     Map<String, MethodAnalyzer> prop_getterAnalyzer_map = new HashMap<>();
-    List<MethodAnalyzer> getterAnalyzers = new ArrayList<>();
 
     private ClassAnalyzer(Class<?> clazz) {
         Method[] methods = clazz.getMethods();
@@ -25,7 +23,6 @@ public class ClassAnalyzer {
             }
             else if (analyzer.isGetter()) {
                 prop_getterAnalyzer_map.put(analyzer.getPropertyName(), analyzer);
-                getterAnalyzers.add(analyzer);
             }
         }
     }
@@ -51,8 +48,12 @@ public class ClassAnalyzer {
         return prop_getterAnalyzer_map.get(propName);
     }
 
-    public List<MethodAnalyzer> get_all_getterAnalyzers() {
-        return getterAnalyzers;
+    public Collection<MethodAnalyzer> get_all_getterAnalyzers() {
+        return prop_getterAnalyzer_map.values();
+    }
+
+    public Collection<MethodAnalyzer> get_all_setterAnalyzers() {
+        return prop_setterAnalyzer_map.values();
     }
 
 }

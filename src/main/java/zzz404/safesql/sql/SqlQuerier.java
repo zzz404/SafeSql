@@ -1,4 +1,4 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.sql;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -11,13 +11,6 @@ import java.util.stream.Stream;
 import zzz404.safesql.DbSourceContext;
 import zzz404.safesql.Page;
 import zzz404.safesql.SqlQueryException;
-import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.EnhancedConnection;
-import zzz404.safesql.sql.OrMapper;
-import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.sql.QuietResultSetIterator;
-import zzz404.safesql.sql.QuietStatement;
 import zzz404.safesql.type.ValueType;
 import zzz404.safesql.util.CommonUtils;
 
@@ -29,7 +22,7 @@ public abstract class SqlQuerier {
     protected int limit = 0;
 
     private transient QuietResultSet rs = null;
-    transient OrMapper<?> orMapper = null;
+    transient OrMapper2<?> orMapper = null;
 
     public SqlQuerier(DbSourceImpl dbSource) {
         this.dbSource = dbSource;
@@ -122,17 +115,17 @@ public abstract class SqlQuerier {
     }
 
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        OrMapper<T> orMapper = getOrMapper(rs, clazz);
+        OrMapper2<T> orMapper = getOrMapper(rs, clazz);
         return orMapper.mapToObject();
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> OrMapper<T> getOrMapper(QuietResultSet rs, Class<T> clazz) {
+    protected <T> OrMapper2<T> getOrMapper(QuietResultSet rs, Class<T> clazz) {
         if (rs != this.rs || this.orMapper == null) {
-            this.orMapper = new OrMapper<>(clazz, rs);
+            this.orMapper = new OrMapper2<>(clazz, rs);
             this.rs = rs;
         }
-        return (OrMapper<T>) this.orMapper;
+        return (OrMapper2<T>) this.orMapper;
     }
 
     public <T> Optional<T> queryOne(Class<T> clazz) {

@@ -13,7 +13,7 @@ import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.Record;
-import zzz404.safesql.sql.OrMapper;
+import zzz404.safesql.sql.OrMapper2;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.QuietResultSetMetaData;
 
@@ -26,11 +26,11 @@ class TestEntity {
         QuietResultSet rs = createSimpleResultSet();
 
         entity.mapToObject(rs);
-        OrMapper<Document> orMapper;
+        OrMapper2<Document> orMapper;
         assertNotNull(orMapper = entity.orMapper);
 
         entity.mapToObject(rs);
-        OrMapper<Document> orMapper2 = entity.orMapper;
+        OrMapper2<Document> orMapper2 = entity.orMapper;
         assertEquals(orMapper, orMapper2);
 
         entity.mapToObject(createSimpleResultSet());

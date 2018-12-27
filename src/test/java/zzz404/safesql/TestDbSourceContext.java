@@ -21,7 +21,7 @@ public class TestDbSourceContext {
     void test_withDbSource_nestCall_throwException() {
         Connection conn = Mockito.mock(Connection.class);
         DbSource.create().useConnectionPrivider(() -> conn);
-        DbSourceImpl ds = DbSource.get("");
+        DbSourceImpl ds = DbSourceImpl.get("");
         assertThrows(IllegalStateException.class, () -> {
             DbSourceContext.withDbSource(ds, () -> {
                 DbSourceContext.withDbSource(ds, () -> {
@@ -36,7 +36,7 @@ public class TestDbSourceContext {
     void test_withConnection_checkDataSource() {
         Connection conn = Mockito.mock(Connection.class);
         DbSource.create().useConnectionPrivider(() -> conn);
-        DbSourceImpl ds = DbSource.get("");
+        DbSourceImpl ds = DbSourceImpl.get("");
 
         DbSource.create("z").useConnectionPrivider(() -> conn);
 

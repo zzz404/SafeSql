@@ -4,21 +4,21 @@ import zzz404.safesql.querier.OneEntityQuerier;
 import zzz404.safesql.querier.SqlDeleter;
 import zzz404.safesql.querier.SqlInserter;
 import zzz404.safesql.querier.SqlUpdater;
-import zzz404.safesql.querier.StaticSqlQuerier;
 import zzz404.safesql.querier.ThreeEntityQuerier;
 import zzz404.safesql.querier.TwoEntityQuerier;
 import zzz404.safesql.sql.DbSourceImpl;
+import zzz404.safesql.sql.StaticSqlExecuter;
 import zzz404.safesql.util.NoisySupplier;
 
 public class QuerierFactory {
     DbSourceImpl dbSource;
 
     public QuerierFactory(String name) {
-        dbSource = DbSource.get(name);
+        dbSource = DbSourceImpl.get(name);
     }
 
-    public StaticSqlQuerier sql(String sql) {
-        return new StaticSqlQuerier(dbSource).sql(sql);
+    public StaticSqlExecuter sql(String sql) {
+        return new StaticSqlExecuter(dbSource).sql(sql);
     }
 
     public <T> OneEntityQuerier<T> from(Class<T> clazz) {
