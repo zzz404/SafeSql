@@ -1,11 +1,11 @@
 package zzz404.safesql;
 
 import zzz404.safesql.querier.OneEntityQuerier;
-import zzz404.safesql.querier.SqlDeleter;
-import zzz404.safesql.querier.SqlUpdater;
+import zzz404.safesql.querier.DynamicDeleter;
+import zzz404.safesql.querier.DynamicUpdater;
 import zzz404.safesql.querier.ThreeEntityQuerier;
 import zzz404.safesql.querier.TwoEntityQuerier;
-import zzz404.safesql.sql.StaticSqlExecuter;
+import zzz404.safesql.sql.StaticSqlExecuterImpl;
 import zzz404.safesql.util.NoisySupplier;
 
 public class Sql {
@@ -25,7 +25,7 @@ public class Sql {
         return new QuerierFactory(name);
     }
 
-    public static StaticSqlExecuter sql(String sql) {
+    public static StaticSqlExecuterImpl sql(String sql) {
         return use("").sql(sql);
     }
 
@@ -41,9 +41,10 @@ public class Sql {
         return use("").from(class1, class2, class3);
     }
 
-    public static <T> Field field(T field) {
+    @SuppressWarnings("unchecked")
+    public static <T> Field<T> field(T field) {
         QueryContext ctx = QueryContext.get();
-        return ctx.getLastField();
+        return (Field<T>) ctx.getLastField();
     }
 
     public static <T> void count() {
@@ -57,75 +58,82 @@ public class Sql {
     }
 
     @SafeVarargs
-    public static <T> AbstractCondition cond(T field, String operator, T... values) {
+    public static <T> AbstractCondition cond(T fieldValue, String operator, T... values) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("cond");
-        Field tableColumn = ctx.takeField();
+        @SuppressWarnings("unchecked")
+        Field<T> field = (Field<T>) ctx.takeField();
         AbstractCondition cond;
         if (ctx.hasMoreColumn()) {
-            cond = new MutualCondition(tableColumn, operator, ctx.takeField());
+            @SuppressWarnings("unchecked")
+            Field<T> field2 = (Field<T>) ctx.takeField();
+            cond = new MutualCondition<T>(field, operator, field2);
         }
         else {
-            cond = AbstractCondition.of(tableColumn, operator, values);
+            cond = AbstractCondition.of(field, operator, values);
         }
         ctx.addCondition(cond);
         return cond;
     }
 
-    public static <T> void innerJoin(T field1, String operator, T field2) {
+    public static <T> void innerJoin(T fieldValue1, String operator, T fieldValue2) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("innerJoin");
-        AbstractCondition cond = new MutualCondition(ctx.takeField(), operator, ctx.takeField());
+        @SuppressWarnings("unchecked")
+        AbstractCondition cond = new MutualCondition<T>((Field<T>) ctx.takeField(), operator,
+                (Field<T>) ctx.takeField());
         ctx.addCondition(cond);
     }
 
-    public static void asc(Object o) {
+    public static <T> void asc(T o) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("asc");
 
-        Field field = ctx.takeField();
+        @SuppressWarnings("unchecked")
+        Field<T> field = (Field<T>) ctx.takeField();
         ctx.addOrderBy(new OrderBy(field, true));
     }
 
-    public static void asc(Object o, String propName) {
+    public static <T> void asc(T o, String propName) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("asc");
 
         EntityGettable entityGettable = (EntityGettable) o;
-        Field field = new Field(entityGettable.entity(), propName);
+        Field<T> field = new Field<>(entityGettable.entity(), propName);
         ctx.addOrderBy(new OrderBy(field, true));
     }
 
-    public static void desc(Object o) {
+    public static <T> void desc(T o) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("desc");
 
-        Field field = ctx.takeField();
+        @SuppressWarnings("unchecked")
+        Field<T> field = (Field<T>) ctx.takeField();
         ctx.addOrderBy(new OrderBy(field, false));
     }
 
-    public static void desc(Object o, String propName) {
+    public static <T> void desc(T o, String propName) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("desc");
 
         EntityGettable entityGettable = (EntityGettable) o;
-        Field field = new Field(entityGettable.entity(), propName);
+        Field<T> field = new Field<>(entityGettable.entity(), propName);
         ctx.addOrderBy(new OrderBy(field, false));
     }
 
     public static <T> T withTheSameConnection(NoisySupplier<T> supplier) {
         return use("").withTheSameConnection(supplier);
     }
-    
+
     public static <T> T insert(T entity) {
         return use("").insert(entity);
     }
 
-    public static <T> SqlUpdater<T> update(T entity) {
+    public static <T> DynamicUpdater<T> update(T entity) {
         return use("").update(entity);
     }
 
-    public static <T> SqlDeleter<T> delete(Class<T> clazz) {
+    public static <T> DynamicDeleter<T> delete(Class<T> clazz) {
         return use("").delete(clazz);
     }
 }

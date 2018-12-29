@@ -1,16 +1,12 @@
 package zzz404.safesql;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import net.sf.cglib.proxy.Enhancer;
 import zzz404.safesql.reflection.GetterTracer;
-import zzz404.safesql.sql.OrMapper2;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.util.CommonUtils;
 
 public class Entity<T> {
@@ -18,10 +14,9 @@ public class Entity<T> {
     private Class<T> objClass;
     private T mockedObject;
 
-    private List<Field> fields = new ArrayList<>();
+    private List<Field<?>> fields = new ArrayList<>();
 
-    private transient QuietResultSet rs;
-    transient OrMapper2<T> orMapper;
+    transient OrMapper<T> orMapper;
 
     public Entity(int index, Class<T> clazz) {
         this.index = index;
@@ -45,20 +40,11 @@ public class Entity<T> {
         return objClass.getSimpleName();
     }
 
-    public T mapToObject(QuietResultSet rs, Field... tableFields) {
-        if (orMapper == null || rs != this.rs) {
-            Set<String> columnNames = Arrays.stream(tableFields).map(f -> f.realColumnName).collect(Collectors.toSet());
-            orMapper = new OrMapper2<>(objClass, rs).selectColumns(columnNames);
-            this.rs = rs;
-        }
-        return orMapper.mapToObject();
-    }
-
-    public void addField(Field field) {
+    public void addField(Field<?> field) {
         fields.add(field);
     }
 
-    public List<Field> getFields() {
+    public List<Field<?>> getFields() {
         return fields;
     }
 

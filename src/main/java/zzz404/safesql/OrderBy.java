@@ -3,10 +3,10 @@ package zzz404.safesql;
 import zzz404.safesql.util.CommonUtils;
 
 public class OrderBy {
-    private Field field;
+    private Field<?> field;
     private boolean isAsc;
 
-    public OrderBy(Field field, boolean isAsc) {
+    public OrderBy(Field<?> field, boolean isAsc) {
         this.field = field;
         this.isAsc = isAsc;
     }

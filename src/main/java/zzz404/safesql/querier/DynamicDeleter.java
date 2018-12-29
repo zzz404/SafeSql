@@ -10,23 +10,22 @@ import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
 import zzz404.safesql.reflection.OneObjectPlayer;
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.QuietStatement;
-import zzz404.safesql.type.ValueType;
+import zzz404.safesql.sql.StaticSqlExecuterImpl;
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.NoisyRunnable;
 
-public class SqlDeleter<T> {
+public class DynamicDeleter<T> {
 
     protected DbSourceImpl dbSource;
     protected Entity<T> entity;
     protected List<AbstractCondition> conditions;
 
-    public SqlDeleter(DbSourceImpl dbSource, Class<T> clazz) {
+    public DynamicDeleter(DbSourceImpl dbSource, Class<T> clazz) {
         this.dbSource = dbSource;
         this.entity = new Entity<>(0, clazz);
     }
 
-    public SqlDeleter<T> where(OneObjectPlayer<T> conditionsCollector) {
+    public DynamicDeleter<T> where(OneObjectPlayer<T> conditionsCollector) {
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.where);
             NoisyRunnable.runQuietly(() -> ((NoisyRunnable) () -> {
@@ -48,8 +47,8 @@ public class SqlDeleter<T> {
         return sql;
     }
 
-    protected List<Object> paramValues() {
-        ArrayList<Object> paramValues = new ArrayList<>();
+    protected List<TypedValue<?>> paramValues() {
+        ArrayList<TypedValue<?>> paramValues = new ArrayList<>();
         conditions.forEach(cond -> {
             cond.appendValuesTo(paramValues);
         });
@@ -57,21 +56,7 @@ public class SqlDeleter<T> {
     }
 
     public int execute() {
-        return dbSource.withConnection(conn -> {
-            List<Object> paramValues = paramValues();
-            if (paramValues.isEmpty()) {
-                QuietStatement stmt = conn.createStatement();
-                return stmt.executeUpdate(sql());
-            }
-            else {
-                QuietPreparedStatement pstmt = conn.prepareStatement(sql());
-                int i = 1;
-                for (Object paramValue : paramValues()) {
-                    ValueType.setValueToPstmt(pstmt, i++, paramValue);
-                }
-                return pstmt.executeUpdate();
-            }
-        });
+        return new StaticSqlExecuterImpl(dbSource).sql(sql()).paramValues(paramValues()).update();
     }
 
 }

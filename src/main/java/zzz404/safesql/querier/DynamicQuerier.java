@@ -3,7 +3,7 @@ package zzz404.safesql.querier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
@@ -16,20 +16,22 @@ import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
 import zzz404.safesql.sql.DbSourceImpl;
+import zzz404.safesql.sql.OrMapper;
+import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.SqlQuerier;
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 import zzz404.safesql.util.NoisyRunnable;
 
 public abstract class DynamicQuerier extends SqlQuerier {
 
     protected List<Entity<?>> entities = new ArrayList<>();
-    protected List<Field> fields = Collections.emptyList();
+    protected List<Field<?>> fields = Collections.emptyList();
     protected List<AbstractCondition> conditions = Collections.emptyList();
-    protected List<Field> groupBys = Collections.emptyList();
+    protected List<Field<?>> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
     private Scope currentScope = null;
-    private transient Map<Entity<?>, List<Field>> entity_fields_map = null;
 
     public DynamicQuerier(DbSourceImpl dbSource) {
         super(dbSource);
@@ -141,20 +143,12 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     @Override
-    protected Object[] paramValues() {
-        ArrayList<Object> paramValues = new ArrayList<>();
+    protected List<TypedValue<?>> paramValues() {
+        ArrayList<TypedValue<?>> paramValues = new ArrayList<>();
         conditions.forEach(cond -> {
             cond.appendValuesTo(paramValues);
         });
-        return paramValues.toArray();
-    }
-
-    protected Field[] getFieldsOfEntity(Entity<?> entity) {
-        if (entity_fields_map == null) {
-            entity_fields_map = fields.stream().collect(Collectors.groupingBy(Field::getEntity));
-        }
-        List<Field> fields = entity_fields_map.get(entity);
-        return fields == null ? new Field[0] : fields.toArray(new Field[fields.size()]);
+        return paramValues;
     }
 
     public abstract Object queryOne();
@@ -162,5 +156,11 @@ public abstract class DynamicQuerier extends SqlQuerier {
     public abstract List<?> queryList();
 
     public abstract Page<?> queryPage();
+
+    protected <E> E rsToObject(QuietResultSet rs, Entity<E> entity) {
+        Set<String> columns = entity.getFields().stream().map(f -> f.realColumnName).collect(Collectors.toSet());
+        E e = OrMapper.get(entity.getObjClass(), dbSource).mapToObject(rs, columns, null);
+        return e;
+    }
 
 }

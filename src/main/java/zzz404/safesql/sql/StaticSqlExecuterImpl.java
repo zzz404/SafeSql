@@ -1,44 +1,51 @@
 package zzz404.safesql.sql;
 
-import javax.swing.tree.VariableHeightLayoutCache;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.type.ValueType;
+import zzz404.safesql.sql.type.TypedValue;
 
-public class StaticSqlExecuter extends SqlQuerier {
+public class StaticSqlExecuterImpl extends SqlQuerier {
 
     private String sql;
-    private Object[] paramValues;
+    private List<TypedValue<?>> paramValues;
 
-    public StaticSqlExecuter(DbSourceImpl dbSource) {
+    public StaticSqlExecuterImpl(DbSourceImpl dbSource) {
         super(dbSource);
     }
 
-    public StaticSqlExecuter sql(String sql) {
+    public StaticSqlExecuterImpl sql(String sql) {
         this.sql = sql;
         return this;
     }
 
-    public StaticSqlExecuter paramValues(Object... paramValues) {
+    public StaticSqlExecuterImpl paramValues(Object... paramValues) {
+        this.paramValues = Arrays.stream(paramValues).map(TypedValue::valueOf).collect(Collectors.toList());
+        return this;
+    }
+
+    public StaticSqlExecuterImpl paramValues(List<TypedValue<?>> paramValues) {
         this.paramValues = paramValues;
         return this;
     }
 
     @Override
-    public Object[] paramValues() {
+    public List<TypedValue<?>> paramValues() {
         return this.paramValues;
     }
 
     @Override
-    public StaticSqlExecuter offset(int offset) {
+    public StaticSqlExecuterImpl offset(int offset) {
         this.offset = offset;
         return this;
     }
 
     @Override
-    public StaticSqlExecuter limit(int limit) {
+    public StaticSqlExecuterImpl limit(int limit) {
         this.limit = limit;
         return this;
     }
@@ -62,18 +69,18 @@ public class StaticSqlExecuter extends SqlQuerier {
     };
 
     public int update() {
-        dbSource.withConnection(conn -> {
-            if (ArrayUtils.isEmpty(paramValues)) {
+        return dbSource.withConnection(conn -> {
+            if (CollectionUtils.isEmpty(paramValues)) {
                 QuietStatement stmt = conn.createStatement();
-                return stmt.executeQuery(sql);
+                return stmt.executeUpdate(sql);
             }
             else {
                 QuietPreparedStatement pstmt = conn.prepareStatement(sql);
                 int i = 1;
-                for (Object o : paramValues) {
-                    ValueType.get(o.getClass()).setToPstmt(pstmt, i++, o);
+                for (TypedValue<?> tv : paramValues) {
+                    tv.setToPstmt(pstmt, i++);
                 }
-                return pstmt.executeQuery();
+                return pstmt.executeUpdate();
             }
         });
     };

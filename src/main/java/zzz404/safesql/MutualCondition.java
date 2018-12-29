@@ -2,14 +2,15 @@ package zzz404.safesql;
 
 import java.util.List;
 
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class MutualCondition extends AbstractCondition {
+public class MutualCondition<T> extends AbstractCondition {
 
     private String operator;
-    protected Field field2;
+    protected Field<T> field2;
 
-    public MutualCondition(Field tableColumn, String operator, Field tableColumn2) {
+    public MutualCondition(Field<T> tableColumn, String operator, Field<T> tableColumn2) {
         super(tableColumn);
         this.operator = operator;
         this.field2 = tableColumn2;
@@ -31,7 +32,7 @@ public class MutualCondition extends AbstractCondition {
     }
 
     @Override
-    public void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<TypedValue<?>> paramValues) {
     }
 
 }

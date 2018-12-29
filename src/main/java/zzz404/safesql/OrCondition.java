@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
 public class OrCondition extends AbstractCondition {
@@ -17,9 +18,12 @@ public class OrCondition extends AbstractCondition {
         this.subConditions.addAll(Arrays.asList(subConditions));
     }
 
-    public <T> OrCondition or(T field, String operator, Object... values) {
+    @Override
+    public <T> OrCondition or(T fieldValue, String operator, @SuppressWarnings("unchecked") T... values) {
         QueryContext ctx = QueryContext.get();
-        AbstractCondition cond = AbstractCondition.of(ctx.takeField(), operator, values);
+        @SuppressWarnings("unchecked")
+        Field<T> field = (Field<T>) ctx.takeField();
+        AbstractCondition cond = AbstractCondition.of(field, operator, values);
         subConditions.add(cond);
         return this;
     }
@@ -35,7 +39,7 @@ public class OrCondition extends AbstractCondition {
     }
 
     @Override
-    public void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<TypedValue<?>> paramValues) {
         for (AbstractCondition cond : subConditions) {
             cond.appendValuesTo(paramValues);
         }

@@ -10,12 +10,12 @@ import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
 
-public class SqlInserter<T> {
+public class DynamicInserter<T> {
 
     private DbSourceImpl dbSource;
     private T o;
 
-    public SqlInserter(DbSourceImpl dbSource, T o) {
+    public DynamicInserter(DbSourceImpl dbSource, T o) {
         this.dbSource = dbSource;
         this.o = o;
     }
@@ -26,6 +26,12 @@ public class SqlInserter<T> {
         Collection<String> realColumnNames = mapper.get_realColumnName_of_all_getters();
         String sql = "INSERT INTO " + mapper.getRealTableName() + " (" + StringUtils.join(realColumnNames, ", ")
                 + ") VALUES (" + String.join(", ", Collections.nCopies(realColumnNames.size(), "?")) + ")";
+        
+        for (String columnName : realColumnNames) {
+            mapper.getValue(o, columnName);
+        }
+
+        
         dbSource.withConnection(conn -> {
             QuietPreparedStatement pstmt = conn.prepareStatement(sql);
             int i = 0;

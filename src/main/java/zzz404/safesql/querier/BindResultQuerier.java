@@ -1,6 +1,5 @@
 package zzz404.safesql.querier;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,7 +8,6 @@ import java.util.stream.Stream;
 
 import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
-import zzz404.safesql.QueryContext;
 import zzz404.safesql.util.NoisyRunnable;
 
 public abstract class BindResultQuerier<R> {
@@ -27,10 +25,6 @@ public abstract class BindResultQuerier<R> {
     protected void onSelectScope(NoisyRunnable collectColumns) {
         querier.onSelectScope(() -> {
             collectColumns.run();
-            this.columnMap = QueryContext.get().getColumnMap();
-            if (this.columnMap == null) {
-                this.columnMap = Collections.emptyMap();
-            }
         });
     }
 

@@ -23,7 +23,7 @@ public class TableSchema {
         this.snakeFormCompatable = snakeFormCompatable;
     }
 
-    public void revise_for_snakeFormCompatable(Field field) {
+    public void revise_for_snakeFormCompatable(Field<?> field) {
         String propName = field.getPropertyName();
         String realColumnName = getRealColumnName(propName);
         if (realColumnName != null) {
@@ -82,7 +82,7 @@ public class TableSchema {
             super(virtualTableName, virtualTableName, false);
         }
 
-        public void revise_for_snakeFormCompatable(Field field) {
+        public void revise_for_snakeFormCompatable(Field<?> field) {
         }
 
     }

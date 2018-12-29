@@ -1,12 +1,17 @@
 package zzz404.safesql;
 
+import org.apache.commons.lang3.Validate;
+
 import zzz404.safesql.util.CommonUtils;
 
-public class Field {
+public class Field<T> {
     private Entity<?> entity;
     private String propertyName;
     public String realColumnName;
     private String function;
+    private Class<T> clazz;
+    
+    Field<T> toField;
 
     public Field(Entity<?> entity, String propertyName) {
         this.entity = entity;
@@ -17,13 +22,9 @@ public class Field {
         }
     }
 
-    public Field(Entity<?> entity, String propertyName, String realColumnName) {
-        this.entity = entity;
-        this.propertyName = propertyName;
-        this.realColumnName = realColumnName;
-        if (entity != null) {
-            entity.addField(this);
-        }
+    public Field(Entity<?> entity, String propertyName, Class<T> clazz) {
+        this(entity, propertyName);
+        this.clazz = clazz;
     }
 
     public Entity<?> getEntity() {
@@ -45,10 +46,12 @@ public class Field {
         return result;
     }
 
-    public void as(Object o) {
+    @SuppressWarnings("unchecked")
+    public void as(T o) {
         QueryContext ctx = QueryContext.get();
-        Field field = ctx.takeLastField();
-        ctx.addColumnMapping(propertyName, field.getPropertyName());
+        Field<?> field = ctx.takeLastField();
+        Validate.isTrue(this.clazz == field.clazz);
+        toField = (Field<T>) field;
     }
 
     @Override
@@ -62,15 +65,15 @@ public class Field {
         return getPrefixedRealColumnName();
     }
 
-    public static Field count() {
-        Field field = new Field(null, "*");
+    public static Field<Integer> count() {
+        Field<Integer> field = new Field<>(null, "*", Integer.class);
         field.function = "COUNT";
         return field;
     }
 
-    public static Field all(EntityGettable mockedObject) {
+    public static Field<?> all(EntityGettable mockedObject) {
         Entity<?> entity = mockedObject.entity();
-        Field field = new Field(entity, "*");
+        Field<?> field = new Field<>(entity, "*");
         return field;
     }
 

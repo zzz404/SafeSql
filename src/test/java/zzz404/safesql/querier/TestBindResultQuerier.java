@@ -36,7 +36,7 @@ public class TestBindResultQuerier {
 
         bq.onSelectScope(() -> {
             QueryContext ctx = QueryContext.get();
-            map.forEach((k, v) -> ctx.addColumnMapping(k, v));
+            map.forEach((k, v) -> ctx.addPropertyMapping(k, v));
         });
         assertEquals(map, bq.columnMap);
     }

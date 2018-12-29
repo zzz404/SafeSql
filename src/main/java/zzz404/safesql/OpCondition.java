@@ -2,17 +2,18 @@ package zzz404.safesql;
 
 import java.util.List;
 
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class OpCondition extends AbstractCondition {
+public class OpCondition<T> extends AbstractCondition {
 
     private String operator;
-    private Object value;
+    private TypedValue<?> value;
 
-    public OpCondition(Field field, String operator, Object value) {
+    public OpCondition(Field<T> field, String operator, T value) {
         super(field);
         this.operator = operator;
-        this.value = value;
+        this.value = TypedValue.valueOf(value);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class OpCondition extends AbstractCondition {
     }
 
     @Override
-    public void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<TypedValue<?>> paramValues) {
         paramValues.add(value);
     }
 

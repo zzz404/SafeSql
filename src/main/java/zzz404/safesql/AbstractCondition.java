@@ -6,31 +6,37 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 
+import zzz404.safesql.sql.type.TypedValue;
+
 public abstract class AbstractCondition implements Condition {
 
-    protected Field field;
+    protected Field<?> field;
 
-    protected AbstractCondition(Field field) {
+    protected AbstractCondition(Field<?> field) {
         this.field = field;
     }
 
-    public static <T> AbstractCondition of(Field tableField, String operator, Object... values) {
+    public static <T> AbstractCondition of(Field<T> tableField, String operator,
+            @SuppressWarnings("unchecked") T... values) {
         if (operator.equals(BETWEEN)) {
             Validate.isTrue(values.length == 2);
-            return new BetweenCondition(tableField, values[0], values[1]);
+            return new BetweenCondition<T>(tableField, values[0], values[1]);
         }
         else if (operator.equals(IN)) {
-            return new InCondition(tableField, values);
+            return new InCondition<T>(tableField, values);
         }
         else {
             Validate.isTrue(values.length == 1);
-            return new OpCondition(tableField, operator, values[0]);
+            return new OpCondition<T>(tableField, operator, values[0]);
         }
     }
 
-    public <T> OrCondition or(T field, String operator, Object... values) {
+    @Override
+    public <T> OrCondition or(T fieldValue, String operator, @SuppressWarnings("unchecked") T... values) {
         QueryContext ctx = QueryContext.get();
-        AbstractCondition cond = AbstractCondition.of(ctx.takeField(), operator, values);
+        @SuppressWarnings("unchecked")
+        Field<T> field = (Field<T>) ctx.takeField();
+        AbstractCondition cond = AbstractCondition.of(field, operator, values);
         OrCondition orCond = new OrCondition(this, cond);
         ctx.reaplaceLastCondition(orCond);
         return orCond;
@@ -38,6 +44,6 @@ public abstract class AbstractCondition implements Condition {
 
     public abstract String toClause();
 
-    public abstract void appendValuesTo(List<Object> paramValues);
+    public abstract void appendValuesTo(List<TypedValue<?>> paramValues);
 
 }
