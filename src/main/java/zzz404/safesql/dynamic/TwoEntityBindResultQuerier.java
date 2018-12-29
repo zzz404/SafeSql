@@ -1,4 +1,4 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.dynamic;
 
 import zzz404.safesql.reflection.ThreeObjectPlayer;
 import zzz404.safesql.reflection.TwoObjectPlayer;

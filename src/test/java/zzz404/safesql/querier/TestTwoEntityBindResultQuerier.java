@@ -6,6 +6,8 @@ import static zzz404.safesql.Sql.*;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.dynamic.TwoEntityBindResultQuerier;
+import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
 import zzz404.safesql.helper.User;

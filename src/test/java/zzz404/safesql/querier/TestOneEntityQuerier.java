@@ -18,6 +18,8 @@ import zzz404.safesql.Field;
 import zzz404.safesql.OpCondition;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
+import zzz404.safesql.dynamic.OneEntityBindResultQuerier;
+import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
 import zzz404.safesql.helper.UtilsForTest;

@@ -10,10 +10,10 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.UtilsForTest;
-import zzz404.safesql.querier.OneEntityQuerier;
 import zzz404.safesql.querier.QuerierBackDoor;
 
 class TestOrCondition {

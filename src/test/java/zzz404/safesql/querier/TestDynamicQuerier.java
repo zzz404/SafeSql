@@ -14,6 +14,7 @@ import zzz404.safesql.MutualCondition;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
+import zzz404.safesql.dynamic.DynamicQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.helper.UtilsForTest;

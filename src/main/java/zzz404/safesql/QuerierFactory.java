@@ -1,11 +1,11 @@
 package zzz404.safesql;
 
-import zzz404.safesql.querier.OneEntityQuerier;
-import zzz404.safesql.querier.DynamicDeleter;
-import zzz404.safesql.querier.DynamicInserter;
-import zzz404.safesql.querier.DynamicUpdater;
-import zzz404.safesql.querier.ThreeEntityQuerier;
-import zzz404.safesql.querier.TwoEntityQuerier;
+import zzz404.safesql.dynamic.DynamicDeleter;
+import zzz404.safesql.dynamic.DynamicInserter;
+import zzz404.safesql.dynamic.DynamicUpdater;
+import zzz404.safesql.dynamic.OneEntityQuerier;
+import zzz404.safesql.dynamic.ThreeEntityQuerier;
+import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.StaticSqlExecuterImpl;
 import zzz404.safesql.util.NoisySupplier;

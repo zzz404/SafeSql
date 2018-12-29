@@ -3,6 +3,7 @@ package zzz404.safesql.querier;
 import java.util.List;
 
 import zzz404.safesql.AbstractCondition;
+import zzz404.safesql.dynamic.DynamicQuerier;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.SqlQuerier;
 

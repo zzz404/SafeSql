@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
+import zzz404.safesql.dynamic.BindResultQuerier;
+import zzz404.safesql.dynamic.DynamicQuerier;
 import zzz404.safesql.helper.DocumentVo;
 import zzz404.safesql.helper.UtilsForTest;
 

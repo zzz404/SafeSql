@@ -10,14 +10,14 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.dynamic.OneEntityQuerier;
+import zzz404.safesql.dynamic.ThreeEntityQuerier;
+import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.User;
-import zzz404.safesql.querier.OneEntityQuerier;
 import zzz404.safesql.querier.QuerierBackDoor;
-import zzz404.safesql.querier.ThreeEntityQuerier;
-import zzz404.safesql.querier.TwoEntityQuerier;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.EnhancedConnection;
 
