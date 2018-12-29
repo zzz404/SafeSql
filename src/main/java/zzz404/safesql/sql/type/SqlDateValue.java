@@ -1,4 +1,4 @@
-package zzz404.safesql.value;
+package zzz404.safesql.sql.type;
 
 import java.sql.Date;
 import java.text.DateFormat;
@@ -12,18 +12,21 @@ public class SqlDateValue extends TypedValue<Date> {
     public static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
-    public void readFromRs(QuietResultSet rs, int index) {
+    public SqlDateValue readFromRs(QuietResultSet rs, int index) {
         value = rs.getDate(index);
+        return this;
     }
 
     @Override
-    public void readFromRs(QuietResultSet rs, String columnName) {
+    public SqlDateValue readFromRs(QuietResultSet rs, String columnName) {
         value = rs.getDate(columnName);
+        return this;
     }
 
     @Override
-    public void setToPstmt(QuietPreparedStatement pstmt, int index) {
+    public SqlDateValue setToPstmt(QuietPreparedStatement pstmt, int index) {
         pstmt.setDate(index, value);
+        return this;
     }
 
     @Override

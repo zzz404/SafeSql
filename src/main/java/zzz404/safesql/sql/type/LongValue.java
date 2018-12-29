@@ -1,4 +1,4 @@
-package zzz404.safesql.value;
+package zzz404.safesql.sql.type;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
@@ -6,18 +6,21 @@ import zzz404.safesql.sql.QuietResultSet;
 public class LongValue extends TypedValue<Long> {
 
     @Override
-    public void readFromRs(QuietResultSet rs, int index) {
+    public LongValue readFromRs(QuietResultSet rs, int index) {
         value = primitiveToObject(rs.getLong(index), rs);
+        return this;
     }
 
     @Override
-    public void readFromRs(QuietResultSet rs, String columnName) {
+    public LongValue readFromRs(QuietResultSet rs, String columnName) {
         value = primitiveToObject(rs.getLong(columnName), rs);
+        return this;
     }
 
     @Override
-    public void setToPstmt(QuietPreparedStatement pstmt, int index) {
+    public LongValue setToPstmt(QuietPreparedStatement pstmt, int index) {
         pstmt.setLong(index, value);
+        return this;
     }
 
 }

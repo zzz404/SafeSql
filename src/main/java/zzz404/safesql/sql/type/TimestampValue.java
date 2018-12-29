@@ -1,35 +1,36 @@
-package zzz404.safesql.value;
+package zzz404.safesql.sql.type;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
 
-public class UtilDateValue extends TypedValue<Date> {
+public class TimestampValue extends TypedValue<Timestamp> {
 
     public static final DateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
-    public void readFromRs(QuietResultSet rs, int index) {
+    public TimestampValue readFromRs(QuietResultSet rs, int index) {
         value = rs.getTimestamp(index);
+        return this;
     }
 
     @Override
-    public void readFromRs(QuietResultSet rs, String columnName) {
+    public TimestampValue readFromRs(QuietResultSet rs, String columnName) {
         value = rs.getTimestamp(columnName);
+        return this;
     }
 
     @Override
-    public void setToPstmt(QuietPreparedStatement pstmt, int index) {
-        pstmt.setTimestamp(index, new Timestamp(value.getTime()));
+    public TimestampValue setToPstmt(QuietPreparedStatement pstmt, int index) {
+        pstmt.setTimestamp(index, value);
+        return this;
     }
 
     @Override
     public String toValueString() {
         return DATE_TIME_FORMATTER.format(value);
     }
-
 }

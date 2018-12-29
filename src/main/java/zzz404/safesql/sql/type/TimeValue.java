@@ -1,4 +1,4 @@
-package zzz404.safesql.value;
+package zzz404.safesql.sql.type;
 
 import java.sql.Time;
 import java.text.DateFormat;
@@ -12,18 +12,21 @@ public class TimeValue extends TypedValue<Time> {
     public static final DateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss");
 
     @Override
-    public void readFromRs(QuietResultSet rs, int index) {
+    public TimeValue readFromRs(QuietResultSet rs, int index) {
         value = rs.getTime(index);
+        return this;
     }
 
     @Override
-    public void readFromRs(QuietResultSet rs, String columnName) {
+    public TimeValue readFromRs(QuietResultSet rs, String columnName) {
         value = rs.getTime(columnName);
+        return this;
     }
 
     @Override
-    public void setToPstmt(QuietPreparedStatement pstmt, int index) {
+    public TimeValue setToPstmt(QuietPreparedStatement pstmt, int index) {
         pstmt.setTime(index, value);
+        return this;
     }
 
     @Override

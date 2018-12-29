@@ -122,7 +122,7 @@ public class TestSql {
     @Test
     void test_withTheSameConnection_hasCorrectConnection() {
         DbSource.create().useConnectionPrivider(() -> mock(Connection.class));
-        DbSourceImpl ds = DbSource.get("");
+        DbSourceImpl ds = DbSource.valueOf("");
 
         EnhancedConnection conn1 = DbSourceContext.withConnection(ds, conn -> conn);
         EnhancedConnection conn2 = DbSourceContext.withConnection(ds, conn -> conn);

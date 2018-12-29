@@ -1,4 +1,4 @@
-package zzz404.safesql.value;
+package zzz404.safesql.sql.type;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
@@ -6,18 +6,21 @@ import zzz404.safesql.sql.QuietResultSet;
 public class ShortValue extends TypedValue<Short> {
 
     @Override
-    public void readFromRs(QuietResultSet rs, int index) {
+    public ShortValue readFromRs(QuietResultSet rs, int index) {
         value = primitiveToObject(rs.getShort(index), rs);
+        return this;
     }
 
     @Override
-    public void readFromRs(QuietResultSet rs, String columnName) {
+    public ShortValue readFromRs(QuietResultSet rs, String columnName) {
         value = primitiveToObject(rs.getShort(columnName), rs);
+        return this;
     }
 
     @Override
-    public void setToPstmt(QuietPreparedStatement pstmt, int index) {
+    public ShortValue setToPstmt(QuietPreparedStatement pstmt, int index) {
         pstmt.setShort(index, value);
+        return this;
     }
 
 }

@@ -5,43 +5,42 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class InCondition extends AbstractCondition {
+public class InCondition<T> extends AbstractCondition {
 
-    private Object[] values = new Object[0];
+    private List<TypedValue<T>> values;
 
-    public InCondition(Field tableColumn, Object... values) {
+    public InCondition(Field<T> tableColumn, @SuppressWarnings("unchecked") T... values) {
         super(tableColumn);
-        this.values = values;
+        this.values = Arrays.stream(values).map(TypedValue::valueOf).collect(Collectors.toList());
     }
 
     @Override
     public String toString() {
-        return "InCondition [field=" + field + ", values=" + Arrays.toString(values) + "]";
+        return "InCondition [field=" + field + ", values=" + values + "]";
     }
 
     @Override
     public String toClause() {
-        if (values.length == 0) {
+        if (values.isEmpty()) {
             return "0<>0";
         }
         else {
             return field.getPrefixedRealColumnName() + " IN ("
-                    + Collections.nCopies(values.length, "?").stream().collect(Collectors.joining(", ")) + ")";
+                    + Collections.nCopies(values.size(), "?").stream().collect(Collectors.joining(", ")) + ")";
         }
     }
 
     @Override
     public boolean equals(Object that) {
-        return CommonUtils.isEquals(this, that, o -> o.values);
+        return CommonUtils.isEquals(this, that, o -> o.values.toArray());
     }
 
     @Override
-    public void appendValuesTo(List<Object> paramValues) {
-        for (Object value : values) {
-            paramValues.add(value);
-        }
+    public void appendValuesTo(List<TypedValue<?>> paramValues) {
+        paramValues.addAll(paramValues);
     }
 
 }

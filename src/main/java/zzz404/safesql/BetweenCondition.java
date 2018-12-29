@@ -2,17 +2,18 @@ package zzz404.safesql;
 
 import java.util.List;
 
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class BetweenCondition extends AbstractCondition {
+public class BetweenCondition<T> extends AbstractCondition {
 
-    private Object value1;
-    private Object value2;
+    private TypedValue<T> value1;
+    private TypedValue<T> value2;
 
-    public BetweenCondition(Field tableColumn, Object value1, Object value2) {
+    public BetweenCondition(Field<T> tableColumn, T value1, T value2) {
         super(tableColumn);
-        this.value1 = value1;
-        this.value2 = value2;
+        this.value1 = TypedValue.valueOf(value1);
+        this.value2 = TypedValue.valueOf(value2);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class BetweenCondition extends AbstractCondition {
     }
 
     @Override
-    public void appendValuesTo(List<Object> paramValues) {
+    public void appendValuesTo(List<TypedValue<?>> paramValues) {
         paramValues.add(value1);
         paramValues.add(value2);
     }

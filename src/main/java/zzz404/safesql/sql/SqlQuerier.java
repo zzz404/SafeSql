@@ -8,21 +8,23 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import zzz404.safesql.DbSourceContext;
 import zzz404.safesql.Page;
 import zzz404.safesql.SqlQueryException;
-import zzz404.safesql.type.ValueType;
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class SqlQuerier {
 
-    DbSourceImpl dbSource;
+    protected DbSourceImpl dbSource;
 
     protected int offset = 0;
     protected int limit = 0;
 
     private transient QuietResultSet rs = null;
-    transient OrMapper2<?> orMapper = null;
+    transient OrMapper<?> orMapper = null;
 
     public SqlQuerier(DbSourceImpl dbSource) {
         this.dbSource = dbSource;
@@ -38,31 +40,27 @@ public abstract class SqlQuerier {
         return this;
     }
 
-    protected final void setCondsValueToPstmt(QuietPreparedStatement pstmt) {
-        int i = 1;
-        for (Object paramValue : paramValues()) {
-            ValueType.setValueToPstmt(pstmt, i++, paramValue);
-        }
-    }
-
     private <T> T query_then_mapAll(Function<QuietResultSet, T> func) {
         String sql = sql();
         return query_then_mapAll(sql, func);
     }
 
     private <T> T query_then_mapAll(String sql, Function<QuietResultSet, T> func) {
-        Object[] paramValues = paramValues();
+        List<TypedValue<?>> paramValues = paramValues();
 
         try {
             return DbSourceContext.withConnection(dbSource, conn -> {
-                if (paramValues.length == 0) {
+                if (CollectionUtils.isEmpty(paramValues)) {
                     QuietStatement stmt = createStatement(conn);
                     QuietResultSet rs = new QuietResultSet(stmt.executeQuery(sql));
                     return func.apply(rs);
                 }
                 else {
                     QuietPreparedStatement pstmt = prepareStatement(sql, conn);
-                    setCondsValueToPstmt(pstmt);
+                    int i = 1;
+                    for (TypedValue<?> paramValue : paramValues) {
+                        paramValue.setToPstmt(pstmt, i++);
+                    }
                     QuietResultSet rs;
                     rs = new QuietResultSet(pstmt.executeQuery());
                     return func.apply(rs);
@@ -115,17 +113,20 @@ public abstract class SqlQuerier {
     }
 
     protected <T> T rsToObject(QuietResultSet rs, Class<T> clazz) {
-        OrMapper2<T> orMapper = getOrMapper(rs, clazz);
-        return orMapper.mapToObject();
+        if (TypedValue.supportType(clazz)) {
+            return TypedValue.valueOf(clazz).readFirstFromRs(rs).getValue();
+        }
+        OrMapper<T> orMapper = getOrMapper(rs, clazz);
+        return orMapper.mapToObject(rs, null, null);
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> OrMapper2<T> getOrMapper(QuietResultSet rs, Class<T> clazz) {
+    protected <T> OrMapper<T> getOrMapper(QuietResultSet rs, Class<T> clazz) {
         if (rs != this.rs || this.orMapper == null) {
-            this.orMapper = new OrMapper2<>(clazz, rs);
+            this.orMapper = new OrMapper<>(clazz, dbSource);
             this.rs = rs;
         }
-        return (OrMapper2<T>) this.orMapper;
+        return (OrMapper<T>) this.orMapper;
     }
 
     public <T> Optional<T> queryOne(Class<T> clazz) {
@@ -183,6 +184,6 @@ public abstract class SqlQuerier {
 
     protected abstract String sql_for_queryCount();
 
-    protected abstract Object[] paramValues();
+    protected abstract List<TypedValue<?>> paramValues();
 
 }

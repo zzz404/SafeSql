@@ -1,6 +1,5 @@
 package zzz404.safesql.sql;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import zzz404.safesql.reflection.ClassAnalyzer;
 import zzz404.safesql.reflection.MethodAnalyzer;
-import zzz404.safesql.type.ValueType;
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.NoisyRunnable;
 import zzz404.safesql.util.NoisySupplier;
 
@@ -35,19 +34,18 @@ public class OrMapper<T> {
     }
 
     OrMapper(Class<T> clazz, DbSourceImpl dbSource) {
-        this.clazz = clazz;
         this.tableSchema = dbSource.getSchema(clazz.getSimpleName());
         ClassAnalyzer classAnalyzer = ClassAnalyzer.get(clazz);
         Collection<MethodAnalyzer> getterAnalyzers = classAnalyzer.get_all_getterAnalyzers();
         for (MethodAnalyzer methodAnalyzer : getterAnalyzers) {
-            if (ValueType.get(methodAnalyzer.getType()) != null) {
+            if (TypedValue.supportType(methodAnalyzer.getType())) {
                 String realColumnName = tableSchema.getRealColumnName(methodAnalyzer.getPropertyName());
                 realColumn_getter_map.put(realColumnName, methodAnalyzer);
             }
         }
         Collection<MethodAnalyzer> setterAnalyzers = classAnalyzer.get_all_setterAnalyzers();
         for (MethodAnalyzer methodAnalyzer : setterAnalyzers) {
-            if (ValueType.get(methodAnalyzer.getType()) != null) {
+            if (TypedValue.supportType(methodAnalyzer.getType())) {
                 String realColumnName = tableSchema.getRealColumnName(methodAnalyzer.getPropertyName());
                 realColumn_getter_map.put(realColumnName, methodAnalyzer);
             }
@@ -62,18 +60,34 @@ public class OrMapper<T> {
         return realColumn_getter_map.keySet();
     }
 
-    public void setValueToPstmt(QuietPreparedStatement pstmt, int i, T o, String realColumnName) {
+    public TypedValue<?> getValue(T o, String realColumnName) {
         MethodAnalyzer analyzer = realColumn_getter_map.get(realColumnName);
         Object value = NoisySupplier.getQuietly(() -> analyzer.getMethod().invoke(o));
-        ValueType<Object> valueType = ValueType.get(value.getClass());
-        valueType.setToPstmt(pstmt, i, value);
+        return TypedValue.valueOf(value);
     }
 
-    public void setValueToObject(T o, String realColumnName, QuietResultSet rs, int i) {
+    public boolean setValueToPstmt(QuietPreparedStatement pstmt, int i, T o, String realColumnName) {
+        MethodAnalyzer analyzer = realColumn_getter_map.get(realColumnName);
+        if (analyzer != null) {
+            Object value = NoisySupplier.getQuietly(() -> analyzer.getMethod().invoke(o));
+            TypedValue.valueOf(value).setToPstmt(pstmt, i);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public boolean setValueToObject(T o, String realColumnName, QuietResultSet rs, int i) {
         MethodAnalyzer analyzer = realColumn_setter_map.get(realColumnName);
-        ValueType<Object> valueType = ValueType.get(analyzer.getType());
-        Object value = valueType.readFromRs(rs, i);
-        NoisyRunnable.runQuietly(() -> analyzer.getMethod().invoke(value));
+        if (analyzer != null) {
+            TypedValue<?> tv = TypedValue.valueOf(analyzer.getType()).readFromRs(rs, i);
+            NoisyRunnable.runQuietly(() -> analyzer.getMethod().invoke(tv.getValue()));
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public T mapToObject(QuietResultSet rs, Set<String> selectedColumns, Map<String, String> realColumn_prop_map) {
@@ -85,16 +99,16 @@ public class OrMapper<T> {
             for (String columnName : realColumnNames) {
                 String propertyName = columnName;
                 if (realColumn_prop_map != null) {
-                    propertyName = realColumn_prop_map.containsKey(columnName) ? realColumn_prop_map.get(columnName) : columnName;
+                    propertyName = realColumn_prop_map.containsKey(columnName) ? realColumn_prop_map.get(columnName)
+                            : columnName;
                 }
                 MethodAnalyzer analyzerOfSetter = classAnalyzer.find_setter_by_propertyName(propertyName);
                 if (analyzerOfSetter != null) {
                     Class<?> type = analyzerOfSetter.getType();
-                    ValueType<?> vType = ValueType.get(type);
-                    if (vType != null) {
-                        Object value = vType.readFromRs(rs, columnName);
-                        Method setter = analyzerOfSetter.getMethod();
-                        setter.invoke(o, value);
+                    TypedValue<?> tv = TypedValue.valueOf(type);
+                    if (tv != null) {
+                        tv.readFromRs(rs, columnName);
+                        analyzerOfSetter.getMethod().invoke(o, tv.getValue());
                     }
                 }
             }
@@ -102,14 +116,8 @@ public class OrMapper<T> {
         });
     }
 
-    Set<String> getColumnsOfResultSet() {
-        if (CollectionUtils.isEmpty(columnsOfResultSet)) {
-            columnsOfResultSet = TableSchema.getColumns(rs.getMetaData());
-        }
-        return columnsOfResultSet;
-    }
-
     public TableSchema getTableSchema() {
         return tableSchema;
     }
+
 }

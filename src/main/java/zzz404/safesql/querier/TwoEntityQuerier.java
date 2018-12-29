@@ -90,8 +90,8 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
     }
 
     protected Tuple2<T, U> rsToTuple(QuietResultSet rs) {
-        T t = entity1.mapToObject(rs, getFieldsOfEntity(entity1));
-        U u = entity2.mapToObject(rs, getFieldsOfEntity(entity2));
+        T t = rsToObject(rs, entity1);
+        U u = rsToObject(rs, entity2);
         return new Tuple2<>(t, u);
     }
 

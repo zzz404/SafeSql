@@ -2,11 +2,9 @@ package zzz404.safesql;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -15,11 +13,9 @@ public class QueryContext {
     private static final ThreadLocal<QueryContext> container = new ThreadLocal<>();
 
     private Scope scope;
-    private LinkedList<Field> fields = null;
+    private LinkedList<Field<?>> fields = null;
     private LinkedList<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
-
-    private Map<String, String> columnMap = null;
 
     private QueryContext() {
     }
@@ -41,41 +37,34 @@ public class QueryContext {
         return ctx;
     }
 
-    public void addTableField(Field field) {
+    public void addTableField(Field<?> field) {
         if (fields == null) {
             fields = new LinkedList<>();
         }
         fields.offer(field);
     }
 
-    public Field takeField() {
+    public Field<?> takeField() {
         Objects.requireNonNull(fields);
         return fields.poll();
     }
 
-    public Field takeLastField() {
+    public Field<?> takeLastField() {
         Objects.requireNonNull(fields);
         return fields.removeLast();
     }
 
-    public List<Field> takeAllTableFieldsUniquely() {
+    public List<Field<?>> takeAllTableFieldsUniquely() {
         if (fields == null) {
             return Collections.emptyList();
         }
-        ArrayList<Field> result = new ArrayList<>(new LinkedHashSet<>(fields));
+        ArrayList<Field<?>> result = new ArrayList<>(new LinkedHashSet<>(fields));
         fields.clear();
         return result;
     }
 
-    public Field getLastField() {
+    public Field<?> getLastField() {
         return fields.getLast();
-    }
-
-    public void addColumnMapping(String fromColumn, String toColumn) {
-        if (columnMap == null) {
-            columnMap = new HashMap<>();
-        }
-        columnMap.put(fromColumn, toColumn);
     }
 
     public boolean hasMoreColumn() {
@@ -115,10 +104,6 @@ public class QueryContext {
 
     public List<OrderBy> getOrderBys() {
         return orderBys != null ? orderBys : Collections.emptyList();
-    }
-
-    public Map<String, String> getColumnMap() {
-        return columnMap;
     }
 
 }

@@ -1,4 +1,4 @@
-package zzz404.safesql.value;
+package zzz404.safesql.sql.type;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
@@ -6,18 +6,21 @@ import zzz404.safesql.sql.QuietResultSet;
 public class FloatValue extends TypedValue<Float> {
 
     @Override
-    public void readFromRs(QuietResultSet rs, int index) {
+    public FloatValue readFromRs(QuietResultSet rs, int index) {
         value = primitiveToObject(rs.getFloat(index), rs);
+        return this;
     }
 
     @Override
-    public void readFromRs(QuietResultSet rs, String columnName) {
+    public FloatValue readFromRs(QuietResultSet rs, String columnName) {
         value = primitiveToObject(rs.getFloat(columnName), rs);
+        return this;
     }
 
     @Override
-    public void setToPstmt(QuietPreparedStatement pstmt, int index) {
+    public FloatValue setToPstmt(QuietPreparedStatement pstmt, int index) {
         pstmt.setFloat(index, value);
+        return this;
     }
 
 }

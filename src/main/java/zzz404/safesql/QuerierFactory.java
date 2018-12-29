@@ -1,13 +1,13 @@
 package zzz404.safesql;
 
 import zzz404.safesql.querier.OneEntityQuerier;
-import zzz404.safesql.querier.SqlDeleter;
-import zzz404.safesql.querier.SqlInserter;
-import zzz404.safesql.querier.SqlUpdater;
+import zzz404.safesql.querier.DynamicDeleter;
+import zzz404.safesql.querier.DynamicInserter;
+import zzz404.safesql.querier.DynamicUpdater;
 import zzz404.safesql.querier.ThreeEntityQuerier;
 import zzz404.safesql.querier.TwoEntityQuerier;
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.StaticSqlExecuter;
+import zzz404.safesql.sql.StaticSqlExecuterImpl;
 import zzz404.safesql.util.NoisySupplier;
 
 public class QuerierFactory {
@@ -17,8 +17,8 @@ public class QuerierFactory {
         dbSource = DbSourceImpl.get(name);
     }
 
-    public StaticSqlExecuter sql(String sql) {
-        return new StaticSqlExecuter(dbSource).sql(sql);
+    public StaticSqlExecuterImpl sql(String sql) {
+        return new StaticSqlExecuterImpl(dbSource).sql(sql);
     }
 
     public <T> OneEntityQuerier<T> from(Class<T> clazz) {
@@ -38,14 +38,14 @@ public class QuerierFactory {
     }
 
     public <T> T insert(T entity) {
-        return new SqlInserter<>(dbSource, entity).execute();
+        return new DynamicInserter<>(dbSource, entity).execute();
     }
 
-    public <T> SqlUpdater<T> update(T entity) {
-        return new SqlUpdater<>(dbSource, entity);
+    public <T> DynamicUpdater<T> update(T entity) {
+        return new DynamicUpdater<>(dbSource, entity);
     }
 
-    public <T> SqlDeleter<T> delete(Class<T> clazz) {
-        return new SqlDeleter<>(dbSource, clazz);
+    public <T> DynamicDeleter<T> delete(Class<T> clazz) {
+        return new DynamicDeleter<>(dbSource, clazz);
     }
 }
