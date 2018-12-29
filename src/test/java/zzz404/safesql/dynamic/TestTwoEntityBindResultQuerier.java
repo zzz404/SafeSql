@@ -1,4 +1,4 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

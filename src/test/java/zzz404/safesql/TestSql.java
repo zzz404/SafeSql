@@ -17,9 +17,9 @@ import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.User;
-import zzz404.safesql.querier.QuerierBackDoor;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.EnhancedConnection;
+import zzz404.safesql.sql.SqlQuerierBackDoor;
 
 public class TestSql {
 
@@ -54,7 +54,7 @@ public class TestSql {
         assertThrows(RuntimeException.class, () -> sql("hi"));
 
         DbSource.create("");
-        assertEquals("", QuerierBackDoor.getDbSource(sql("hi")).name);
+        assertEquals("", SqlQuerierBackDoor.getDbSource(sql("hi")).name);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class TestSql {
         assertThrows(RuntimeException.class, () -> from(Object.class));
 
         DbSource.create("");
-        assertEquals("", QuerierBackDoor.getDbSource(from(Object.class)).name);
+        assertEquals("", SqlQuerierBackDoor.getDbSource(from(Object.class)).name);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class TestSql {
             count();
             d.getId();
         });
-        assertEquals("SELECT COUNT(*), t1.id FROM Document t1", QuerierBackDoor.sql(querier));
+        assertEquals("SELECT COUNT(*), t1.id FROM Document t1", SqlQuerierBackDoor.sql(querier));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class TestSql {
             all(d);
             u.getId();
         });
-        assertEquals("SELECT t1.*, t2.id FROM Document t1, User t2", QuerierBackDoor.sql(querier));
+        assertEquals("SELECT t1.*, t2.id FROM Document t1, User t2", SqlQuerierBackDoor.sql(querier));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class TestSql {
                     asc(u, "name");
                 });
         assertEquals("SELECT * FROM Document t1, User t2, Category t3 ORDER BY t1.id ASC, t3.id DESC, t2.name ASC",
-                QuerierBackDoor.sql(querier));
+                SqlQuerierBackDoor.sql(querier));
     }
 
     @Test
@@ -109,10 +109,10 @@ public class TestSql {
 
         Sql.withTheSameConnection(() -> {
             OneEntityQuerier<Document> querier1 = from(Document.class);
-            DbSourceImpl ds1 = QuerierBackDoor.getDbSource(querier1);
+            DbSourceImpl ds1 = SqlQuerierBackDoor.getDbSource(querier1);
             assertEquals("", ds1.name);
             OneEntityQuerier<Document> querier2 = from(Document.class);
-            DbSourceImpl ds2 = QuerierBackDoor.getDbSource(querier2);
+            DbSourceImpl ds2 = SqlQuerierBackDoor.getDbSource(querier2);
             assertEquals("", ds2.name);
             assertEquals(ds1, ds2);
             return null;
@@ -122,7 +122,7 @@ public class TestSql {
     @Test
     void test_withTheSameConnection_hasCorrectConnection() {
         DbSource.create().useConnectionPrivider(() -> mock(Connection.class));
-        DbSourceImpl ds = DbSource.valueOf("");
+        DbSourceImpl ds = DbSourceImpl.get("");
 
         EnhancedConnection conn1 = DbSourceContext.withConnection(ds, conn -> conn);
         EnhancedConnection conn2 = DbSourceContext.withConnection(ds, conn -> conn);
@@ -143,7 +143,7 @@ public class TestSql {
         TwoEntityQuerier<Document, User> querier = from(Document.class, User.class).where((d, u) -> {
             innerJoin(d.getOwnerId(), "=", u.getId());
         });
-        String sql = QuerierBackDoor.sql(querier);
+        String sql = SqlQuerierBackDoor.sql(querier);
         assertEquals("SELECT * FROM Document t1, User t2 WHERE t1.ownerId = t2.id", sql);
     }
 

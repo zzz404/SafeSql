@@ -4,43 +4,43 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.sql.type.TypedValue;
 
 class TestInCondition {
 
-    private static final Field column_zzz = UtilsForTest.createSimpleField("zzz");
+    private static final Field<Integer> column_zzz = UtilsForTest.createSimpleField("zzz");
 
     @Test
     void test_toClause() {
-        InCondition cond = new InCondition(column_zzz, 1, 2, 3);
+        InCondition<Integer> cond = new InCondition<>(column_zzz, 1, 2, 3);
         assertEquals("t1.zzz IN (?, ?, ?)", cond.toClause());
     }
 
     @Test
     void test_toClause_noParams() {
-        InCondition cond = new InCondition(column_zzz);
+        InCondition<Integer> cond = new InCondition<>(column_zzz);
         assertEquals("0<>0", cond.toClause());
     }
 
     @Test
     void test_appendValuesTo() throws SQLException {
-        InCondition cond = new InCondition(column_zzz, 1, 3, 7);
+        InCondition<Integer> cond = new InCondition<>(column_zzz, 1, 3, 7);
 
-        ArrayList<Object> values = new ArrayList<>();
+        ArrayList<TypedValue<?>> values = new ArrayList<>();
         cond.appendValuesTo(values);
 
-        assertEquals(Arrays.asList(1, 3, 7), values);
+        assertEquals(UtilsForTest.createTypedValueList(1, 3, 7), values);
     }
 
     @Test
     void cover_rest() {
-        InCondition cond = new InCondition(UtilsForTest.createSimpleField(""), "", "");
+        InCondition<Integer> cond = new InCondition<>(UtilsForTest.createSimpleField(""), 1);
         cond.toString();
-        InCondition cond2 = new InCondition(UtilsForTest.createSimpleField(""), "", "");
+        InCondition<Integer> cond2 = new InCondition<>(UtilsForTest.createSimpleField(""), 1);
         cond.equals(cond2);
     }
 }

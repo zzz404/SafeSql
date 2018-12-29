@@ -1,4 +1,4 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -19,6 +19,7 @@ import zzz404.safesql.Page;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.FakeDbSource;
 import zzz404.safesql.sql.SqlQuerier;
+import zzz404.safesql.sql.type.TypedValue;
 
 class TestSqlQuerier {
 
@@ -147,7 +148,7 @@ class TestSqlQuerier {
     }
 
     public static class MySqlQuerier extends SqlQuerier {
-        private Object[] paramValues = new Object[0];
+        private List<TypedValue<?>> paramValues;
 
         public MySqlQuerier(FakeDatabase fakeDb) {
             super(new FakeDbSource(fakeDb));
@@ -164,12 +165,12 @@ class TestSqlQuerier {
         }
 
         @Override
-        protected Object[] paramValues() {
-            return paramValues;
+        protected List<TypedValue<?>> paramValues() {
+            return this.paramValues;
         }
 
         public MySqlQuerier paramValues(Object... paramValues) {
-            this.paramValues = paramValues;
+            this.paramValues = Arrays.stream(paramValues).map(TypedValue::valueOf).collect(Collectors.toList());
             return this;
         }
     }

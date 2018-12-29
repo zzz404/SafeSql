@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import net.sf.cglib.proxy.Enhancer;
 import zzz404.safesql.reflection.GetterTracer;
-import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.util.CommonUtils;
 
 public class Entity<T> {
@@ -15,8 +14,6 @@ public class Entity<T> {
     private T mockedObject;
 
     private List<Field<?>> fields = new ArrayList<>();
-
-    transient OrMapper<T> orMapper;
 
     public Entity(int index, Class<T> clazz) {
         this.index = index;

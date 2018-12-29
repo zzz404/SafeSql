@@ -1,4 +1,4 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
@@ -18,8 +18,6 @@ import zzz404.safesql.Field;
 import zzz404.safesql.OpCondition;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
-import zzz404.safesql.dynamic.OneEntityBindResultQuerier;
-import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
 import zzz404.safesql.helper.UtilsForTest;
@@ -48,7 +46,7 @@ class TestOneEntityQuerier {
         OneEntityQuerier<Document> q = createQuerier(Document.class).where(d -> {
             cond(d.getId(), "=", 3);
         });
-        assertEquals(Arrays.asList(new OpCondition(new Field(new Entity<Document>(1, Document.class), "id"), "=", 3)),
+        assertEquals(Arrays.asList(new OpCondition<>(new Field<>(new Entity<>(1, Document.class), "id"), "=", 3)),
                 q.conditions);
     }
 
@@ -57,7 +55,7 @@ class TestOneEntityQuerier {
         OneEntityQuerier<Document> q = createQuerier(Document.class).groupBy(d -> {
             d.getId();
         });
-        assertEquals(Arrays.asList(new Field(new Entity<>(1, Document.class), "id")), q.groupBys);
+        assertEquals(Arrays.asList(new Field<>(new Entity<>(1, Document.class), "id")), q.groupBys);
     }
 
     @Test
@@ -65,7 +63,7 @@ class TestOneEntityQuerier {
         OneEntityQuerier<Document> q = createQuerier(Document.class).orderBy(d -> {
             asc(d.getId());
         });
-        assertEquals(Arrays.asList(new OrderBy(new Field(new Entity<>(1, Document.class), "id"), true)), q.orderBys);
+        assertEquals(Arrays.asList(new OrderBy(new Field<>(new Entity<>(1, Document.class), "id"), true)), q.orderBys);
     }
 
     private <T> OneEntityQuerier<T> createQuerier(Class<T> clazz) {

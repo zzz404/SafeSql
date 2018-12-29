@@ -1,10 +1,8 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 import static zzz404.safesql.Sql.*;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,16 +14,11 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.Entity;
-import zzz404.safesql.Field;
 import zzz404.safesql.Page;
-import zzz404.safesql.dynamic.ThreeEntityQuerier;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
-import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.QuietResultSet;
-import zzz404.safesql.sql.QuietResultSetMetaData;
 import zzz404.safesql.util.Tuple3;
 
 class TestThreeEntityQuerier {
@@ -125,44 +118,8 @@ class TestThreeEntityQuerier {
     }
 
     @Test
-    void rsToTuple() throws SQLException {
-        ThreeEntityQuerier<Document, User, Category> q = new ThreeEntityQuerier<Document, User, Category>(null,
-                Document.class, User.class, Category.class);
-        Document doc = new Document();
-        User user = new User();
-        Category cat = new Category();
-        q.entity1 = new MyEntity<>(1, Document.class).setT(doc);
-        q.entity2 = new MyEntity<>(2, User.class).setT(user);
-        q.entity3 = new MyEntity<>(3, Category.class).setT(cat);
-
-        QuietResultSetMetaData metaData = new QuietResultSetMetaData(FakeSchemaBase.mockMetaData());
-        QuietResultSet rs = mock(QuietResultSet.class);
-        when(rs.getMetaData()).thenReturn(metaData);
-        Tuple3<Document, User, Category> tuple = q.rsToTuple(rs);
-        assertEquals(new Tuple3<>(doc, user, cat), tuple);
-    }
-
-    @Test
     void cover_rest() {
         createQuerier(Document.class, User.class, Category.class).offset(1).limit(1);
-    }
-
-    public static class MyEntity<T> extends Entity<T> {
-        private T t;
-
-        public MyEntity(int index, Class<T> clazz) {
-            super(index, clazz);
-        }
-
-        @Override
-        public T mapToObject(QuietResultSet rs, Field... tableFields) {
-            return t;
-        }
-
-        public MyEntity<T> setT(T t) {
-            this.t = t;
-            return this;
-        }
     }
 
     public static class MyThreeEntityQuerier<T, U, V> extends ThreeEntityQuerier<T, U, V> {

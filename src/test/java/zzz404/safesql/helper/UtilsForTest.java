@@ -6,11 +6,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 
 import zzz404.safesql.Entity;
 import zzz404.safesql.Field;
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.NoisyRunnable;
 
 public class UtilsForTest {
@@ -44,8 +46,8 @@ public class UtilsForTest {
         }
     }
 
-    public static Field createSimpleField(String field) {
-        return new Field(new Entity<>(1, Object.class), field);
+    public static Field<Integer> createSimpleField(String propertyName) {
+        return new Field<>(new Entity<>(1, Object.class), propertyName);
     }
 
     public static <K, V> Map<K, V> newMap(K k, V v) {
@@ -65,4 +67,7 @@ public class UtilsForTest {
         Assertions.assertEquals(list, Arrays.asList(array));
     }
 
+    public static List<TypedValue<?>> createTypedValueList(Object... os) {
+        return Arrays.stream(os).map(TypedValue::valueOf).collect(Collectors.toList());
+    }
 }

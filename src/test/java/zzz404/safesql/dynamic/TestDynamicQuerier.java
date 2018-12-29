@@ -1,4 +1,4 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,10 +14,8 @@ import zzz404.safesql.MutualCondition;
 import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
-import zzz404.safesql.dynamic.DynamicQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
-import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.DbSourceImpl;
 
 class TestDynamicQuerier {
@@ -44,8 +42,8 @@ class TestDynamicQuerier {
         MyDynamicQuerier q = new MyDynamicQuerier();
         q.onSelectScope(() -> {
             QueryContext ctx = QueryContext.get();
-            ctx.addTableField(new Field(new Entity<>(1, Document.class), "title"));
-            ctx.addTableField(new Field(new Entity<>(2, User.class), "account"));
+            ctx.addTableField(new Field<>(new Entity<>(1, Document.class), "title"));
+            ctx.addTableField(new Field<>(new Entity<>(2, User.class), "account"));
         });
         assertEquals("t1.title, t2.account", q.getColumnsClause());
     }
@@ -55,8 +53,8 @@ class TestDynamicQuerier {
         MyDynamicQuerier q = new MyDynamicQuerier();
         q.onWhereScope(() -> {
             QueryContext ctx = QueryContext.get();
-            ctx.addCondition(AbstractCondition.of(new Field(new Entity<>(1, Document.class), "title"), "=", "zzz"));
-            ctx.addCondition(AbstractCondition.of(new Field(new Entity<>(2, User.class), "id"), "=", 123));
+            ctx.addCondition(AbstractCondition.of(new Field<>(new Entity<>(1, Document.class), "title"), "=", "zzz"));
+            ctx.addCondition(AbstractCondition.of(new Field<>(new Entity<>(2, User.class), "id"), "=", 123));
         });
         assertEquals("t1.title = ? AND t2.id = ?", q.getWhereClause());
         assertEquals(Arrays.asList("zzz", 123), Arrays.asList(q.paramValues()));
@@ -67,8 +65,8 @@ class TestDynamicQuerier {
         MyDynamicQuerier q = new MyDynamicQuerier();
         q.onGroupByScope(() -> {
             QueryContext ctx = QueryContext.get();
-            ctx.addTableField(new Field(new Entity<>(1, Document.class), "title"));
-            ctx.addTableField(new Field(new Entity<>(2, User.class), "account"));
+            ctx.addTableField(new Field<>(new Entity<>(1, Document.class), "title"));
+            ctx.addTableField(new Field<>(new Entity<>(2, User.class), "account"));
         });
         assertEquals("t1.title, t2.account", q.getGroupByClause());
     }
@@ -78,8 +76,8 @@ class TestDynamicQuerier {
         MyDynamicQuerier q = new MyDynamicQuerier();
         q.onOrderByScope(() -> {
             QueryContext ctx = QueryContext.get();
-            ctx.addOrderBy(new OrderBy(new Field(new Entity<>(1, Document.class), "title"), true));
-            ctx.addOrderBy(new OrderBy(new Field(new Entity<>(2, User.class), "account"), false));
+            ctx.addOrderBy(new OrderBy(new Field<>(new Entity<>(1, Document.class), "title"), true));
+            ctx.addOrderBy(new OrderBy(new Field<>(new Entity<>(2, User.class), "account"), false));
         });
         assertEquals("t1.title ASC, t2.account DESC", q.getOrderByClause());
     }
@@ -104,7 +102,7 @@ class TestDynamicQuerier {
         Entity<User> entity3 = new Entity<>(3, User.class);
         q.entities.add(entity3);
 
-        q.fields = Arrays.asList(new Field(entity2, ""), new Field(entity3, ""));
+        q.fields = Arrays.asList(new Field<>(entity2, ""), new Field<>(entity3, ""));
 
         assertEquals("Document t2, User t3", q.getTablesClause());
     }
@@ -119,8 +117,8 @@ class TestDynamicQuerier {
         Entity<User> entity3 = new Entity<>(3, User.class);
         q.entities.add(entity3);
 
-        q.fields = Arrays.asList(new Field(entity1, ""));
-        q.conditions = Arrays.asList(AbstractCondition.of(new Field(entity2, ""), "=", 1));
+        q.fields = Arrays.asList(new Field<>(entity1, ""));
+        q.conditions = Arrays.asList(AbstractCondition.of(new Field<>(entity2, ""), "=", 1));
 
         assertEquals("Object t1, Document t2", q.getTablesClause());
     }
@@ -135,8 +133,8 @@ class TestDynamicQuerier {
         Entity<User> entity3 = new Entity<>(3, User.class);
         q.entities.add(entity3);
 
-        q.fields = Arrays.asList(new Field(entity1, ""));
-        q.groupBys = Arrays.asList(new Field(entity3, ""));
+        q.fields = Arrays.asList(new Field<>(entity1, ""));
+        q.groupBys = Arrays.asList(new Field<>(entity3, ""));
 
         assertEquals("Object t1, User t3", q.getTablesClause());
     }
@@ -151,8 +149,8 @@ class TestDynamicQuerier {
         Entity<User> entity3 = new Entity<>(3, User.class);
         q.entities.add(entity3);
 
-        q.fields = Arrays.asList(new Field(entity2, ""));
-        q.orderBys = Arrays.asList(new OrderBy(new Field(entity3, ""), true));
+        q.fields = Arrays.asList(new Field<>(entity2, ""));
+        q.orderBys = Arrays.asList(new OrderBy(new Field<>(entity3, ""), true));
 
         assertEquals("Document t2, User t3", q.getTablesClause());
     }
@@ -172,33 +170,16 @@ class TestDynamicQuerier {
         Entity<User> userEntity = new Entity<>(2, User.class);
         q.entities.add(docEntity);
         q.entities.add(userEntity);
-        q.fields = Arrays.asList(new Field(docEntity, "title"), new Field(userEntity, "account"));
+        q.fields = Arrays.asList(new Field<>(docEntity, "title"), new Field<>(userEntity, "account"));
         q.conditions = Arrays
-                .asList(new MutualCondition(new Field(docEntity, "ownerId"), "=", new Field(userEntity, "id")));
-        q.groupBys = Arrays.asList(new Field(userEntity, "account"));
-        q.orderBys = Arrays.asList(new OrderBy(new Field(docEntity, "id"), true));
+                .asList(new MutualCondition<>(new Field<>(docEntity, "ownerId"), "=", new Field<>(userEntity, "id")));
+        q.groupBys = Arrays.asList(new Field<>(userEntity, "account"));
+        q.orderBys = Arrays.asList(new OrderBy(new Field<>(docEntity, "id"), true));
         String expectedSql = "SELECT t1.title, t2.account FROM Document t1, User t2"
                 + " WHERE t1.ownerId = t2.id GROUP BY t2.account ORDER BY t1.id ASC";
         assertEquals(expectedSql, q.sql());
         expectedSql = "SELECT COUNT(*) FROM Document t1, User t2" + " WHERE t1.ownerId = t2.id GROUP BY t2.account";
         assertEquals(expectedSql, q.sql_for_queryCount());
-    }
-
-    @Test
-    void test_getFieldsOfEntity() {
-        MyDynamicQuerier q = new MyDynamicQuerier();
-        Entity<Document> docEntity = new Entity<>(1, Document.class);
-        Entity<User> userEntity = new Entity<>(2, User.class);
-        q.entities.add(docEntity);
-        q.entities.add(userEntity);
-
-        Field field_docId = new Field(docEntity, "id");
-        Field field_userAccount = new Field(userEntity, "account");
-        Field field_docTitle = new Field(docEntity, "title");
-        q.fields = Arrays.asList(field_docId, field_userAccount, field_docTitle);
-
-        UtilsForTest.assertEquals(Arrays.asList(field_docId, field_docTitle), q.getFieldsOfEntity(docEntity));
-        UtilsForTest.assertEquals(Arrays.asList(field_userAccount), q.getFieldsOfEntity(userEntity));
     }
 
     public static class MyDynamicQuerier extends DynamicQuerier {

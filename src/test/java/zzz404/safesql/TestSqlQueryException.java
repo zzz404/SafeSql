@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.helper.Document;
-import zzz404.safesql.helper.UtilsForTest;
 
 public class TestSqlQueryException {
     @Test
@@ -31,7 +30,7 @@ public class TestSqlQueryException {
         });
         SqlQueryException e = assertThrows(SqlQueryException.class, () -> querier.queryList());
         assertEquals("SELECT * FROM Document t1 WHERE t1.id = ? AND t1.title = ?", e.getSql());
-        UtilsForTest.assertEquals(Arrays.asList(111, "zzz"), e.getParamValues());
+        assertEquals(Arrays.asList(111, "zzz"), e.getParamValues());
         assertEquals("SELECT * FROM Document t1 WHERE t1.id = 111 AND t1.title = 'zzz'", e.getValuedSql());
         assertEquals("Error on query : SELECT * FROM Document t1 WHERE t1.id = 111 AND t1.title = 'zzz'",
                 e.getMessage());

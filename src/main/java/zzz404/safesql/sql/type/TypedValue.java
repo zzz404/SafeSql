@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 
 import zzz404.safesql.sql.QuietPreparedStatement;
 import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.util.CommonUtils;
 
 public abstract class TypedValue<T> {
     @SuppressWarnings("rawtypes")
@@ -116,6 +117,11 @@ public abstract class TypedValue<T> {
 
     public T getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        return CommonUtils.isEquals(this, that, tv -> new Object[] { tv.value });
     }
 
 }

@@ -1,4 +1,4 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
@@ -14,10 +14,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.Entity;
-import zzz404.safesql.Field;
 import zzz404.safesql.Page;
-import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.QuietResultSet;
@@ -111,38 +108,8 @@ class TestTwoEntityQuerier {
     }
 
     @Test
-    void rsToTuple() {
-        TwoEntityQuerier<Document, User> q = new TwoEntityQuerier<Document, User>(null, Document.class, User.class);
-        Document doc = new Document();
-        User user = new User();
-        q.entity1 = new MyEntity<>(1, Document.class).setT(doc);
-        q.entity2 = new MyEntity<>(2, User.class).setT(user);
-
-        Tuple2<Document, User> tuple = q.rsToTuple(null);
-        assertEquals(new Tuple2<>(doc, user), tuple);
-    }
-
-    @Test
     void cover_rest() {
         createQuerier(Document.class, User.class).offset(1).limit(1);
-    }
-
-    public static class MyEntity<T> extends Entity<T> {
-        private T t;
-
-        public MyEntity(int index, Class<T> clazz) {
-            super(index, clazz);
-        }
-
-        @Override
-        public T mapToObject(QuietResultSet rs, Field... tableFields) {
-            return t;
-        }
-
-        public MyEntity<T> setT(T t) {
-            this.t = t;
-            return this;
-        }
     }
 
     public static class MyTwoEntityQuerier<T, U> extends TwoEntityQuerier<T, U> {

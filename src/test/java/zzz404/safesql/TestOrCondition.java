@@ -6,7 +6,6 @@ import static zzz404.safesql.Sql.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,12 +13,13 @@ import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.UtilsForTest;
-import zzz404.safesql.querier.QuerierBackDoor;
+import zzz404.safesql.sql.SqlQuerierBackDoor;
+import zzz404.safesql.sql.type.TypedValue;
 
 class TestOrCondition {
 
-    private static OpCondition cond1 = new OpCondition(UtilsForTest.createSimpleField("a"), "=", "aaa");
-    private static OpCondition cond2 = new OpCondition(UtilsForTest.createSimpleField("b"), "<>", 11);
+    private static OpCondition<Integer> cond1 = new OpCondition<>(UtilsForTest.createSimpleField("a"), "=", 3);
+    private static OpCondition<Integer> cond2 = new OpCondition<>(UtilsForTest.createSimpleField("b"), "<>", 11);
 
     @Test
     void test_toClause() {
@@ -31,10 +31,10 @@ class TestOrCondition {
     void test_appendValuesTo() throws SQLException {
         OrCondition cond = new OrCondition(cond1, cond2);
 
-        ArrayList<Object> values = new ArrayList<>();
+        ArrayList<TypedValue<?>> values = new ArrayList<>();
         cond.appendValuesTo(values);
 
-        assertEquals(Arrays.asList("aaa", 11), values);
+        assertEquals(UtilsForTest.createTypedValueList("aaa", 11), values);
     }
 
     @Test
@@ -48,8 +48,9 @@ class TestOrCondition {
             });
             assertEquals(
                     "SELECT * FROM Document t1 WHERE t1.ownerId = ? AND (t1.id < ? OR t1.id > ? OR t1.title LIKE ?)",
-                    QuerierBackDoor.sql(querier));
-            UtilsForTest.assertEquals(Arrays.asList(111, 1, 100, "zzz%"), QuerierBackDoor.paramValues(querier));
+                    SqlQuerierBackDoor.sql(querier));
+            assertEquals(UtilsForTest.createTypedValueList(111, 1, 100, "zzz%"),
+                    SqlQuerierBackDoor.paramValues(querier));
         }
         finally {
             DbSource.map.clear();

@@ -3,34 +3,34 @@ package zzz404.safesql;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.sql.type.TypedValue;
 
 class TestOpCondition {
 
-    private static final Field column_zzz = UtilsForTest.createSimpleField("zzz");
+    private static final Field<Integer> column_zzz = UtilsForTest.createSimpleField("zzz");
 
     @Test
     void test_toClause() {
-        OpCondition cond = new OpCondition(column_zzz, "=", 123);
+        OpCondition<Integer> cond = new OpCondition<>(column_zzz, "=", 123);
         assertEquals("t1.zzz = ?", cond.toClause());
     }
 
     @Test
     void test_appendValuesTo() {
-        OpCondition cond = new OpCondition(column_zzz, "=", 123);
+        OpCondition<Integer> cond = new OpCondition<>(column_zzz, "=", 123);
 
-        ArrayList<Object> values = new ArrayList<>();
+        ArrayList<TypedValue<?>> values = new ArrayList<>();
         cond.appendValuesTo(values);
 
-        assertEquals(Arrays.asList(123), values);
+        assertEquals(UtilsForTest.createTypedValueList(123), values);
     }
 
     @Test
     void cover_rest() {
-        new OpCondition(column_zzz, "", "").toString();
+        new OpCondition<>(column_zzz, "", 1).toString();
     }
 }

@@ -1,4 +1,4 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,43 +12,18 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.Page;
-import zzz404.safesql.QueryContext;
-import zzz404.safesql.dynamic.BindResultQuerier;
-import zzz404.safesql.dynamic.DynamicQuerier;
 import zzz404.safesql.helper.DocumentVo;
 import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.sql.SqlQuerierBackDoor;
 
 public class TestBindResultQuerier {
-
-    @Test
-    void test_onSelectScope_doNothing_columnMapNotNull() {
-        DynamicQuerier q = new MyDynamicQuerier();
-        MyBindResultQuerier<DocumentVo> bq = new MyBindResultQuerier<>(q, DocumentVo.class);
-        assertNull(bq.columnMap);
-        bq.onSelectScope(() -> {
-        });
-        assertNotNull(bq.columnMap);
-    }
-
-    @Test
-    void test_onSelectScope_columnMap() {
-        MyBindResultQuerier<DocumentVo> bq = new MyBindResultQuerier<>(new MyDynamicQuerier(), DocumentVo.class);
-
-        Map<String, String> map = UtilsForTest.newMap("aaa", "bbb", "ccc", "ddd");
-
-        bq.onSelectScope(() -> {
-            QueryContext ctx = QueryContext.get();
-            map.forEach((k, v) -> ctx.addPropertyMapping(k, v));
-        });
-        assertEquals(map, bq.columnMap);
-    }
 
     @Test
     void test_offset() {
         MyDynamicQuerier q = new MyDynamicQuerier();
         MyBindResultQuerier<DocumentVo> bq = new MyBindResultQuerier<>(q, DocumentVo.class);
         bq.offset(11);
-        assertEquals(11, q.offset);
+        assertEquals(11, SqlQuerierBackDoor.offset(q));
     }
 
     @Test
@@ -56,7 +31,7 @@ public class TestBindResultQuerier {
         MyDynamicQuerier q = new MyDynamicQuerier();
         MyBindResultQuerier<DocumentVo> bq = new MyBindResultQuerier<>(q, DocumentVo.class);
         bq.limit(5);
-        assertEquals(5, q.limit);
+        assertEquals(5, SqlQuerierBackDoor.limit(q));
     }
 
     @Test

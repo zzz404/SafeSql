@@ -1,15 +1,10 @@
-package zzz404.safesql.querier;
+package zzz404.safesql.sql;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.StaticSqlExecuterImpl;
-
-class TestStaticSqlQuerier {
+class TestStaticSqlExecuterImpl {
 
     @Test
     void test_buildSql() {
@@ -27,18 +22,6 @@ class TestStaticSqlQuerier {
         String sql_noOrderBy = "select aaa,bbb, ccc FROM ddd where aaa=1 ";
         q = new StaticSqlExecuterImpl(null).sql(sql_noOrderBy);
         assertEquals("SELECT COUNT(*) FROM ddd where aaa=1 ", q.sql_for_queryCount());
-    }
-
-    @Test
-    void test_setCondValueToPstmt() {
-        StaticSqlExecuterImpl q = new StaticSqlExecuterImpl(null).sql("Hello").paramValues(123, "zzz");
-        QuietPreparedStatement pstmt = mock(QuietPreparedStatement.class);
-
-        q.setCondsValueToPstmt(pstmt);
-
-        InOrder inOrder = inOrder(pstmt);
-        inOrder.verify(pstmt, times(1)).setInt(1, 123);
-        inOrder.verify(pstmt, times(1)).setString(2, "zzz");
     }
 
     @Test
