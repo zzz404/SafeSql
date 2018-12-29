@@ -18,6 +18,7 @@ import zzz404.safesql.Page;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
+import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.Tuple3;
 
@@ -47,7 +48,7 @@ class TestThreeEntityQuerier {
             cond(c.getId(), "=", 321);
         });
         assertEquals("t1.ownerId = t2.id AND t2.name LIKE ? AND t3.id = ?", q.getWhereClause());
-        assertEquals(Arrays.asList("zz%", 321), Arrays.asList(q.paramValues()));
+        assertEquals(UtilsForTest.createTypedValueList("zz%", 321), q.paramValues());
     }
 
     @Test

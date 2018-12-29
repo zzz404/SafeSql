@@ -18,13 +18,15 @@ import zzz404.safesql.sql.type.TypedValue;
 
 class TestOrCondition {
 
-    private static OpCondition<Integer> cond1 = new OpCondition<>(UtilsForTest.createSimpleField("a"), "=", 3);
-    private static OpCondition<Integer> cond2 = new OpCondition<>(UtilsForTest.createSimpleField("b"), "<>", 11);
+    private static OpCondition<String> cond1 = new OpCondition<>(new Field<>(new Entity<>(1, Object.class), "a"), "=",
+            "aaa");
+    private static OpCondition<Integer> cond2 = new OpCondition<>(new Field<>(new Entity<>(2, Object.class), "b"), "<>",
+            11);
 
     @Test
     void test_toClause() {
         OrCondition cond = new OrCondition(cond1, cond2);
-        assertEquals("(t1.a = ? OR t1.b <> ?)", cond.toClause());
+        assertEquals("(t1.a = ? OR t2.b <> ?)", cond.toClause());
     }
 
     @Test

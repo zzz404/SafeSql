@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
+import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.util.Tuple2;
 
@@ -44,7 +45,7 @@ class TestTwoEntityQuerier {
             cond(u.getName(), LIKE, "zz%");
         });
         assertEquals("t1.ownerId = t2.id AND t2.name LIKE ?", q.getWhereClause());
-        assertEquals(Arrays.asList("zz%"), Arrays.asList(q.paramValues()));
+        assertEquals(UtilsForTest.createTypedValueList("zz%"), q.paramValues());
     }
 
     @Test

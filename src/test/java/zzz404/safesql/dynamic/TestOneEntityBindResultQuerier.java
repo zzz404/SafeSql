@@ -1,30 +1,14 @@
 package zzz404.safesql.dynamic;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static zzz404.safesql.Sql.*;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.dynamic.OneEntityBindResultQuerier;
-import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
-import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.reflection.OneObjectPlayer;
 
 public class TestOneEntityBindResultQuerier {
-
-    @Test
-    void test_select() {
-        OneEntityQuerier<Document> q = new OneEntityQuerier<>(null, Document.class);
-        OneEntityBindResultQuerier<Document, DocumentVo> bq = q.to(DocumentVo.class);
-        bq.select((d, v) -> {
-            field(d.getTitle()).as(v.getTitle2());
-        });
-        assertEquals("t1.title", q.getColumnsClause());
-        assertEquals(UtilsForTest.newMap("title", "title2"), bq.columnMap);
-    }
 
     @Test
     void test_where() {

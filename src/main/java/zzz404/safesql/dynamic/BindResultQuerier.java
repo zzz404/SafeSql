@@ -1,7 +1,6 @@
 package zzz404.safesql.dynamic;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -14,8 +13,6 @@ public abstract class BindResultQuerier<R> {
 
     protected DynamicQuerier querier;
     protected Entity<R> resultEntity;
-
-    protected Map<String, String> columnMap;
 
     public BindResultQuerier(DynamicQuerier querier, Class<R> resultClass) {
         this.querier = querier;

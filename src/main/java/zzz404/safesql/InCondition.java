@@ -40,7 +40,7 @@ public class InCondition<T> extends AbstractCondition {
 
     @Override
     public void appendValuesTo(List<TypedValue<?>> paramValues) {
-        paramValues.addAll(paramValues);
+        paramValues.addAll(values);
     }
 
 }

@@ -16,6 +16,7 @@ import zzz404.safesql.Page;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
+import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.DbSourceImpl;
 
 class TestDynamicQuerier {
@@ -57,7 +58,7 @@ class TestDynamicQuerier {
             ctx.addCondition(AbstractCondition.of(new Field<>(new Entity<>(2, User.class), "id"), "=", 123));
         });
         assertEquals("t1.title = ? AND t2.id = ?", q.getWhereClause());
-        assertEquals(Arrays.asList("zzz", 123), Arrays.asList(q.paramValues()));
+        assertEquals(UtilsForTest.createTypedValueList("zzz", 123), q.paramValues());
     }
 
     @Test

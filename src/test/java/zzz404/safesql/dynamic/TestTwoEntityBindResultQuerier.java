@@ -6,12 +6,9 @@ import static zzz404.safesql.Sql.*;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.dynamic.TwoEntityBindResultQuerier;
-import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
 import zzz404.safesql.helper.User;
-import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.reflection.TwoObjectPlayer;
 
 public class TestTwoEntityBindResultQuerier {
@@ -25,7 +22,6 @@ public class TestTwoEntityBindResultQuerier {
             u.getId();
         });
         assertEquals("t1.title, t2.id", q.getColumnsClause());
-        assertEquals(UtilsForTest.newMap("title", "title2"), bq.columnMap);
     }
 
     @Test

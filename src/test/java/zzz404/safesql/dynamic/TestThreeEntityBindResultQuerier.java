@@ -6,13 +6,10 @@ import static zzz404.safesql.Sql.*;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.dynamic.ThreeEntityBindResultQuerier;
-import zzz404.safesql.dynamic.ThreeEntityQuerier;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
 import zzz404.safesql.helper.User;
-import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.reflection.ThreeObjectPlayer;
 
 public class TestThreeEntityBindResultQuerier {
@@ -28,7 +25,6 @@ public class TestThreeEntityBindResultQuerier {
             c.getId();
         });
         assertEquals("t1.title, t2.id, t3.id", q.getColumnsClause());
-        assertEquals(UtilsForTest.newMap("title", "title2"), bq.columnMap);
     }
 
     @Test
