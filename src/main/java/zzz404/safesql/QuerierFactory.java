@@ -7,7 +7,7 @@ import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.dynamic.ThreeEntityQuerier;
 import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.StaticSqlExecuterImpl;
+import zzz404.safesql.sql.StaticSqlExecuter;
 import zzz404.safesql.util.NoisySupplier;
 
 public class QuerierFactory {
@@ -17,8 +17,8 @@ public class QuerierFactory {
         dbSource = DbSourceImpl.get(name);
     }
 
-    public StaticSqlExecuterImpl sql(String sql) {
-        return new StaticSqlExecuterImpl(dbSource).sql(sql);
+    public StaticSqlExecuter sql(String sql) {
+        return new StaticSqlExecuter(dbSource).sql(sql);
     }
 
     public <T> OneEntityQuerier<T> from(Class<T> clazz) {

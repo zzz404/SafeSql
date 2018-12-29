@@ -2,13 +2,17 @@ package zzz404.safesql.sql;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import zzz404.safesql.DbSource;
 import zzz404.safesql.Entity;
 import zzz404.safesql.sql.TableSchema.NullTableSchema;
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 import zzz404.safesql.util.NoisySupplier;
 import zzz404.safesql.util.Tuple2;
@@ -112,4 +116,20 @@ public class DbSourceImpl extends DbSource {
         return name;
     }
 
+    public int update(String sql, List<TypedValue<?>> paramValues) {
+        return withConnection(conn -> {
+            if (CollectionUtils.isEmpty(paramValues)) {
+                QuietStatement stmt = conn.createStatement();
+                return stmt.executeUpdate(sql);
+            }
+            else {
+                QuietPreparedStatement pstmt = conn.prepareStatement(sql);
+                int i = 1;
+                for (TypedValue<?> tv : paramValues) {
+                    tv.setToPstmt(pstmt, i++);
+                }
+                return pstmt.executeUpdate();
+            }
+        });
+    };
 }

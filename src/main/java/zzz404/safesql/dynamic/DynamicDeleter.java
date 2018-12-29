@@ -10,12 +10,10 @@ import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
 import zzz404.safesql.reflection.OneObjectPlayer;
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.StaticSqlExecuterImpl;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.NoisyRunnable;
 
 public class DynamicDeleter<T> {
-
     protected DbSourceImpl dbSource;
     protected Entity<T> entity;
     protected List<AbstractCondition> conditions;
@@ -56,7 +54,7 @@ public class DynamicDeleter<T> {
     }
 
     public int execute() {
-        return new StaticSqlExecuterImpl(dbSource).sql(sql()).paramValues(paramValues()).update();
+        return dbSource.update(sql(), paramValues());
     }
 
 }

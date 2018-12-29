@@ -5,7 +5,7 @@ import zzz404.safesql.dynamic.DynamicUpdater;
 import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.dynamic.ThreeEntityQuerier;
 import zzz404.safesql.dynamic.TwoEntityQuerier;
-import zzz404.safesql.sql.StaticSqlExecuterImpl;
+import zzz404.safesql.sql.StaticSqlExecuter;
 import zzz404.safesql.util.NoisySupplier;
 
 public class Sql {
@@ -25,7 +25,7 @@ public class Sql {
         return new QuerierFactory(name);
     }
 
-    public static StaticSqlExecuterImpl sql(String sql) {
+    public static StaticSqlExecuter sql(String sql) {
         return use("").sql(sql);
     }
 

@@ -4,32 +4,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 
 import zzz404.safesql.sql.type.TypedValue;
 
-public class StaticSqlExecuterImpl extends SqlQuerier {
+public class StaticSqlExecuter extends SqlQuerier {
 
     private String sql;
     private List<TypedValue<?>> paramValues;
 
-    public StaticSqlExecuterImpl(DbSourceImpl dbSource) {
+    public StaticSqlExecuter(DbSourceImpl dbSource) {
         super(dbSource);
     }
 
-    public StaticSqlExecuterImpl sql(String sql) {
+    public StaticSqlExecuter sql(String sql) {
         this.sql = sql;
         return this;
     }
 
-    public StaticSqlExecuterImpl paramValues(Object... paramValues) {
+    public StaticSqlExecuter paramValues(Object... paramValues) {
         this.paramValues = Arrays.stream(paramValues).map(TypedValue::valueOf).collect(Collectors.toList());
-        return this;
-    }
-
-    public StaticSqlExecuterImpl paramValues(List<TypedValue<?>> paramValues) {
-        this.paramValues = paramValues;
         return this;
     }
 
@@ -39,13 +33,13 @@ public class StaticSqlExecuterImpl extends SqlQuerier {
     }
 
     @Override
-    public StaticSqlExecuterImpl offset(int offset) {
+    public StaticSqlExecuter offset(int offset) {
         this.offset = offset;
         return this;
     }
 
     @Override
-    public StaticSqlExecuterImpl limit(int limit) {
+    public StaticSqlExecuter limit(int limit) {
         this.limit = limit;
         return this;
     }
@@ -69,20 +63,7 @@ public class StaticSqlExecuterImpl extends SqlQuerier {
     };
 
     public int update() {
-        return dbSource.withConnection(conn -> {
-            if (CollectionUtils.isEmpty(paramValues)) {
-                QuietStatement stmt = conn.createStatement();
-                return stmt.executeUpdate(sql);
-            }
-            else {
-                QuietPreparedStatement pstmt = conn.prepareStatement(sql);
-                int i = 1;
-                for (TypedValue<?> tv : paramValues) {
-                    tv.setToPstmt(pstmt, i++);
-                }
-                return pstmt.executeUpdate();
-            }
-        });
+        return dbSource.update(sql, paramValues);
     };
 
 }
