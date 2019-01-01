@@ -1,6 +1,7 @@
 package zzz404.safesql;
 
 import zzz404.safesql.dynamic.DynamicDeleter;
+import zzz404.safesql.dynamic.DynamicInserter;
 import zzz404.safesql.dynamic.DynamicUpdater;
 import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.dynamic.ThreeEntityQuerier;
@@ -125,7 +126,7 @@ public class Sql {
         return use("").withTheSameConnection(supplier);
     }
 
-    public static <T> T insert(T entity) {
+    public static <T> DynamicInserter<T> insert(T entity) {
         return use("").insert(entity);
     }
 

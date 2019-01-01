@@ -3,7 +3,6 @@ package zzz404.safesql.dynamic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
@@ -17,8 +16,8 @@ import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.OrMapper;
-import zzz404.safesql.sql.QuietResultSet;
 import zzz404.safesql.sql.SqlQuerier;
+import zzz404.safesql.sql.proxy.QuietResultSet;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 import zzz404.safesql.util.NoisyRunnable;
@@ -44,7 +43,8 @@ public abstract class DynamicQuerier extends SqlQuerier {
 
             NoisyRunnable.runQuietly(() -> collectColumns.run());
 
-            this.fields = ctx.takeAllTableFieldsUniquely();
+            fields = ctx.takeAllTableFieldsUniquely();
+            fields.forEach(Field::checkType);
         });
     }
 
@@ -88,18 +88,17 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     String getTablesClause() {
-        List<Entity<?>> usedEntities = fields.isEmpty() ? entities
-                : entities.stream().filter(entity -> !entity.getFields().isEmpty()).collect(Collectors.toList());
-        return usedEntities.stream()
-                .map(entity -> dbSource.getRealTableName(entity.getVirtualTableName()) + " t" + entity.getIndex())
-                .collect(Collectors.joining(", "));
+        return entities.stream().map(entity -> {
+            String realTableName = dbSource.getSchema(entity.getName()).getTableName();
+            return realTableName + " t" + entity.getIndex();
+        }).collect(Collectors.joining(", "));
     }
 
     String getColumnsClause() {
         if (fields.isEmpty()) {
             return "*";
         }
-        return CommonUtils.join(fields, ", ", Field::getPrefixedRealColumnName);
+        return CommonUtils.join(fields, ", ", Field::getColumnClause);
     }
 
     String getWhereClause() {
@@ -107,7 +106,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     String getGroupByClause() {
-        return this.groupBys.stream().map(Field::getPrefixedRealColumnName).collect(Collectors.joining(", "));
+        return this.groupBys.stream().map(Field::getPrefixedColumnName).collect(Collectors.joining(", "));
     }
 
     String getOrderByClause() {
@@ -158,9 +157,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     public abstract Page<?> queryPage();
 
     protected <E> E rsToObject(QuietResultSet rs, Entity<E> entity) {
-        Set<String> columns = entity.getFields().stream().map(f -> f.realColumnName).collect(Collectors.toSet());
-        E e = OrMapper.get(entity.getObjClass(), dbSource).mapToObject(rs, columns, null);
-        return e;
+        return new OrMapper(rs, dbSource).mapToObject(entity.getObjClass(), true);
     }
 
 }

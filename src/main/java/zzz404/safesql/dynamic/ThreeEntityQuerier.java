@@ -9,7 +9,7 @@ import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.ThreeObjectPlayer;
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietResultSet;
 import zzz404.safesql.util.Tuple3;
 
 public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {

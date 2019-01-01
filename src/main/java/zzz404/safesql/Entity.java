@@ -33,7 +33,7 @@ public class Entity<T> {
         return mockedObject;
     }
 
-    public String getVirtualTableName() {
+    public String getName() {
         return objClass.getSimpleName();
     }
 

@@ -19,7 +19,7 @@ import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.helper.UtilsForTest;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietResultSet;
 import zzz404.safesql.util.Tuple3;
 
 class TestThreeEntityQuerier {

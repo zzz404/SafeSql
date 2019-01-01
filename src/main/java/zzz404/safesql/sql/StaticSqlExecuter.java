@@ -46,7 +46,7 @@ public class StaticSqlExecuter extends SqlQuerier {
 
     protected String sql() {
         return sql;
-    };
+    }
 
     protected String sql_for_queryCount() {
         String lowerSql = sql.toLowerCase();
@@ -60,10 +60,10 @@ public class StaticSqlExecuter extends SqlQuerier {
         pos = lowerSql.indexOf(" from ");
         resultSql = "SELECT COUNT(*) FROM " + resultSql.substring(pos + 6);
         return resultSql;
-    };
+    }
 
     public int update() {
         return dbSource.update(sql, paramValues);
-    };
+    }
 
 }

@@ -28,7 +28,7 @@ public class InCondition<T> extends AbstractCondition {
             return "0<>0";
         }
         else {
-            return field.getPrefixedRealColumnName() + " IN ("
+            return field.getPrefixedColumnName() + " IN ("
                     + Collections.nCopies(values.size(), "?").stream().collect(Collectors.joining(", ")) + ")";
         }
     }

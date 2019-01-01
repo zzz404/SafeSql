@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietPreparedStatement;
+import zzz404.safesql.sql.proxy.QuietResultSet;
 
 public class InstantValue extends TypedValue<Instant> {
 

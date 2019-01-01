@@ -12,7 +12,7 @@ public class OrderBy {
     }
 
     public String toClause() {
-        String column = field.getPrefixedRealColumnName();
+        String column = field.getPrefixedColumnName();
         return column + " " + (isAsc ? "ASC" : "DESC");
     }
 

@@ -4,8 +4,8 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietPreparedStatement;
+import zzz404.safesql.sql.proxy.QuietResultSet;
 
 public class TimestampValue extends TypedValue<Timestamp> {
 

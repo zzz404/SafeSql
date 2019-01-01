@@ -9,7 +9,7 @@ import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.reflection.TwoObjectPlayer;
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietResultSet;
 import zzz404.safesql.util.Tuple2;
 
 public class TwoEntityQuerier<T, U> extends DynamicQuerier {

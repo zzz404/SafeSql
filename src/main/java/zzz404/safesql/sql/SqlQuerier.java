@@ -13,6 +13,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import zzz404.safesql.DbSourceContext;
 import zzz404.safesql.Page;
 import zzz404.safesql.SqlQueryException;
+import zzz404.safesql.sql.proxy.EnhancedConnection;
+import zzz404.safesql.sql.proxy.QuietPreparedStatement;
+import zzz404.safesql.sql.proxy.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietResultSetIterator;
+import zzz404.safesql.sql.proxy.QuietStatement;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
@@ -24,7 +29,7 @@ public abstract class SqlQuerier {
     protected int limit = 0;
 
     private transient QuietResultSet rs = null;
-    transient OrMapper<?> orMapper = null;
+    private transient OrMapper orMapper = null;
 
     public SqlQuerier(DbSourceImpl dbSource) {
         this.dbSource = dbSource;
@@ -116,17 +121,15 @@ public abstract class SqlQuerier {
         if (TypedValue.supportType(clazz)) {
             return TypedValue.valueOf(clazz).readFirstFromRs(rs).getValue();
         }
-        OrMapper<T> orMapper = getOrMapper(rs, clazz);
-        return orMapper.mapToObject(rs, null, null);
+        return getOrMapper(rs).mapToObject(clazz, false);
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T> OrMapper<T> getOrMapper(QuietResultSet rs, Class<T> clazz) {
+    protected OrMapper getOrMapper(QuietResultSet rs) {
         if (rs != this.rs || this.orMapper == null) {
-            this.orMapper = new OrMapper<>(clazz, dbSource);
+            this.orMapper = new OrMapper(rs, dbSource);
             this.rs = rs;
         }
-        return (OrMapper<T>) this.orMapper;
+        return this.orMapper;
     }
 
     public <T> Optional<T> queryOne(Class<T> clazz) {

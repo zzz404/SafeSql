@@ -1,93 +1,116 @@
 package zzz404.safesql.sql;
 
+import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import zzz404.safesql.Field;
+import zzz404.safesql.sql.proxy.EnhancedConnection;
+import zzz404.safesql.sql.proxy.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietStatement;
 import zzz404.safesql.util.CommonUtils;
 
 public class TableSchema {
+    private String entityName;
+    private String tablePrefix;
+    private DbSourceImpl dbSource;
 
-    String virtualTableName;
-    String realTableName;
-    Map<String, String> prop_real_map = new HashMap<>();
-    Map<String, String> snake_real_map = new HashMap<>();
-    boolean snakeFormCompatable;
-    String autoIncrementColumnName;
+    private String tableName;
+    private String lcTableName;
+    private String lcColumnNameOfAutoIncrement;
+    private Set<String> lcColumnNames;
+    private Map<String, String> prop_column_map = new HashMap<>();
 
-    TableSchema(String virtualTableName, String realTableName, boolean snakeFormCompatable) {
-        this.virtualTableName = virtualTableName;
-        this.realTableName = realTableName;
-        this.snakeFormCompatable = snakeFormCompatable;
+    protected TableSchema(String entityName, String tablePrefix, DbSourceImpl dbSource) {
+        this.entityName = entityName;
+        this.tablePrefix = tablePrefix;
+        this.dbSource = dbSource;
+        init();
     }
 
-    public void revise_for_snakeFormCompatable(Field<?> field) {
-        String propName = field.getPropertyName();
-        String realColumnName = getRealColumnName(propName);
-        if (realColumnName != null) {
-            field.realColumnName = realColumnName;
-        }
-    }
-
-    public String getRealTableName() {
-        return realTableName;
-    }
-
-    public String getRealColumnName(String propName) {
-        String prop_lower = propName.toLowerCase();
-        if (!prop_real_map.containsKey(prop_lower)) {
-            String snaked_propName = CommonUtils.camelForm_to_snakeForm(propName);
-            String realColumnName = snake_real_map.get(snaked_propName);
-            prop_real_map.put(prop_lower, realColumnName);
-        }
-        return prop_real_map.get(prop_lower);
-    }
-    
-    void initColumns(QuietResultSetMetaData metaData) {
-        Set<String> columnsOfResultSet = getColumns(metaData);
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            if (metaData.isAutoIncrement(i)) {
-                autoIncrementColumnName = metaData.getColumnName(i);
-                break;
-            }
-        }
-        columnsOfResultSet.forEach(real_columnName -> {
-            prop_real_map.put(real_columnName.toLowerCase(), real_columnName);
-            if (snakeFormCompatable) {
-                String snake_columnName = CommonUtils.camelForm_to_snakeForm(real_columnName);
-                if (snake_real_map.containsKey(snake_columnName)) {
-                    String pattern = "Columns %s, %s of Table %s are ambiguous on snakeFormCompatable mode!";
-                    throw new TableSchemeException(String.format(pattern, snake_real_map.get(snake_columnName),
-                            real_columnName, realTableName));
-                }
-                else {
-                    snake_real_map.put(snake_columnName, real_columnName);
-                }
-            }
+    protected void init() {
+        dbSource.withConnection(conn -> {
+            ResultSet rs = loadTableName(conn);
+            loadColumns(new QuietResultSet(rs));
+            return null;
         });
     }
 
-    public static Set<String> getColumns(QuietResultSetMetaData metaData) {
-        HashSet<String> columnsOfResultSet = new HashSet<>();
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            columnsOfResultSet.add(metaData.getColumnName(i));
+    private ResultSet loadTableName(EnhancedConnection conn) {
+        setTableName(tablePrefix + entityName);
+        QuietStatement stmt = conn.createStatement();
+        try {
+            return stmt.executeQuery("SELECT * FROM " + tableName);
         }
-        return columnsOfResultSet;
+        catch (RuntimeException e) {
+            if (!dbSource.isSnakeFormCompatable()) {
+                throw new TableNotFoundException(e, tableName);
+            }
+            String tb1 = tableName;
+            setTableName(tablePrefix + CommonUtils.camelForm_to_snakeForm(entityName));
+            try {
+                return stmt.executeQuery("SELECT * FROM " + tableName);
+            }
+            catch (RuntimeException e1) {
+                throw new TableNotFoundException(e1, tb1, tableName);
+            }
+        }
     }
 
-    public static class NullTableSchema extends TableSchema {
-        NullTableSchema(String virtualTableName) {
-            super(virtualTableName, virtualTableName, false);
-        }
-
-        public void revise_for_snakeFormCompatable(Field<?> field) {
-        }
-
+    private void setTableName(String tableName) {
+        this.tableName = tableName;
+        this.lcTableName = tableName.toLowerCase();
     }
 
-    public String getRealColumnName_of_autoIncrement() {
-        return autoIncrementColumnName;
+    private void loadColumns(QuietResultSet rs) {
+        ResultSetAnalyzer rsAnalyzer = new ResultSetAnalyzer(rs);
+        this.lcColumnNameOfAutoIncrement = rsAnalyzer.getLcColumnOfAutoIncrement();
+        this.lcColumnNames = rsAnalyzer.getAllColumns().stream().map(c -> c.lcColumn).collect(Collectors.toSet());
     }
+
+    public String getColumnName(String propName) {
+        if (!hasMatchedColumn(propName)) {
+            throw new ColumnNotFoundException(propName, tableName);
+        }
+        return prop_column_map.get(propName);
+    }
+
+    public boolean hasMatchedColumn(String propName) {
+        if (!prop_column_map.containsKey(propName)) {
+            prop_column_map.put(propName, findColumnName(propName));
+        }
+        return prop_column_map.get(propName) != null;
+    }
+
+    private String findColumnName(String propName) {
+        if (lcColumnNames.contains(propName.toLowerCase())) {
+            return propName;
+        }
+        if (dbSource.isSnakeFormCompatable()) {
+            String snakeColumnName = CommonUtils.camelForm_to_snakeForm(propName);
+            if (lcColumnNames.contains(snakeColumnName)) {
+                return snakeColumnName;
+            }
+        }
+        return null;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public String getLcTableName() {
+        return lcTableName;
+    }
+
+    public String getColumnName_of_autoIncrement() {
+        return lcColumnNameOfAutoIncrement;
+    }
+
+    static TableSchema createSchema(String entityName, DbSourceImpl dbSource) {
+        String tablePrefix = dbSource.isUseTablePrefix() ? dbSource.getName() : "";
+        return new TableSchema(entityName, tablePrefix, dbSource);
+    }
+
 }

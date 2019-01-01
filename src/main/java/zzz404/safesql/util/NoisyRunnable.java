@@ -1,5 +1,6 @@
 package zzz404.safesql.util;
 
+@FunctionalInterface
 public interface NoisyRunnable {
     public void run() throws Exception;
 

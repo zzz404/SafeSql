@@ -1,4 +1,4 @@
-package zzz404.safesql.sql;
+package zzz404.safesql.sql.proxy;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -11,6 +11,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.junit.jupiter.api.Test;
+
+import zzz404.safesql.sql.proxy.EnhancedConnection;
+import zzz404.safesql.sql.proxy.QuietPreparedStatement;
+import zzz404.safesql.sql.proxy.QuietStatement;
 
 public class TestEnhancedConnection {
 

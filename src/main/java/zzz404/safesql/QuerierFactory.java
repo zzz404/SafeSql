@@ -37,8 +37,8 @@ public class QuerierFactory {
         return DbSourceContext.withDbSource(dbSource, NoisySupplier.shutUp(supplier));
     }
 
-    public <T> T insert(T entity) {
-        return new DynamicInserter<>(dbSource, entity).execute();
+    public <T> DynamicInserter<T> insert(T entity) {
+        return new DynamicInserter<>(dbSource, entity);
     }
 
     public <T> DynamicUpdater<T> update(T entity) {

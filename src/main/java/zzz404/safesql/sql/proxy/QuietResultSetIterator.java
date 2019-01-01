@@ -1,4 +1,4 @@
-package zzz404.safesql.sql;
+package zzz404.safesql.sql.proxy;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

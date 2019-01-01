@@ -28,7 +28,7 @@ public class MutualCondition<T> extends AbstractCondition {
 
     @Override
     public String toClause() {
-        return field.getPrefixedRealColumnName() + " " + operator + " " + field2.getPrefixedRealColumnName();
+        return field.getPrefixedColumnName() + " " + operator + " " + field2.getPrefixedColumnName();
     }
 
     @Override

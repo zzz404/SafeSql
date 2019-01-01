@@ -18,8 +18,8 @@ import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.EnhancedConnection;
 import zzz404.safesql.sql.SqlQuerierBackDoor;
+import zzz404.safesql.sql.proxy.EnhancedConnection;
 
 public class TestSql {
 

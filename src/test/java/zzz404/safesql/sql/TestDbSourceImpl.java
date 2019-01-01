@@ -25,6 +25,8 @@ import zzz404.safesql.Field;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;
+import zzz404.safesql.sql.proxy.QuietConnection;
+import zzz404.safesql.sql.proxy.QuietConnectionBackDoor;
 
 public class TestDbSourceImpl {
 
@@ -68,22 +70,13 @@ public class TestDbSourceImpl {
         verify(conn, times(0)).close();
     }
 
-    @Test
-    void test_getRealTableName_noSnake() throws SQLException {
-        DbSourceImpl ds = new DbSourceImpl("zzz");
-        assertEquals("AaaBbb", ds.getRealTableName("AaaBbb"));
-
-        ds.withTablePrefix(true);
-        assertEquals("zzzAaaBbb", ds.getRealTableName("AaaBbb"));
-    }
-
     @ParameterizedTest
-    @CsvSource({ "zzz, DocUser", "DoC_uSEr, doc_user", "DoC_uSEr|dOcuseR, DocUser" })
+    @CsvSource({ "zzz,DocUser", "DoC_uSEr, doc_user", "DoC_uSEr|dOcuseR, DocUser" })
     void test_getRealTableName_snake_noPrefix(String realTables, String expectedTable) throws SQLException {
         DbSourceImpl ds = new DbSourceImpl("zzz");
         ds.snakeFormCompatable(true);
         ds.useConnectionPrivider(() -> buildConnection(StringUtils.split(realTables, '|')));
-        assertEquals(expectedTable, ds.getRealTableName("DocUser"));
+        assertEquals(expectedTable, ds.getTableName("DocUser"));
     }
 
     private QuietConnection buildConnection(String... tableNames) throws SQLException {
@@ -92,13 +85,13 @@ public class TestDbSourceImpl {
     }
 
     @ParameterizedTest
-    @CsvSource({ "Doc_User, DocUser", "zzzDoC_uSEr, zzzdoc_user", "zzzDoC_uSEr|dOcuseR, zzzdoc_user",
+    @CsvSource({ "Doc_User,zzzDocUser", "zzzDoC_uSEr, zzzdoc_user", "zzzDoC_uSEr|dOcuseR, zzzdoc_user",
             "zzzDoC_uSEr|zzzdOcuseR, zzzDocUser" })
     void test_getRealTableName_snake_prefix(String realTables, String expectedTable) throws SQLException {
         DbSourceImpl ds = new DbSourceImpl("zzz");
         ds.withTablePrefix(true).snakeFormCompatable(true);
         ds.useConnectionPrivider(() -> buildConnection(StringUtils.split(realTables, '|')));
-        assertEquals(expectedTable, ds.getRealTableName("DocUser"));
+        assertEquals(expectedTable, ds.getTableName("DocUser"));
     }
 
     @Test
@@ -129,14 +122,14 @@ public class TestDbSourceImpl {
 
         ds.revise(docEntity, userEntity, cateEntity);
 
-        List<String> columns = docEntity.getFields().stream().map(Field::getPrefixedRealColumnName)
+        List<String> columns = docEntity.getFields().stream().map(Field::getPrefixedColumnName)
                 .collect(Collectors.toList());
         assertEquals(Arrays.asList("t1.doc_title", "t1.ownerId"), columns);
 
-        columns = userEntity.getFields().stream().map(Field::getPrefixedRealColumnName).collect(Collectors.toList());
+        columns = userEntity.getFields().stream().map(Field::getPrefixedColumnName).collect(Collectors.toList());
         assertEquals(Arrays.asList("t2.firstName", "t2.full_name"), columns);
 
-        columns = cateEntity.getFields().stream().map(Field::getPrefixedRealColumnName).collect(Collectors.toList());
+        columns = cateEntity.getFields().stream().map(Field::getPrefixedColumnName).collect(Collectors.toList());
         assertEquals(Arrays.asList("t3.parentId"), columns);
     }
 
@@ -149,7 +142,7 @@ public class TestDbSourceImpl {
         Entity<Document> docEntity = createEntity(1, Document.class, "docTitle");
         ds.revise(docEntity);
 
-        List<String> columns = docEntity.getFields().stream().map(Field::getPrefixedRealColumnName)
+        List<String> columns = docEntity.getFields().stream().map(Field::getPrefixedColumnName)
                 .collect(Collectors.toList());
         assertEquals(Arrays.asList("t1.docTitle"), columns);
     }

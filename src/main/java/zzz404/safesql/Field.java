@@ -2,21 +2,24 @@ package zzz404.safesql;
 
 import org.apache.commons.lang3.Validate;
 
+import zzz404.safesql.sql.TableSchema;
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
 public class Field<T> {
     private Entity<?> entity;
-    private String propertyName;
-    public String realColumnName;
-    private String function;
     private Class<T> clazz;
-    
-    Field<T> toField;
+    private String propertyName;
+    private String columnName;
+    private String function;
+
+    private String asProperty;
+    private String asColumn;
 
     public Field(Entity<?> entity, String propertyName) {
         this.entity = entity;
         this.propertyName = propertyName;
-        this.realColumnName = propertyName;
+        this.columnName = propertyName;
         if (entity != null) {
             entity.addField(this);
         }
@@ -35,34 +38,41 @@ public class Field<T> {
         return propertyName;
     }
 
-    public String getPrefixedRealColumnName() {
-        String result = realColumnName;
+    public String getPrefixedColumnName() {
+        String result = columnName;
         if (entity != null && entity.getIndex() > 0) {
             result = "t" + entity.getIndex() + "." + result;
-        }
-        if (function != null) {
-            result = function + "(" + result + ")";
         }
         return result;
     }
 
-    @SuppressWarnings("unchecked")
+    public String getColumnClause() {
+        String result = getPrefixedColumnName();
+        if (function != null) {
+            result = function + "(" + result + ")";
+        }
+        if (asColumn != null) {
+            result += " AS " + asColumn;
+        }
+        return result;
+    }
+
     public void as(T o) {
         QueryContext ctx = QueryContext.get();
         Field<?> field = ctx.takeLastField();
         Validate.isTrue(this.clazz == field.clazz);
-        toField = (Field<T>) field;
+        this.asColumn = this.asProperty = field.propertyName;
     }
 
     @Override
     public boolean equals(Object that) {
         return CommonUtils.isEquals(this, that,
-                tc -> new Object[] { tc.entity, tc.propertyName, tc.realColumnName, tc.function });
+                tc -> new Object[] { tc.entity, tc.propertyName, tc.columnName, tc.function });
     }
 
     @Override
     public String toString() {
-        return getPrefixedRealColumnName();
+        return getPrefixedColumnName();
     }
 
     public static Field<Integer> count() {
@@ -75,6 +85,23 @@ public class Field<T> {
         Entity<?> entity = mockedObject.entity();
         Field<?> field = new Field<>(entity, "*");
         return field;
+    }
+
+    public void revisedBy(TableSchema schema) {
+        columnName = schema.getColumnName(propertyName);
+        if (asProperty != null) {
+            asColumn = schema.getColumnName(asProperty);
+        }
+    }
+
+    public void checkType() {
+        if (clazz != null) {
+            TypedValue.valueOf(clazz);
+        }
+    }
+
+    public String getColumnName() {
+        return columnName;
     }
 
 }

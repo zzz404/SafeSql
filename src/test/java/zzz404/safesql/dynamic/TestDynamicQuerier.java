@@ -94,66 +94,14 @@ class TestDynamicQuerier {
     }
 
     @Test
-    void test_getTablesClause_hasFields_returnUsedTables() {
+    void test_getTablesClause() {
         MyDynamicQuerier q = new MyDynamicQuerier();
-        Entity<Object> entity1 = new Entity<>(1, Object.class);
+        Entity<Document> entity1 = new Entity<>(1, Document.class);
         q.entities.add(entity1);
-        Entity<Document> entity2 = new Entity<>(2, Document.class);
+        Entity<User> entity2 = new Entity<>(2, User.class);
         q.entities.add(entity2);
-        Entity<User> entity3 = new Entity<>(3, User.class);
-        q.entities.add(entity3);
 
-        q.fields = Arrays.asList(new Field<>(entity2, ""), new Field<>(entity3, ""));
-
-        assertEquals("Document t2, User t3", q.getTablesClause());
-    }
-
-    @Test
-    void test_getTablesClause_hasFields_returnUsedTables_countCondition() {
-        MyDynamicQuerier q = new MyDynamicQuerier();
-        Entity<Object> entity1 = new Entity<>(1, Object.class);
-        q.entities.add(entity1);
-        Entity<Document> entity2 = new Entity<>(2, Document.class);
-        q.entities.add(entity2);
-        Entity<User> entity3 = new Entity<>(3, User.class);
-        q.entities.add(entity3);
-
-        q.fields = Arrays.asList(new Field<>(entity1, ""));
-        q.conditions = Arrays.asList(AbstractCondition.of(new Field<>(entity2, ""), "=", 1));
-
-        assertEquals("Object t1, Document t2", q.getTablesClause());
-    }
-
-    @Test
-    void test_getTablesClause_hasFields_returnUsedTables_countGroupBy() {
-        MyDynamicQuerier q = new MyDynamicQuerier();
-        Entity<Object> entity1 = new Entity<>(1, Object.class);
-        q.entities.add(entity1);
-        Entity<Document> entity2 = new Entity<>(2, Document.class);
-        q.entities.add(entity2);
-        Entity<User> entity3 = new Entity<>(3, User.class);
-        q.entities.add(entity3);
-
-        q.fields = Arrays.asList(new Field<>(entity1, ""));
-        q.groupBys = Arrays.asList(new Field<>(entity3, ""));
-
-        assertEquals("Object t1, User t3", q.getTablesClause());
-    }
-
-    @Test
-    void test_getTablesClause_hasFields_returnUsedTables_countOrderBy() {
-        MyDynamicQuerier q = new MyDynamicQuerier();
-        Entity<Object> entity1 = new Entity<>(1, Object.class);
-        q.entities.add(entity1);
-        Entity<Document> entity2 = new Entity<>(2, Document.class);
-        q.entities.add(entity2);
-        Entity<User> entity3 = new Entity<>(3, User.class);
-        q.entities.add(entity3);
-
-        q.fields = Arrays.asList(new Field<>(entity2, ""));
-        q.orderBys = Arrays.asList(new OrderBy(new Field<>(entity3, ""), true));
-
-        assertEquals("Document t2, User t3", q.getTablesClause());
+        assertEquals("Document t1, User t2", q.getTablesClause());
     }
 
     @Test

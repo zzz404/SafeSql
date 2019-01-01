@@ -1,55 +1,26 @@
 package zzz404.safesql.dynamic;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
+import zzz404.safesql.reflection.OneObjectPlayer;
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.OrMapper;
-import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.QuietResultSet;
 
-public class DynamicInserter<T> {
-
-    private DbSourceImpl dbSource;
-    private T o;
+public class DynamicInserter<T> extends DynamicObjectExecuter<T> {
 
     public DynamicInserter(DbSourceImpl dbSource, T o) {
-        this.dbSource = dbSource;
-        this.o = o;
+        super(dbSource, o);
     }
 
-    @SuppressWarnings({ "unchecked" })
-    public T execute() {
-        OrMapper<T> mapper = OrMapper.get((Class<T>) o.getClass(), dbSource);
-        Collection<String> realColumnNames = mapper.get_realColumnName_of_all_getters();
-        String sql = "INSERT INTO " + mapper.getRealTableName() + " (" + StringUtils.join(realColumnNames, ", ")
-                + ") VALUES (" + String.join(", ", Collections.nCopies(realColumnNames.size(), "?")) + ")";
-        
-        for (String columnName : realColumnNames) {
-            mapper.getValue(o, columnName);
-        }
+    public DynamicInserter<T> values(OneObjectPlayer<T> columnsCollector) {
+        super.set(columnsCollector);
+        return this;
+    }
 
-        
-        dbSource.withConnection(conn -> {
-            QuietPreparedStatement pstmt = conn.prepareStatement(sql);
-            int i = 0;
-            for (String columnName : realColumnNames) {
-                mapper.setValueToPstmt(pstmt, i++, o, columnName);
-            }
-            pstmt.executeUpdate();
-
-            String realColumnName_of_autoIncrement = mapper.getTableSchema().getRealColumnName_of_autoIncrement();
-            if (realColumnName_of_autoIncrement != null) {
-                QuietResultSet rs = pstmt.getGeneratedKeys();
-                if (rs.next()) {
-                    mapper.setValueToObject(o, realColumnName_of_autoIncrement, rs, 1);
-                }
-            }
-            return null;
-        });
-        return o;
+    protected String sql() {
+        return "INSERT INTO " + tableName + " ("
+                + fields.stream().map(field -> field.getColumnName()).collect(Collectors.joining(", ")) + ") VALUES ("
+                + String.join(", ", Collections.nCopies(fields.size(), "?")) + ")";
     }
 
 }

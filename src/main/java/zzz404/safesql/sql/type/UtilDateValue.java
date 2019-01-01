@@ -5,8 +5,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietPreparedStatement;
+import zzz404.safesql.sql.proxy.QuietResultSet;
 
 public class UtilDateValue extends TypedValue<Date> {
 

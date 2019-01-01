@@ -28,7 +28,7 @@ public class OpCondition<T> extends AbstractCondition {
 
     @Override
     public String toClause() {
-        return field.getPrefixedRealColumnName() + " " + operator + " ?";
+        return field.getPrefixedColumnName() + " " + operator + " ?";
     }
 
     @Override

@@ -2,6 +2,7 @@ package zzz404.safesql.util;
 
 import java.util.function.Supplier;
 
+@FunctionalInterface
 public interface NoisySupplier<T> {
     public T get() throws Throwable;
 

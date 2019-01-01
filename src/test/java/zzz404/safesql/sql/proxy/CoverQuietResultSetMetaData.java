@@ -1,4 +1,4 @@
-package zzz404.safesql.sql;
+package zzz404.safesql.sql.proxy;
 
 import static org.mockito.Mockito.*;
 
@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.UtilsForTest;
+import zzz404.safesql.sql.proxy.QuietResultSetMetaData;
 
 public class CoverQuietResultSetMetaData {
 

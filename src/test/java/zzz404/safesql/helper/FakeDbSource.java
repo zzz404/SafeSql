@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.function.Function;
 
 import zzz404.safesql.sql.DbSourceImpl;
-import zzz404.safesql.sql.EnhancedConnection;
+import zzz404.safesql.sql.proxy.EnhancedConnection;
 import zzz404.safesql.util.CommonUtils;
 
 public class FakeDbSource extends DbSourceImpl {

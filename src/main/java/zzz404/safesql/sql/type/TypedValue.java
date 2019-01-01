@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import zzz404.safesql.sql.QuietPreparedStatement;
-import zzz404.safesql.sql.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietPreparedStatement;
+import zzz404.safesql.sql.proxy.QuietResultSet;
 import zzz404.safesql.util.CommonUtils;
 
 public abstract class TypedValue<T> {

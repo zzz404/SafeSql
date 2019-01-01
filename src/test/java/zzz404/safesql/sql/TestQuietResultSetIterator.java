@@ -9,6 +9,8 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.helper.FakeDatabase;
+import zzz404.safesql.sql.proxy.QuietResultSet;
+import zzz404.safesql.sql.proxy.QuietResultSetIterator;
 
 public class TestQuietResultSetIterator {
 
