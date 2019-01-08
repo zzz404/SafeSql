@@ -10,7 +10,7 @@ public class OpCondition<T> extends AbstractCondition {
     private String operator;
     private TypedValue<?> value;
 
-    public OpCondition(Field<T> field, String operator, T value) {
+    public OpCondition(FieldImpl<T> field, String operator, T value) {
         super(field);
         this.operator = operator;
         this.value = TypedValue.valueOf(value);

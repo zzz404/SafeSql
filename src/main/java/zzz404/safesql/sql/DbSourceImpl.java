@@ -9,7 +9,7 @@ import java.util.function.Function;
 import org.apache.commons.collections4.CollectionUtils;
 
 import zzz404.safesql.DbSource;
-import zzz404.safesql.Entity;
+import zzz404.safesql.dynamic.Entity;
 import zzz404.safesql.sql.proxy.EnhancedConnection;
 import zzz404.safesql.sql.proxy.QuietPreparedStatement;
 import zzz404.safesql.sql.proxy.QuietStatement;

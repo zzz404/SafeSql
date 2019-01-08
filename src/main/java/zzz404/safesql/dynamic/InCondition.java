@@ -12,7 +12,7 @@ public class InCondition<T> extends AbstractCondition {
 
     private List<TypedValue<T>> values;
 
-    public InCondition(Field<T> tableColumn, @SuppressWarnings("unchecked") T... values) {
+    public InCondition(FieldImpl<T> tableColumn, @SuppressWarnings("unchecked") T... values) {
         super(tableColumn);
         this.values = Arrays.stream(values).map(TypedValue::valueOf).collect(Collectors.toList());
     }

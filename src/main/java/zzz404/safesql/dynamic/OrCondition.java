@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import zzz404.safesql.QueryContext;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
@@ -23,7 +22,7 @@ public class OrCondition extends AbstractCondition {
     public <T> OrCondition or(T fieldValue, String operator, @SuppressWarnings("unchecked") T... values) {
         QueryContext ctx = QueryContext.get();
         @SuppressWarnings("unchecked")
-        Field<T> field = (Field<T>) ctx.takeField();
+        FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
         AbstractCondition cond = AbstractCondition.of(field, operator, values);
         subConditions.add(cond);
         return this;

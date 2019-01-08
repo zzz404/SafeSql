@@ -7,10 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
-import zzz404.safesql.QueryContext;
-import zzz404.safesql.Scope;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.OrMapper;
 import zzz404.safesql.sql.SqlQuerier;
@@ -22,9 +19,9 @@ import zzz404.safesql.util.NoisyRunnable;
 public abstract class DynamicQuerier extends SqlQuerier {
 
     protected List<Entity<?>> entities = new ArrayList<>();
-    protected List<Field<?>> fields = Collections.emptyList();
+    protected List<FieldImpl<?>> fields = Collections.emptyList();
     protected List<AbstractCondition> conditions = Collections.emptyList();
-    protected List<Field<?>> groupBys = Collections.emptyList();
+    protected List<FieldImpl<?>> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
     private Scope currentScope = null;
@@ -41,7 +38,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
             NoisyRunnable.runQuietly(() -> collectColumns.run());
 
             fields = ctx.takeAllTableFieldsUniquely();
-            fields.forEach(Field::checkType);
+            fields.forEach(FieldImpl::checkType);
         });
     }
 
@@ -95,7 +92,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         if (fields.isEmpty()) {
             return "*";
         }
-        return CommonUtils.join(fields, ", ", Field::getColumnClause);
+        return CommonUtils.join(fields, ", ", FieldImpl::getColumnClause);
     }
 
     String getWhereClause() {
@@ -103,7 +100,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     String getGroupByClause() {
-        return this.groupBys.stream().map(Field::getPrefixedColumnName).collect(Collectors.joining(", "));
+        return this.groupBys.stream().map(FieldImpl::getPrefixedColumnName).collect(Collectors.joining(", "));
     }
 
     String getOrderByClause() {

@@ -1,11 +1,10 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import net.sf.cglib.proxy.Enhancer;
-import zzz404.safesql.dynamic.Field;
 import zzz404.safesql.reflection.GetterTracer;
 import zzz404.safesql.util.CommonUtils;
 
@@ -14,7 +13,7 @@ public class Entity<T> {
     private Class<T> objClass;
     private T mockedObject;
 
-    private List<Field<?>> fields = new ArrayList<>();
+    private List<FieldImpl<?>> fields = new ArrayList<>();
 
     public Entity(int index, Class<T> clazz) {
         this.index = index;
@@ -38,11 +37,11 @@ public class Entity<T> {
         return objClass.getSimpleName();
     }
 
-    public void addField(Field<?> field) {
+    public void addField(FieldImpl<?> field) {
         fields.add(field);
     }
 
-    public List<Field<?>> getFields() {
+    public List<FieldImpl<?>> getFields() {
         return fields;
     }
 

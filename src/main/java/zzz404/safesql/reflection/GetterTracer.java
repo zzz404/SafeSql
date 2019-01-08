@@ -4,10 +4,10 @@ import java.lang.reflect.Method;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import zzz404.safesql.Entity;
-import zzz404.safesql.EntityGettable;
-import zzz404.safesql.QueryContext;
-import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.Entity;
+import zzz404.safesql.dynamic.EntityGettable;
+import zzz404.safesql.dynamic.FieldImpl;
+import zzz404.safesql.dynamic.QueryContext;
 import zzz404.safesql.util.NoisySupplier;
 
 public class GetterTracer<T> implements MethodInterceptor {
@@ -30,7 +30,7 @@ public class GetterTracer<T> implements MethodInterceptor {
         }
         if (m.isGetter()) {
             QueryContext ctx = QueryContext.get();
-            ctx.addTableField(new Field<>(entity, m.getPropertyName(), m.getType()));
+            ctx.addTableField(new FieldImpl<>(entity, m.getPropertyName(), m.getType()));
         }
         return NoisySupplier.getQuietly(() -> proxy.invokeSuper(obj, args));
     }

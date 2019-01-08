@@ -1,22 +1,20 @@
 package zzz404.safesql.dynamic;
 
-import zzz404.safesql.Entity;
-import zzz404.safesql.EntityGettable;
-import zzz404.safesql.QueryContext;
+import zzz404.safesql.Field;
 import zzz404.safesql.sql.TableSchema;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class Field<T> {
+public class FieldImpl<T> implements Field<T> {
     private Entity<?> entity;
     private Class<T> clazz;
     private String propertyName;
     private String columnName;
     private String function;
 
-    private Field<T> asField;
+    private FieldImpl<T> asField;
 
-    public Field(Entity<?> entity, String propertyName) {
+    public FieldImpl(Entity<?> entity, String propertyName) {
         this.entity = entity;
         this.propertyName = propertyName;
         this.columnName = propertyName;
@@ -25,7 +23,7 @@ public class Field<T> {
         }
     }
 
-    public Field(Entity<?> entity, String propertyName, Class<T> clazz) {
+    public FieldImpl(Entity<?> entity, String propertyName, Class<T> clazz) {
         this(entity, propertyName);
         this.clazz = clazz;
     }
@@ -56,7 +54,10 @@ public class Field<T> {
     @SuppressWarnings("unchecked")
     public void as(T o) {
         QueryContext ctx = QueryContext.get();
-        asField = (Field<T>) ctx.takeLastField();
+        asField = (FieldImpl<T>) ctx.takeLastField();
+        if (asField.entity != ctx.resultEntity) {
+            throw new IllegalStateException("fled(...).as(..) can only be used for from(..).to(..) ...");
+        }
     }
 
     @Override
@@ -70,15 +71,15 @@ public class Field<T> {
         return getPrefixedColumnName();
     }
 
-    public static Field<Integer> count() {
-        Field<Integer> field = new Field<>(null, "*", Integer.class);
+    public static FieldImpl<Integer> count() {
+        FieldImpl<Integer> field = new FieldImpl<>(null, "*", Integer.class);
         field.function = "COUNT";
         return field;
     }
 
-    public static Field<?> all(EntityGettable mockedObject) {
+    public static FieldImpl<?> all(EntityGettable mockedObject) {
         Entity<?> entity = mockedObject.entity();
-        Field<?> field = new Field<>(entity, "*");
+        FieldImpl<?> field = new FieldImpl<>(entity, "*");
         return field;
     }
 

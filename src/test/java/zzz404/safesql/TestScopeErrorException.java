@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.dynamic.Scope;
+import zzz404.safesql.dynamic.ScopeErrorException;
+
 public class TestScopeErrorException {
     
     @Test

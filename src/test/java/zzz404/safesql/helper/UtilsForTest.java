@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 
-import zzz404.safesql.Entity;
-import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.Entity;
+import zzz404.safesql.dynamic.FieldImpl;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.NoisyRunnable;
 
@@ -46,8 +46,8 @@ public class UtilsForTest {
         }
     }
 
-    public static Field<Integer> createSimpleField(String propertyName) {
-        return new Field<>(new Entity<>(1, Object.class), propertyName);
+    public static FieldImpl<Integer> createSimpleField(String propertyName) {
+        return new FieldImpl<>(new Entity<>(1, Object.class), propertyName);
     }
 
     public static <K, V> Map<K, V> newMap(K k, V v) {

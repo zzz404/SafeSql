@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.dynamic.AbstractCondition;
 import zzz404.safesql.dynamic.BetweenCondition;
-import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.FieldImpl;
 import zzz404.safesql.dynamic.InCondition;
 import zzz404.safesql.dynamic.OpCondition;
 import zzz404.safesql.helper.UtilsForTest;
 
 class TestCondition {
-    private static final Field<Integer> column_z = UtilsForTest.createSimpleField("z");
+    private static final FieldImpl<Integer> column_z = UtilsForTest.createSimpleField("z");
 
     @Test
     void test_of_createConditionByOperator() {

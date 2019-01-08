@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,19 +8,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import zzz404.safesql.dynamic.AbstractCondition;
-import zzz404.safesql.dynamic.Field;
-import zzz404.safesql.dynamic.OrCondition;
-import zzz404.safesql.dynamic.OrderBy;
-
 public class QueryContext {
 
     private static final ThreadLocal<QueryContext> container = new ThreadLocal<>();
 
     private Scope scope;
-    private LinkedList<Field<?>> fields = null;
+    private LinkedList<FieldImpl<?>> fields = null;
     private LinkedList<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
+
+    Entity<?> resultEntity;
 
     private QueryContext() {
     }
@@ -42,33 +39,33 @@ public class QueryContext {
         return ctx;
     }
 
-    public void addTableField(Field<?> field) {
+    public void addTableField(FieldImpl<?> field) {
         if (fields == null) {
             fields = new LinkedList<>();
         }
         fields.offer(field);
     }
 
-    public Field<?> takeField() {
+    public FieldImpl<?> takeField() {
         Objects.requireNonNull(fields);
         return fields.poll();
     }
 
-    public Field<?> takeLastField() {
+    public FieldImpl<?> takeLastField() {
         Objects.requireNonNull(fields);
         return fields.removeLast();
     }
 
-    public List<Field<?>> takeAllTableFieldsUniquely() {
+    public List<FieldImpl<?>> takeAllTableFieldsUniquely() {
         if (fields == null) {
             return Collections.emptyList();
         }
-        ArrayList<Field<?>> result = new ArrayList<>(new LinkedHashSet<>(fields));
+        ArrayList<FieldImpl<?>> result = new ArrayList<>(new LinkedHashSet<>(fields));
         fields.clear();
         return result;
     }
 
-    public Field<?> getLastField() {
+    public FieldImpl<?> getLastField() {
         return fields.getLast();
     }
 

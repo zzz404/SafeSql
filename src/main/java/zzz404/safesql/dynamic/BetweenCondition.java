@@ -10,7 +10,7 @@ public class BetweenCondition<T> extends AbstractCondition {
     private TypedValue<T> value1;
     private TypedValue<T> value2;
 
-    public BetweenCondition(Field<T> tableColumn, T value1, T value2) {
+    public BetweenCondition(FieldImpl<T> tableColumn, T value1, T value2) {
         super(tableColumn);
         this.value1 = TypedValue.valueOf(value1);
         this.value2 = TypedValue.valueOf(value2);

@@ -6,18 +6,17 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 
-import zzz404.safesql.QueryContext;
 import zzz404.safesql.sql.type.TypedValue;
 
 public abstract class AbstractCondition implements Condition {
 
-    protected Field<?> field;
+    protected FieldImpl<?> field;
 
-    protected AbstractCondition(Field<?> field) {
+    protected AbstractCondition(FieldImpl<?> field) {
         this.field = field;
     }
 
-    public static <T> AbstractCondition of(Field<T> tableField, String operator,
+    public static <T> AbstractCondition of(FieldImpl<T> tableField, String operator,
             @SuppressWarnings("unchecked") T... values) {
         if (operator.equals(BETWEEN)) {
             Validate.isTrue(values.length == 2);
@@ -36,7 +35,7 @@ public abstract class AbstractCondition implements Condition {
     public <T> OrCondition or(T fieldValue, String operator, @SuppressWarnings("unchecked") T... values) {
         QueryContext ctx = QueryContext.get();
         @SuppressWarnings("unchecked")
-        Field<T> field = (Field<T>) ctx.takeField();
+        FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
         AbstractCondition cond = AbstractCondition.of(field, operator, values);
         OrCondition orCond = new OrCondition(this, cond);
         ctx.reaplaceLastCondition(orCond);

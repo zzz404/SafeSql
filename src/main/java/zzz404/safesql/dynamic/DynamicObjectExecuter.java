@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import zzz404.safesql.QueryContext;
 import zzz404.safesql.reflection.MethodAnalyzer;
 import zzz404.safesql.reflection.ObjectSchema;
 import zzz404.safesql.reflection.OneObjectPlayer;
@@ -18,7 +17,7 @@ import zzz404.safesql.util.NoisyRunnable;
 abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
 
     protected T o;
-    protected List<Field<?>> fields;
+    protected List<FieldImpl<?>> fields;
     protected ObjectSchema objSchema;
 
     @SuppressWarnings("unchecked")
@@ -32,7 +31,7 @@ abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
         QueryContext.underQueryContext(ctx -> {
             NoisyRunnable.runQuietly(() -> columnsCollector.play(entity.getMockedObject()));
             fields = ctx.takeAllTableFieldsUniquely();
-            fields.forEach(Field::checkType);
+            fields.forEach(FieldImpl::checkType);
         });
         return this;
     }
@@ -41,7 +40,7 @@ abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
 
     protected List<TypedValue<?>> paramValues() {
         List<TypedValue<?>> paramValues = new ArrayList<>();
-        for (Field<?> field : fields) {
+        for (FieldImpl<?> field : fields) {
             String propName = field.getPropertyName();
             Object value = objSchema.findGetter_by_propName(propName).getValue(o);
             paramValues.add(TypedValue.valueOf(value));
@@ -55,7 +54,7 @@ abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
             TableSchema tableSchema = dbSource.getSchema(entity.getName());
             fields = objSchema.findAllValidGetters().stream().map(MethodAnalyzer::getPropertyName)
                     .filter(propName -> tableSchema.hasMatchedColumn(propName))
-                    .map(propName -> new Field<>(entity, propName)).collect(Collectors.toList());
+                    .map(propName -> new FieldImpl<>(entity, propName)).collect(Collectors.toList());
         }
         return super.execute();
     }

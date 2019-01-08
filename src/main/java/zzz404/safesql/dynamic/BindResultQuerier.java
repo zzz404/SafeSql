@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.util.NoisyRunnable;
 
@@ -21,6 +20,7 @@ public abstract class BindResultQuerier<R> {
 
     protected void onSelectScope(NoisyRunnable collectColumns) {
         querier.onSelectScope(() -> {
+            QueryContext.get().resultEntity = resultEntity;
             collectColumns.run();
         });
     }

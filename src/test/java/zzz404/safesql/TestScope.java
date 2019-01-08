@@ -6,6 +6,7 @@ import static zzz404.safesql.Sql.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.dynamic.ScopeErrorException;
 import zzz404.safesql.helper.Document;
 
 public class TestScope {

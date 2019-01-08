@@ -3,7 +3,6 @@ package zzz404.safesql.dynamic;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import zzz404.safesql.Entity;
 import zzz404.safesql.reflection.OneObjectPlayer;
 import zzz404.safesql.sql.DbSourceImpl;
 

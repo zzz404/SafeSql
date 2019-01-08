@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.Entity;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;
@@ -43,7 +42,7 @@ class TestOneEntityQuerier {
         OneEntityQuerier<Document> q = createQuerier(Document.class).where(d -> {
             cond(d.getId(), "=", 3);
         });
-        assertEquals(Arrays.asList(new OpCondition<>(new Field<>(new Entity<>(1, Document.class), "id"), "=", 3)),
+        assertEquals(Arrays.asList(new OpCondition<>(new FieldImpl<>(new Entity<>(1, Document.class), "id"), "=", 3)),
                 q.conditions);
     }
 
@@ -52,7 +51,7 @@ class TestOneEntityQuerier {
         OneEntityQuerier<Document> q = createQuerier(Document.class).groupBy(d -> {
             d.getId();
         });
-        assertEquals(Arrays.asList(new Field<>(new Entity<>(1, Document.class), "id")), q.groupBys);
+        assertEquals(Arrays.asList(new FieldImpl<>(new Entity<>(1, Document.class), "id")), q.groupBys);
     }
 
     @Test
@@ -60,7 +59,7 @@ class TestOneEntityQuerier {
         OneEntityQuerier<Document> q = createQuerier(Document.class).orderBy(d -> {
             asc(d.getId());
         });
-        assertEquals(Arrays.asList(new OrderBy(new Field<>(new Entity<>(1, Document.class), "id"), true)), q.orderBys);
+        assertEquals(Arrays.asList(new OrderBy(new FieldImpl<>(new Entity<>(1, Document.class), "id"), true)), q.orderBys);
     }
 
     private <T> OneEntityQuerier<T> createQuerier(Class<T> clazz) {

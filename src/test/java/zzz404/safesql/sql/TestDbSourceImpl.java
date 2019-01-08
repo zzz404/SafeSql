@@ -20,8 +20,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import zzz404.safesql.ConnectionManager;
 import zzz404.safesql.DbSourceBackDoor;
-import zzz404.safesql.Entity;
-import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.Entity;
+import zzz404.safesql.dynamic.FieldImpl;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;
@@ -122,14 +122,14 @@ public class TestDbSourceImpl {
 
         ds.revise(docEntity, userEntity, cateEntity);
 
-        List<String> columns = docEntity.getFields().stream().map(Field::getPrefixedColumnName)
+        List<String> columns = docEntity.getFields().stream().map(FieldImpl::getPrefixedColumnName)
                 .collect(Collectors.toList());
         assertEquals(Arrays.asList("t1.doc_title", "t1.ownerId"), columns);
 
-        columns = userEntity.getFields().stream().map(Field::getPrefixedColumnName).collect(Collectors.toList());
+        columns = userEntity.getFields().stream().map(FieldImpl::getPrefixedColumnName).collect(Collectors.toList());
         assertEquals(Arrays.asList("t2.firstName", "t2.full_name"), columns);
 
-        columns = cateEntity.getFields().stream().map(Field::getPrefixedColumnName).collect(Collectors.toList());
+        columns = cateEntity.getFields().stream().map(FieldImpl::getPrefixedColumnName).collect(Collectors.toList());
         assertEquals(Arrays.asList("t3.parentId"), columns);
     }
 
@@ -142,7 +142,7 @@ public class TestDbSourceImpl {
         Entity<Document> docEntity = createEntity(1, Document.class, "docTitle");
         ds.revise(docEntity);
 
-        List<String> columns = docEntity.getFields().stream().map(Field::getPrefixedColumnName)
+        List<String> columns = docEntity.getFields().stream().map(FieldImpl::getPrefixedColumnName)
                 .collect(Collectors.toList());
         assertEquals(Arrays.asList("t1.docTitle"), columns);
     }
@@ -150,7 +150,7 @@ public class TestDbSourceImpl {
     private <T> Entity<T> createEntity(int index, Class<T> clazz, String... columns) {
         Entity<T> entity = new Entity<>(index, clazz);
         for (String column : columns) {
-            new Field<>(entity, column);
+            new FieldImpl<>(entity, column);
         }
         return entity;
     }

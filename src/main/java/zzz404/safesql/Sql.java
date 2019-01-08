@@ -4,10 +4,12 @@ import zzz404.safesql.dynamic.AbstractCondition;
 import zzz404.safesql.dynamic.DynamicDeleter;
 import zzz404.safesql.dynamic.DynamicInserter;
 import zzz404.safesql.dynamic.DynamicUpdater;
-import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.EntityGettable;
+import zzz404.safesql.dynamic.FieldImpl;
 import zzz404.safesql.dynamic.MutualCondition;
 import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.dynamic.OrderBy;
+import zzz404.safesql.dynamic.QueryContext;
 import zzz404.safesql.dynamic.ThreeEntityQuerier;
 import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.sql.StaticSqlExecuter;
@@ -49,17 +51,17 @@ public class Sql {
     @SuppressWarnings("unchecked")
     public static <T> Field<T> field(T field) {
         QueryContext ctx = QueryContext.get();
-        return (Field<T>) ctx.getLastField();
+        return (FieldImpl<T>) ctx.getLastField();
     }
 
     public static <T> void count() {
         QueryContext ctx = QueryContext.get();
-        ctx.addTableField(Field.count());
+        ctx.addTableField(FieldImpl.count());
     }
 
     public static <T> void all(Object mockedObject) {
         QueryContext ctx = QueryContext.get();
-        ctx.addTableField(Field.all((EntityGettable) mockedObject));
+        ctx.addTableField(FieldImpl.all((EntityGettable) mockedObject));
     }
 
     @SafeVarargs
@@ -67,11 +69,11 @@ public class Sql {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("cond");
         @SuppressWarnings("unchecked")
-        Field<T> field = (Field<T>) ctx.takeField();
+        FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
         AbstractCondition cond;
         if (ctx.hasMoreColumn()) {
             @SuppressWarnings("unchecked")
-            Field<T> field2 = (Field<T>) ctx.takeField();
+            FieldImpl<T> field2 = (FieldImpl<T>) ctx.takeField();
             cond = new MutualCondition<T>(field, operator, field2);
         }
         else {
@@ -85,8 +87,8 @@ public class Sql {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("innerJoin");
         @SuppressWarnings("unchecked")
-        AbstractCondition cond = new MutualCondition<T>((Field<T>) ctx.takeField(), operator,
-                (Field<T>) ctx.takeField());
+        AbstractCondition cond = new MutualCondition<T>((FieldImpl<T>) ctx.takeField(), operator,
+                (FieldImpl<T>) ctx.takeField());
         ctx.addCondition(cond);
     }
 
@@ -95,7 +97,7 @@ public class Sql {
         ctx.getScope().checkCommand("asc");
 
         @SuppressWarnings("unchecked")
-        Field<T> field = (Field<T>) ctx.takeField();
+        FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
         ctx.addOrderBy(new OrderBy(field, true));
     }
 
@@ -104,7 +106,7 @@ public class Sql {
         ctx.getScope().checkCommand("asc");
 
         EntityGettable entityGettable = (EntityGettable) o;
-        Field<T> field = new Field<>(entityGettable.entity(), propName);
+        FieldImpl<T> field = new FieldImpl<>(entityGettable.entity(), propName);
         ctx.addOrderBy(new OrderBy(field, true));
     }
 
@@ -113,7 +115,7 @@ public class Sql {
         ctx.getScope().checkCommand("desc");
 
         @SuppressWarnings("unchecked")
-        Field<T> field = (Field<T>) ctx.takeField();
+        FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
         ctx.addOrderBy(new OrderBy(field, false));
     }
 
@@ -122,7 +124,7 @@ public class Sql {
         ctx.getScope().checkCommand("desc");
 
         EntityGettable entityGettable = (EntityGettable) o;
-        Field<T> field = new Field<>(entityGettable.entity(), propName);
+        FieldImpl<T> field = new FieldImpl<>(entityGettable.entity(), propName);
         ctx.addOrderBy(new OrderBy(field, false));
     }
 

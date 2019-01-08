@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.DbSource;
 import zzz404.safesql.DbSourceBackDoor;
-import zzz404.safesql.Entity;
-import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.FieldImpl;
 import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.dynamic.OpCondition;
 import zzz404.safesql.dynamic.OrCondition;
@@ -24,9 +23,9 @@ import zzz404.safesql.sql.type.TypedValue;
 
 class TestOrCondition {
 
-    private static OpCondition<String> cond1 = new OpCondition<>(new Field<>(new Entity<>(1, Object.class), "a"), "=",
+    private static OpCondition<String> cond1 = new OpCondition<>(new FieldImpl<>(new Entity<>(1, Object.class), "a"), "=",
             "aaa");
-    private static OpCondition<Integer> cond2 = new OpCondition<>(new Field<>(new Entity<>(2, Object.class), "b"), "<>",
+    private static OpCondition<Integer> cond2 = new OpCondition<>(new FieldImpl<>(new Entity<>(2, Object.class), "b"), "<>",
             11);
 
     @Test
