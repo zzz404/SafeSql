@@ -1,9 +1,12 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.Entity;
+import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.MutualCondition;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.User;
 

@@ -1,10 +1,11 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import zzz404.safesql.QueryContext;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 

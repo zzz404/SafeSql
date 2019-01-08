@@ -39,8 +39,6 @@ class TestMethodAnalyzer_Setter {
         Method method = getMyMethod("setTitle_returnVoid");
         MethodAnalyzer methodAnalyzer = new MethodAnalyzer(method);
 
-        assertEquals(method, methodAnalyzer.getMethod());
-
         assertEquals(String.class, methodAnalyzer.getType());
     }
 

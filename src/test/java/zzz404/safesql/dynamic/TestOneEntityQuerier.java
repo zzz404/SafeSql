@@ -14,9 +14,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.Entity;
-import zzz404.safesql.Field;
-import zzz404.safesql.OpCondition;
-import zzz404.safesql.OrderBy;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.DocumentVo;

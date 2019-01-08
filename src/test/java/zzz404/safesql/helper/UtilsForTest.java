@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 
 import zzz404.safesql.Entity;
-import zzz404.safesql.Field;
+import zzz404.safesql.dynamic.Field;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.NoisyRunnable;
 

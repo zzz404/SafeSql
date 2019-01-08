@@ -40,8 +40,6 @@ class TestMethodAnalyzer_Getter {
         Method method = getMyMethod("getTitle");
         MethodAnalyzer methodAnalyzer = new MethodAnalyzer(method);
 
-        assertEquals(method, methodAnalyzer.getMethod());
-
         assertEquals(String.class, methodAnalyzer.getType());
     }
 

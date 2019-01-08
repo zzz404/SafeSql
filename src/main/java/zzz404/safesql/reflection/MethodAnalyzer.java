@@ -2,6 +2,11 @@ package zzz404.safesql.reflection;
 
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang3.Validate;
+
+import zzz404.safesql.util.NoisyRunnable;
+import zzz404.safesql.util.NoisySupplier;
+
 public class MethodAnalyzer {
 
     private static final String SETTER_PREFIX = "set";
@@ -84,12 +89,18 @@ public class MethodAnalyzer {
         return isSetter;
     }
 
-    public String getPropertyName() {
-        return propertyName;
+    public Object getValue(Object o) {
+        Validate.isTrue(isGetter);
+        return NoisySupplier.getQuietly(() -> method.invoke(o));
     }
 
-    public Method getMethod() {
-        return method;
+    public void setValue(Object o, Object value) {
+        Validate.isTrue(isSetter);
+        NoisyRunnable.runQuietly(() -> method.invoke(o, value));
+    }
+
+    public String getPropertyName() {
+        return propertyName;
     }
 
 }

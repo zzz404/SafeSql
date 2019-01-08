@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import static zzz404.safesql.Sql.*;
 
@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 
+import zzz404.safesql.QueryContext;
 import zzz404.safesql.sql.type.TypedValue;
 
 public abstract class AbstractCondition implements Condition {

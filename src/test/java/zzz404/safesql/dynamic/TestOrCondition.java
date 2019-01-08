@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
@@ -9,7 +9,13 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.DbSource;
+import zzz404.safesql.DbSourceBackDoor;
+import zzz404.safesql.Entity;
+import zzz404.safesql.dynamic.Field;
 import zzz404.safesql.dynamic.OneEntityQuerier;
+import zzz404.safesql.dynamic.OpCondition;
+import zzz404.safesql.dynamic.OrCondition;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.UtilsForTest;
@@ -55,7 +61,7 @@ class TestOrCondition {
                     SqlQuerierBackDoor.paramValues(querier));
         }
         finally {
-            DbSource.map.clear();
+            DbSourceBackDoor.removeAllFactories();
         }
     }
 

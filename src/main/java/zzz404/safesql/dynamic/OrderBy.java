@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import zzz404.safesql.util.CommonUtils;
 

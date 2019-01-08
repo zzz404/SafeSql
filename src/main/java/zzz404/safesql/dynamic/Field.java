@@ -1,7 +1,8 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
-import org.apache.commons.lang3.Validate;
-
+import zzz404.safesql.Entity;
+import zzz404.safesql.EntityGettable;
+import zzz404.safesql.QueryContext;
 import zzz404.safesql.sql.TableSchema;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
@@ -13,8 +14,7 @@ public class Field<T> {
     private String columnName;
     private String function;
 
-    private String asProperty;
-    private String asColumn;
+    private Field<T> asField;
 
     public Field(Entity<?> entity, String propertyName) {
         this.entity = entity;
@@ -30,11 +30,7 @@ public class Field<T> {
         this.clazz = clazz;
     }
 
-    public Entity<?> getEntity() {
-        return entity;
-    }
-
-    public String getPropertyName() {
+    String getPropertyName() {
         return propertyName;
     }
 
@@ -46,22 +42,21 @@ public class Field<T> {
         return result;
     }
 
-    public String getColumnClause() {
+    String getColumnClause() {
         String result = getPrefixedColumnName();
         if (function != null) {
             result = function + "(" + result + ")";
         }
-        if (asColumn != null) {
-            result += " AS " + asColumn;
+        if (asField != null) {
+            result += " AS " + asField.propertyName;
         }
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public void as(T o) {
         QueryContext ctx = QueryContext.get();
-        Field<?> field = ctx.takeLastField();
-        Validate.isTrue(this.clazz == field.clazz);
-        this.asColumn = this.asProperty = field.propertyName;
+        asField = (Field<T>) ctx.takeLastField();
     }
 
     @Override
@@ -89,18 +84,15 @@ public class Field<T> {
 
     public void revisedBy(TableSchema schema) {
         columnName = schema.getColumnName(propertyName);
-        if (asProperty != null) {
-            asColumn = schema.getColumnName(asProperty);
-        }
     }
 
-    public void checkType() {
+    void checkType() {
         if (clazz != null) {
             TypedValue.valueOf(clazz);
         }
     }
 
-    public String getColumnName() {
+    String getColumnName() {
         return columnName;
     }
 

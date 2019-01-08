@@ -1,10 +1,15 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.Sql.*;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.dynamic.AbstractCondition;
+import zzz404.safesql.dynamic.BetweenCondition;
+import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.InCondition;
+import zzz404.safesql.dynamic.OpCondition;
 import zzz404.safesql.helper.UtilsForTest;
 
 class TestCondition {

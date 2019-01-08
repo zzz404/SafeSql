@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import zzz404.safesql.AbstractCondition;
 import zzz404.safesql.Entity;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.Scope;

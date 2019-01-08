@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import net.sf.cglib.proxy.Enhancer;
+import zzz404.safesql.dynamic.Field;
 import zzz404.safesql.reflection.GetterTracer;
 import zzz404.safesql.util.CommonUtils;
 

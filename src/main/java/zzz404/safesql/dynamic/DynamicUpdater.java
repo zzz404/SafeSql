@@ -4,7 +4,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import zzz404.safesql.AbstractCondition;
 import zzz404.safesql.reflection.OneObjectPlayer;
 import zzz404.safesql.sql.DbSourceImpl;
 

@@ -1,4 +1,4 @@
-package zzz404.safesql;
+package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.dynamic.BetweenCondition;
 import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.type.TypedValue;
 

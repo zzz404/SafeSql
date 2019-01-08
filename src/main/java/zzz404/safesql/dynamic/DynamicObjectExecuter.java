@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import zzz404.safesql.Field;
 import zzz404.safesql.QueryContext;
 import zzz404.safesql.reflection.MethodAnalyzer;
 import zzz404.safesql.reflection.ObjectSchema;
@@ -44,7 +43,7 @@ abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
         List<TypedValue<?>> paramValues = new ArrayList<>();
         for (Field<?> field : fields) {
             String propName = field.getPropertyName();
-            Object value = objSchema.getValue(o, propName);
+            Object value = objSchema.findGetter_by_propName(propName).getValue(o);
             paramValues.add(TypedValue.valueOf(value));
         }
         paramValues.addAll(super.paramValues());

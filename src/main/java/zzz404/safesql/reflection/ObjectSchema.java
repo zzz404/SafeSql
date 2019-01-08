@@ -8,7 +8,6 @@ import java.util.Map;
 
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
-import zzz404.safesql.util.NoisySupplier;
 
 public class ObjectSchema {
     @SuppressWarnings("rawtypes")
@@ -63,16 +62,12 @@ public class ObjectSchema {
         return lcProp_setter_map.get(lcPropName);
     }
 
-    public MethodAnalyzer findValidSetter_by_snakedPropName(String snakedPropName) {
+    public MethodAnalyzer findSetter_by_snakedPropName(String snakedPropName) {
         return snakedProp_setter_map.get(snakedPropName);
     }
 
     public Class<?> getObjClass() {
         return objClass;
-    }
-
-    public Object getValue(Object o, String propName) {
-        return NoisySupplier.getQuietly(() -> getterMap.get(propName).getMethod().invoke(o));
     }
 
 }

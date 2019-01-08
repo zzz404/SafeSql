@@ -21,7 +21,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import zzz404.safesql.ConnectionManager;
 import zzz404.safesql.DbSourceBackDoor;
 import zzz404.safesql.Entity;
-import zzz404.safesql.Field;
+import zzz404.safesql.dynamic.Field;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;

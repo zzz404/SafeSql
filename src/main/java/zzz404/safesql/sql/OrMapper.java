@@ -37,14 +37,14 @@ public class OrMapper {
             for (ColumnInfo columnInfo : columnInfos) {
                 MethodAnalyzer setter = objSchema.findSetter_by_lcPropName(columnInfo.lcColumn);
                 if (setter == null && dbSource.isSnakeFormCompatable()) {
-                    setter = objSchema.findValidSetter_by_snakedPropName(columnInfo.lcColumn);
+                    setter = objSchema.findSetter_by_snakedPropName(columnInfo.lcColumn);
                 }
                 if (setter == null) {
                     throw new MappingException(clazz, columnInfo.column);
                 }
                 if (setter != null) {
                     TypedValue<?> value = TypedValue.valueOf(setter.getType()).readFromRs(rs, columnInfo.index);
-                    setter.getMethod().invoke(o, value.getValue());
+                    setter.setValue(o, value.getValue());
                 }
             }
         });

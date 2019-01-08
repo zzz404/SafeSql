@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import zzz404.safesql.dynamic.AbstractCondition;
+import zzz404.safesql.dynamic.Field;
+import zzz404.safesql.dynamic.OrCondition;
+import zzz404.safesql.dynamic.OrderBy;
+
 public class QueryContext {
 
     private static final ThreadLocal<QueryContext> container = new ThreadLocal<>();

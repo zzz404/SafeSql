@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import zzz404.safesql.dynamic.OrderBy;
+
 public class CoverOrderBy {
 
     @Test
