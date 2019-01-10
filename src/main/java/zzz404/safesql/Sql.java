@@ -101,30 +101,12 @@ public class Sql {
         ctx.addOrderBy(new OrderBy(field, true));
     }
 
-    public static <T> void asc(T o, String propName) {
-        QueryContext ctx = QueryContext.get();
-        ctx.getScope().checkCommand("asc");
-
-        EntityGettable entityGettable = (EntityGettable) o;
-        FieldImpl<T> field = new FieldImpl<>(entityGettable.entity(), propName);
-        ctx.addOrderBy(new OrderBy(field, true));
-    }
-
     public static <T> void desc(T o) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("desc");
 
         @SuppressWarnings("unchecked")
         FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
-        ctx.addOrderBy(new OrderBy(field, false));
-    }
-
-    public static <T> void desc(T o, String propName) {
-        QueryContext ctx = QueryContext.get();
-        ctx.getScope().checkCommand("desc");
-
-        EntityGettable entityGettable = (EntityGettable) o;
-        FieldImpl<T> field = new FieldImpl<>(entityGettable.entity(), propName);
         ctx.addOrderBy(new OrderBy(field, false));
     }
 

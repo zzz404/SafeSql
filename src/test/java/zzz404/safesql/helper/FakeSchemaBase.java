@@ -39,11 +39,11 @@ public class FakeSchemaBase {
         });
         return metaData;
     }
-    
+
     public Connection getMockedConnection() throws SQLException {
         Connection conn = mock(Connection.class);
         Statement stmt = mock(Statement.class);
-        
+
         when(conn.createStatement()).thenReturn(stmt);
         when(stmt.executeQuery(anyString())).thenAnswer(info -> {
             String sql = info.getArgument(0);

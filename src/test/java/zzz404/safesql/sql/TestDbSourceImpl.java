@@ -23,6 +23,7 @@ import zzz404.safesql.DbSourceBackDoor;
 import zzz404.safesql.dynamic.Entity;
 import zzz404.safesql.dynamic.FieldImpl;
 import zzz404.safesql.helper.Category;
+import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.proxy.QuietConnection;
@@ -110,8 +111,8 @@ public class TestDbSourceImpl {
 
     @Test
     void test_revise_snake() throws SQLException {
-        Connection conn = new FakeSchemaBase().addTable("Document", "doc_title", "ownerId")
-                .addTable("User", "full_name").getMockedConnection();
+        Connection conn = new FakeDatabase().pushMetaData("doc_title", "ownerId").pushMetaData("full_name")
+                .getMockedConnection();
 
         DbSourceImpl ds = new DbSourceImpl("");
         ds.snakeFormCompatable(true).useConnectionPrivider(() -> new QuietConnection(conn));
@@ -135,7 +136,8 @@ public class TestDbSourceImpl {
 
     @Test
     void test_revise_noSnake() throws SQLException {
-        Connection conn = new FakeSchemaBase().addTable("Document", "doc_title").getMockedConnection();
+        Connection conn = new FakeDatabase().pushMetaData("doc_title").pushMetaData("full_name").getMockedConnection();
+
         DbSourceImpl ds = new DbSourceImpl("");
         ds.snakeFormCompatable(false).useConnectionPrivider(() -> new QuietConnection(conn));
 

@@ -9,26 +9,24 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import zzz404.safesql.util.NoisyRunnable;
-
 class RecordsResultBuilder {
     private Record[] recs;
     private int position = -1;
     private ResultSet rs = mock(ResultSet.class);
     private ResultSetMetaData meta = mock(ResultSetMetaData.class);
 
-    public RecordsResultBuilder(Record... recs) {
+    public RecordsResultBuilder(Record... recs) throws SQLException {
         this.recs = recs != null ? recs : new Record[0];
-        NoisyRunnable.runQuietly(() -> simulate());
+        simulateData();
     }
 
-    private void simulate() throws SQLException {
-        simulateMetaData();
+    public void simulateData() throws SQLException {
         simulatePosition();
         simulateGet();
+        simulateMetaData();
     }
 
-    private void simulateMetaData() throws SQLException {
+    private RecordsResultBuilder simulateMetaData() throws SQLException {
         when(rs.getMetaData()).thenReturn(meta);
         if (ArrayUtils.isEmpty(recs)) {
             when(meta.getColumnCount()).thenReturn(0);
@@ -40,6 +38,7 @@ class RecordsResultBuilder {
                 return recs[0].getColumnName(index);
             });
         }
+        return this;
     }
 
     private void simulateGet() throws SQLException {

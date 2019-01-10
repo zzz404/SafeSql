@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
@@ -31,8 +32,21 @@ public class FakeDatabase {
         return this;
     }
 
-    public FakeDatabase pushRecords(Record... records) {
+    public FakeDatabase pushRecords(Record... records) throws SQLException {
         ResultSet rs = new RecordsResultBuilder(records).getResultSet();
+        data.offer(rs);
+        return this;
+    }
+
+    public FakeDatabase pushMetaData(String... columnNames) throws SQLException {
+        ResultSet rs = mock(ResultSet.class);
+        ResultSetMetaData meta = mock(ResultSetMetaData.class);
+        when(rs.getMetaData()).thenReturn(meta);
+        when(meta.getColumnCount()).thenReturn(columnNames.length);
+        when(meta.getColumnName(anyInt())).then(info -> {
+            int index = (Integer) info.getArgument(0);
+            return columnNames[index - 1];
+        });
         data.offer(rs);
         return this;
     }

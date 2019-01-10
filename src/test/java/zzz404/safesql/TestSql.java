@@ -16,6 +16,7 @@ import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
+import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.SqlQuerierBackDoor;
@@ -89,14 +90,15 @@ public class TestSql {
 
     @Test
     void test_asc_desc() throws SQLException {
-        Connection conn = new FakeDatabase().getMockedConnection();
+        Connection conn = new FakeSchemaBase().addTable("Document", "id").addTable("User", "NAME")
+                .addTable("Category", "id").getMockedConnection();
         DbSource.create().useConnectionPrivider(() -> conn);
 
         ThreeEntityQuerier<Document, User, Category> querier = from(Document.class, User.class, Category.class)
                 .orderBy((d, u, c) -> {
                     asc(d.getId());
-                    desc(c, "id");
-                    asc(u, "name");
+                    desc(c.getId());
+                    asc(u.getName());
                 });
         assertEquals("SELECT * FROM Document t1, User t2, Category t3 ORDER BY t1.id ASC, t3.id DESC, t2.name ASC",
                 SqlQuerierBackDoor.sql(querier));
