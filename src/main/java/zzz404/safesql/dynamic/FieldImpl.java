@@ -23,7 +23,7 @@ public class FieldImpl implements Field {
         }
     }
 
-    public FieldImpl(Entity<?> entity, String propertyName, Class<T> clazz) {
+    public FieldImpl(Entity<?> entity, String propertyName, Class<?> clazz) {
         this(entity, propertyName);
         this.clazz = clazz;
     }
@@ -51,7 +51,6 @@ public class FieldImpl implements Field {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public void as(Object o) {
         QueryContext ctx = QueryContext.get();
         asField = (FieldImpl) ctx.takeLastField();
@@ -71,15 +70,15 @@ public class FieldImpl implements Field {
         return getPrefixedColumnName();
     }
 
-    public static FieldImpl<Integer> count() {
-        FieldImpl<Integer> field = new FieldImpl<>(null, "*", Integer.class);
+    public static FieldImpl count() {
+        FieldImpl field = new FieldImpl(null, "*", Integer.class);
         field.function = "COUNT";
         return field;
     }
 
-    public static FieldImpl<?> all(EntityGettable mockedObject) {
+    public static FieldImpl all(EntityGettable mockedObject) {
         Entity<?> entity = mockedObject.entity();
-        FieldImpl<?> field = new FieldImpl<>(entity, "*");
+        FieldImpl field = new FieldImpl(entity, "*");
         return field;
     }
 

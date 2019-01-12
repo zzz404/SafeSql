@@ -13,7 +13,7 @@ public class QueryContext {
     private static final ThreadLocal<QueryContext> container = new ThreadLocal<>();
 
     private Scope scope;
-    private LinkedList<FieldImpl<?>> fields = null;
+    private LinkedList<FieldImpl> fields = null;
     private LinkedList<AbstractCondition> conditions = null;
     private List<OrderBy> orderBys = null;
 
@@ -39,14 +39,14 @@ public class QueryContext {
         return ctx;
     }
 
-    public void addTableField(FieldImpl<?> field) {
+    public void addTableField(FieldImpl field) {
         if (fields == null) {
             fields = new LinkedList<>();
         }
         fields.offer(field);
     }
 
-    public FieldImpl<?> takeField() {
+    public FieldImpl takeField() {
         Objects.requireNonNull(fields);
         return fields.poll();
     }
@@ -56,16 +56,16 @@ public class QueryContext {
         return fields.removeLast();
     }
 
-    public List<FieldImpl<?>> takeAllTableFieldsUniquely() {
+    public List<FieldImpl> takeAllTableFieldsUniquely() {
         if (fields == null) {
             return Collections.emptyList();
         }
-        ArrayList<FieldImpl<?>> result = new ArrayList<>(new LinkedHashSet<>(fields));
+        ArrayList<FieldImpl> result = new ArrayList<>(new LinkedHashSet<>(fields));
         fields.clear();
         return result;
     }
 
-    public FieldImpl<?> getLastField() {
+    public FieldImpl getLastField() {
         return fields.getLast();
     }
 

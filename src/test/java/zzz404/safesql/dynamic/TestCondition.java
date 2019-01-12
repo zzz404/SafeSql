@@ -13,7 +13,7 @@ import zzz404.safesql.dynamic.OpCondition;
 import zzz404.safesql.helper.UtilsForTest;
 
 class TestCondition {
-    private static final FieldImpl<Integer> column_z = UtilsForTest.createSimpleField("z");
+    private static final FieldImpl column_z = UtilsForTest.createSimpleField("z");
 
     @Test
     void test_of_createConditionByOperator() {

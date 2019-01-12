@@ -23,9 +23,9 @@ import zzz404.safesql.sql.type.TypedValue;
 
 class TestOrCondition {
 
-    private static OpCondition<String> cond1 = new OpCondition<>(new FieldImpl<>(new Entity<>(1, Object.class), "a"), "=",
+    private static OpCondition cond1 = new OpCondition(new FieldImpl(new Entity<>(1, Object.class), "a"), "=",
             "aaa");
-    private static OpCondition<Integer> cond2 = new OpCondition<>(new FieldImpl<>(new Entity<>(2, Object.class), "b"), "<>",
+    private static OpCondition cond2 = new OpCondition(new FieldImpl(new Entity<>(2, Object.class), "b"), "<>",
             11);
 
     @Test
