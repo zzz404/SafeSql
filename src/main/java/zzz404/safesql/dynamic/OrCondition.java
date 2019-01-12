@@ -19,7 +19,7 @@ public class OrCondition extends AbstractCondition {
     }
 
     @Override
-    public <T> OrCondition or(T fieldValue, String operator, @SuppressWarnings("unchecked") T... values) {
+    public OrCondition or(Object fieldValue, String operator, Object... values) {
         QueryContext ctx = QueryContext.get();
         FieldImpl field = (FieldImpl) ctx.takeField();
         AbstractCondition cond = AbstractCondition.of(field, operator, values);

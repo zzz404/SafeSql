@@ -2,6 +2,6 @@ package zzz404.safesql.dynamic;
 
 public interface Condition {
 
-    public <T> Condition or(T field, String operator, @SuppressWarnings("unchecked") T... values);
+    public Condition or(Object field, String operator, Object... values);
 
 }
