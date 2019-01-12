@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 
+import zzz404.safesql.SafeSqlException;
 import zzz404.safesql.sql.type.TypedValue;
 
 public abstract class AbstractCondition implements Condition {
@@ -19,7 +20,9 @@ public abstract class AbstractCondition implements Condition {
     public static <T> AbstractCondition of(FieldImpl<T> tableField, String operator,
             @SuppressWarnings("unchecked") T... values) {
         if (operator.equals(BETWEEN)) {
-            Validate.isTrue(values.length == 2);
+            if(values.length != 2) {
+                throw new SafeSqlException("A BetweenCondition must has exact two parameters!");
+            }
             return new BetweenCondition<T>(tableField, values[0], values[1]);
         }
         else if (operator.equals(IN)) {

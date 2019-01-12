@@ -1,8 +1,8 @@
 package zzz404.safesql.sql;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
 
@@ -11,7 +11,7 @@ import zzz404.safesql.sql.type.TypedValue;
 public class StaticSqlExecuter extends SqlQuerier {
 
     private String sql;
-    private List<TypedValue<?>> paramValues;
+    private List<TypedValue<?>> paramValues = new ArrayList<>();
 
     public StaticSqlExecuter(DbSourceImpl dbSource) {
         super(dbSource);
@@ -23,7 +23,7 @@ public class StaticSqlExecuter extends SqlQuerier {
     }
 
     public StaticSqlExecuter paramValues(Object... paramValues) {
-        this.paramValues = Arrays.stream(paramValues).map(TypedValue::valueOf).collect(Collectors.toList());
+        Arrays.stream(paramValues).map(TypedValue::valueOf).forEach(this.paramValues::add);
         return this;
     }
 

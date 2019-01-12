@@ -10,7 +10,7 @@ import zzz404.safesql.sql.DbSourceImpl;
 public class TestDbSource {
     @AfterEach
     public void tearDown() {
-        DbSource.map.clear();
+        DbSource.clearAll();;
     }
 
     @Test

@@ -1,20 +1,34 @@
 package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static zzz404.safesql.Sql.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.dynamic.BetweenCondition;
+import zzz404.safesql.DbSource;
+import zzz404.safesql.DbSourceBackDoor;
+import zzz404.safesql.helper.Document;
+import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.type.TypedValue;
 
 class TestBetweenCondition {
+    @AfterEach
+    void afterEach() {
+        DbSourceBackDoor.removeAllFactories();
+    }
 
     @Test
     void test_toClause() {
+        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
+        from(Document.class).where(d -> {
+            cond(d.getId(), BETWEEN, 123, 456);
+            Arrays.asList(1, "aa");
+        });
         BetweenCondition<Integer> cond = new BetweenCondition<>(UtilsForTest.createSimpleField("zzz"), 123, 456);
         assertEquals("t1.zzz BETWEEN ? AND ?", cond.toClause());
     }

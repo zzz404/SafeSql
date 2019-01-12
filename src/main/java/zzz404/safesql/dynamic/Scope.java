@@ -15,7 +15,7 @@ public enum Scope {
 
     public void checkCommand(String command) {
         if (!acceptedCommands.contains(command)) {
-            throw new ScopeErrorException("cond", this);
+            throw new ScopeErrorException(command, this);
         }
     }
 }

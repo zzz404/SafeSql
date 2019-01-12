@@ -5,18 +5,12 @@ import static org.mockito.Mockito.*;
 import static zzz404.safesql.Sql.*;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.dynamic.OneEntityQuerier;
-import zzz404.safesql.dynamic.ThreeEntityQuerier;
-import zzz404.safesql.dynamic.TwoEntityQuerier;
-import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
-import zzz404.safesql.helper.FakeSchemaBase;
-import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.SqlQuerierBackDoor;
 import zzz404.safesql.sql.proxy.EnhancedConnection;
@@ -25,7 +19,7 @@ public class TestSql {
 
     @AfterEach
     void afterEach() {
-        DbSource.map.clear();
+        DbSource.clearAll();
     }
 
     @Test
@@ -35,114 +29,81 @@ public class TestSql {
         DbSource.create("bbb");
         assertThrows(RuntimeException.class, () -> use("aaa"));
 
-        DbSource.create("aaa");
+        DbSource ds = DbSource.create("aaa");
         QuerierFactory qf = use("aaa");
-        assertEquals("aaa", qf.dbSource.name);
+        assertEquals(ds, qf.dbSource);
     }
 
     @Test
     void test_useDefault() {
         assertThrows(RuntimeException.class, () -> use());
 
-        DbSource.create();
+        DbSource ds = DbSource.create();
         QuerierFactory qf = use();
-        assertEquals("", qf.dbSource.name);
+        assertEquals(ds, qf.dbSource);
     }
 
     @Test
     void test_sql_useDefault() {
         assertThrows(RuntimeException.class, () -> sql("hi"));
 
-        DbSource.create("");
-        assertEquals("", SqlQuerierBackDoor.getDbSource(sql("hi")).name);
+        DbSource ds = DbSource.create("");
+        assertEquals(ds, SqlQuerierBackDoor.getDbSource(sql("hi")));
     }
 
     @Test
     void test_from_useDefault() {
         assertThrows(RuntimeException.class, () -> from(Object.class));
 
-        DbSource.create("");
-        assertEquals("", SqlQuerierBackDoor.getDbSource(from(Object.class)).name);
-    }
-
-    @Test
-    void test_count() throws SQLException {
-        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
-        OneEntityQuerier<Document> querier = from(Document.class).select(d -> {
-            count();
-            d.getId();
-        });
-        assertEquals("SELECT COUNT(*), t1.id FROM Document t1", SqlQuerierBackDoor.sql(querier));
-    }
-
-    @Test
-    void test_all() throws SQLException {
-        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
-        TwoEntityQuerier<Document, User> querier = from(Document.class, User.class).select((d, u) -> {
-            all(d);
-            u.getId();
-        });
-        assertEquals("SELECT t1.*, t2.id FROM Document t1, User t2", SqlQuerierBackDoor.sql(querier));
-    }
-
-    @Test
-    void test_asc_desc() throws SQLException {
-        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
-
-        ThreeEntityQuerier<Document, User, Category> querier = from(Document.class, User.class, Category.class)
-                .orderBy((d, u, c) -> {
-                    asc(d.getId());
-                    desc(c.getId());
-                    asc(u.getName());
-                });
-        assertEquals("SELECT * FROM Document t1, User t2, Category t3 ORDER BY t1.id ASC, t3.id DESC, t2.name ASC",
-                SqlQuerierBackDoor.sql(querier));
+        DbSource ds = DbSource.create("");
+        assertEquals(ds, SqlQuerierBackDoor.getDbSource(from(Object.class)));
     }
 
     @Test
     void test_withTheSameConnection_hasCorrectDbSource() {
         Connection conn = mock(Connection.class);
-        DbSource.create().useConnectionPrivider(() -> conn);
+        DbSource.create("z").useConnectionPrivider(() -> conn);
 
-        Sql.withTheSameConnection(() -> {
-            OneEntityQuerier<Document> querier1 = from(Document.class);
+        DbSourceImpl ds = DbSourceImpl.get("z");
+
+        use("z").withTheSameConnection(() -> {
+            OneEntityQuerier<Document> querier1 = use("z").from(Document.class);
             DbSourceImpl ds1 = SqlQuerierBackDoor.getDbSource(querier1);
-            assertEquals("", ds1.name);
-            OneEntityQuerier<Document> querier2 = from(Document.class);
-            DbSourceImpl ds2 = SqlQuerierBackDoor.getDbSource(querier2);
-            assertEquals("", ds2.name);
-            assertEquals(ds1, ds2);
+            assertEquals(ds, ds1);
             return null;
         });
     }
 
     @Test
+    void test_withConnection_useErrorDataSource_throwException() {
+        Connection conn = mock(Connection.class);
+        DbSource.create("z1").useConnectionPrivider(() -> conn);
+        DbSource.create("z2").useConnectionPrivider(() -> conn);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            use("z1").withTheSameConnection(() -> {
+                DbSourceContext.withConnection(DbSourceImpl.get("z2"), enConn -> null);
+                return null;
+            });
+        });
+    }
+
+    @Test
     void test_withTheSameConnection_hasCorrectConnection() {
-        DbSource.create().useConnectionPrivider(() -> mock(Connection.class));
-        DbSourceImpl ds = DbSourceImpl.get("");
+        DbSource.create("z").useConnectionPrivider(() -> mock(Connection.class));
+        DbSourceImpl ds = DbSourceImpl.get("z");
 
         EnhancedConnection conn1 = DbSourceContext.withConnection(ds, conn -> conn);
         EnhancedConnection conn2 = DbSourceContext.withConnection(ds, conn -> conn);
 
         assertNotEquals(conn1, conn2);
 
-        Sql.withTheSameConnection(() -> {
+        use("z").withTheSameConnection(() -> {
             EnhancedConnection conn3 = DbSourceContext.withConnection(ds, conn -> conn);
             EnhancedConnection conn4 = DbSourceContext.withConnection(ds, conn -> conn);
             assertEquals(conn3, conn4);
             return null;
         });
-    }
-
-    @Test
-    void test_innerJoin_() throws SQLException {
-        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
-
-        TwoEntityQuerier<Document, User> querier = from(Document.class, User.class).where((d, u) -> {
-            innerJoin(d.getOwnerId(), "=", u.getId());
-        });
-        String sql = SqlQuerierBackDoor.sql(querier);
-        assertEquals("SELECT * FROM Document t1, User t2 WHERE t1.ownerId = t2.id", sql);
     }
 
 }

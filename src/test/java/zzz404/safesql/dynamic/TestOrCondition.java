@@ -50,6 +50,7 @@ class TestOrCondition {
         DbSource.create().useConnectionPrivider(() -> conn);
         try {
             OneEntityQuerier<Document> querier = from(Document.class).where(doc -> {
+                cond(1, "=", 2);
                 cond(doc.getOwnerId(), "=", 111);
                 cond(doc.getId(), "<", 1).or(doc.getId(), ">", 100).or(doc.getTitle(), LIKE, "zzz%");
             });

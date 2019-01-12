@@ -63,4 +63,7 @@ public abstract class DbSource {
         return this;
     }
 
+    static void clearAll() {
+        map.clear();
+    }
 }

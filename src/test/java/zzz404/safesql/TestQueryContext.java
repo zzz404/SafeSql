@@ -20,19 +20,4 @@ public class TestQueryContext {
         });
     }
 
-    @Test
-    void test_get_notUnderQueryContext_throwNull() {
-        QueryContext.underQueryContext(ctx -> {
-        });
-        assertThrows(NullPointerException.class, () -> QueryContext.get());
-    }
-
-    @Test
-    void test_others() {
-        QueryContext.underQueryContext(ctx -> {
-            assertTrue(ctx.getConditions().isEmpty());
-            assertTrue(ctx.getOrderBys().isEmpty());
-        });
-    }
-
 }
