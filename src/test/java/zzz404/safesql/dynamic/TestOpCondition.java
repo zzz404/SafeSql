@@ -6,24 +6,22 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-import zzz404.safesql.dynamic.FieldImpl;
-import zzz404.safesql.dynamic.OpCondition;
 import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.type.TypedValue;
 
 class TestOpCondition {
 
-    private static final FieldImpl<Integer> column_zzz = UtilsForTest.createSimpleField("zzz");
+    private static final FieldImpl column_zzz = UtilsForTest.createSimpleField("zzz");
 
     @Test
     void test_toClause() {
-        OpCondition<Integer> cond = new OpCondition<>(column_zzz, "=", 123);
+        OpCondition cond = new OpCondition(column_zzz, "=", 123);
         assertEquals("t1.zzz = ?", cond.toClause());
     }
 
     @Test
     void test_appendValuesTo() {
-        OpCondition<Integer> cond = new OpCondition<>(column_zzz, "=", 123);
+        OpCondition cond = new OpCondition(column_zzz, "=", 123);
 
         ArrayList<TypedValue<?>> values = new ArrayList<>();
         cond.appendValuesTo(values);
@@ -33,6 +31,6 @@ class TestOpCondition {
 
     @Test
     void cover_rest() {
-        new OpCondition<>(column_zzz, "", 1).toString();
+        new OpCondition(column_zzz, "", 1).toString();
     }
 }

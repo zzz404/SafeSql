@@ -1,7 +1,7 @@
 package zzz404.safesql.dynamic;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static zzz404.safesql.Sql.*;
+import static zzz404.safesql.SafeSql.*;
 
 import java.sql.SQLException;
 import java.util.Arrays;

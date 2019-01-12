@@ -13,7 +13,7 @@ public class Entity<T> {
     private Class<T> objClass;
     private T mockedObject;
 
-    private List<FieldImpl<?>> fields = new ArrayList<>();
+    private List<FieldImpl> fields = new ArrayList<>();
 
     public Entity(int index, Class<T> clazz) {
         this.index = index;
@@ -37,11 +37,11 @@ public class Entity<T> {
         return objClass.getSimpleName();
     }
 
-    public void addField(FieldImpl<?> field) {
+    public void addField(FieldImpl field) {
         fields.add(field);
     }
 
-    public List<FieldImpl<?>> getFields() {
+    public List<FieldImpl> getFields() {
         return fields;
     }
 

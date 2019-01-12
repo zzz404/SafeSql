@@ -5,14 +5,14 @@ import zzz404.safesql.sql.TableSchema;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class FieldImpl<T> implements Field<T> {
+public class FieldImpl implements Field {
     private Entity<?> entity;
-    private Class<T> clazz;
+    private Class<?> clazz;
     private String propertyName;
     private String columnName;
     private String function;
 
-    private FieldImpl<T> asField;
+    private FieldImpl asField;
 
     public FieldImpl(Entity<?> entity, String propertyName) {
         this.entity = entity;
@@ -52,9 +52,9 @@ public class FieldImpl<T> implements Field<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public void as(T o) {
+    public void as(Object o) {
         QueryContext ctx = QueryContext.get();
-        asField = (FieldImpl<T>) ctx.takeLastField();
+        asField = (FieldImpl) ctx.takeLastField();
         if (asField.entity != ctx.resultEntity) {
             throw new IllegalStateException("fled(...).as(..) can only be used for from(..).to(..) ...");
         }

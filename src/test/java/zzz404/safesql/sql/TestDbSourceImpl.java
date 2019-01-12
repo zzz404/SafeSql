@@ -150,7 +150,7 @@ public class TestDbSourceImpl {
     private <T> Entity<T> createEntity(int index, Class<T> clazz, String... columns) {
         Entity<T> entity = new Entity<>(index, clazz);
         for (String column : columns) {
-            new FieldImpl<>(entity, column);
+            new FieldImpl(entity, column);
         }
         return entity;
     }

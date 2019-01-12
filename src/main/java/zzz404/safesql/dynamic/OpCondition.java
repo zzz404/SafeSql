@@ -5,12 +5,12 @@ import java.util.List;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class OpCondition<T> extends AbstractCondition {
+public class OpCondition extends AbstractCondition {
 
     private String operator;
     private TypedValue<?> value;
 
-    public OpCondition(FieldImpl<T> field, String operator, T value) {
+    public OpCondition(FieldImpl field, String operator, Object value) {
         super(field);
         this.operator = operator;
         this.value = TypedValue.valueOf(value);

@@ -51,7 +51,7 @@ public class QueryContext {
         return fields.poll();
     }
 
-    public FieldImpl<?> takeLastField() {
+    public FieldImpl takeLastField() {
         Objects.requireNonNull(fields);
         return fields.removeLast();
     }

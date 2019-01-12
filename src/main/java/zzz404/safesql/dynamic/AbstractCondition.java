@@ -1,6 +1,6 @@
 package zzz404.safesql.dynamic;
 
-import static zzz404.safesql.Sql.*;
+import static zzz404.safesql.SafeSql.*;
 
 import java.util.List;
 
@@ -17,8 +17,8 @@ public abstract class AbstractCondition implements Condition {
         this.field = field;
     }
 
-    public static <T> AbstractCondition of(FieldImpl<T> tableField, String operator,
-            @SuppressWarnings("unchecked") T... values) {
+    public static AbstractCondition of(FieldImpl<?> tableField, String operator,
+            @SuppressWarnings("unchecked") Object... values) {
         if (operator.equals(BETWEEN)) {
             if(values.length != 2) {
                 throw new SafeSqlException("A BetweenCondition must has exact two parameters!");

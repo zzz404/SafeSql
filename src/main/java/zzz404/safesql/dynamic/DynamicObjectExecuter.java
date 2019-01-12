@@ -17,7 +17,7 @@ import zzz404.safesql.util.NoisyRunnable;
 abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
 
     protected T o;
-    protected List<FieldImpl<?>> fields;
+    protected List<FieldImpl> fields;
     protected ObjectSchema objSchema;
 
     @SuppressWarnings("unchecked")
@@ -40,7 +40,7 @@ abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
 
     protected List<TypedValue<?>> paramValues() {
         List<TypedValue<?>> paramValues = new ArrayList<>();
-        for (FieldImpl<?> field : fields) {
+        for (FieldImpl field : fields) {
             String propName = field.getPropertyName();
             Object value = objSchema.findGetter_by_propName(propName).getValue(o);
             paramValues.add(TypedValue.valueOf(value));
@@ -54,7 +54,7 @@ abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
             TableSchema tableSchema = dbSource.getSchema(entity.getName());
             fields = objSchema.findAllValidGetters().stream().map(MethodAnalyzer::getPropertyName)
                     .filter(propName -> tableSchema.hasMatchedColumn(propName))
-                    .map(propName -> new FieldImpl<>(entity, propName)).collect(Collectors.toList());
+                    .map(propName -> new FieldImpl(entity, propName)).collect(Collectors.toList());
         }
         return super.execute();
     }

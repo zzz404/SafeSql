@@ -48,8 +48,8 @@ public class UtilsForTest {
         }
     }
 
-    public static FieldImpl<Integer> createSimpleField(String propertyName) {
-        return new FieldImpl<>(new Entity<>(1, Object.class), propertyName);
+    public static FieldImpl createSimpleField(String propertyName) {
+        return new FieldImpl(new Entity<>(1, Object.class), propertyName);
     }
 
     public static <T> Set<T> newSet(@SuppressWarnings("unchecked") T... values) {

@@ -14,23 +14,23 @@ import zzz404.safesql.sql.type.TypedValue;
 
 class TestInCondition {
 
-    private static final FieldImpl<Integer> column_zzz = UtilsForTest.createSimpleField("zzz");
+    private static final FieldImpl column_zzz = UtilsForTest.createSimpleField("zzz");
 
     @Test
     void test_toClause() {
-        InCondition<Integer> cond = new InCondition<>(column_zzz, 1, 2, 3);
+        InCondition cond = new InCondition(column_zzz, 1, 2, 3);
         assertEquals("t1.zzz IN (?, ?, ?)", cond.toClause());
     }
 
     @Test
     void test_toClause_noParams() {
-        InCondition<Integer> cond = new InCondition<>(column_zzz);
+        InCondition cond = new InCondition(column_zzz);
         assertEquals("0<>0", cond.toClause());
     }
 
     @Test
     void test_appendValuesTo() throws SQLException {
-        InCondition<Integer> cond = new InCondition<>(column_zzz, 1, 3, 7);
+        InCondition cond = new InCondition(column_zzz, 1, 3, 7);
 
         ArrayList<TypedValue<?>> values = new ArrayList<>();
         cond.appendValuesTo(values);
@@ -40,9 +40,9 @@ class TestInCondition {
 
     @Test
     void cover_rest() {
-        InCondition<Integer> cond = new InCondition<>(UtilsForTest.createSimpleField(""), 1);
+        InCondition cond = new InCondition(UtilsForTest.createSimpleField(""), 1);
         cond.toString();
-        InCondition<Integer> cond2 = new InCondition<>(UtilsForTest.createSimpleField(""), 1);
+        InCondition cond2 = new InCondition(UtilsForTest.createSimpleField(""), 1);
         cond.equals(cond2);
     }
 }

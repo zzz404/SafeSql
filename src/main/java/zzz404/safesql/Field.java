@@ -1,7 +1,7 @@
 package zzz404.safesql;
 
-public interface Field<T> {
+public interface Field {
 
-    public void as(T o);
+    public void as(Object o);
 
 }

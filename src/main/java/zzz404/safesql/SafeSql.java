@@ -15,13 +15,13 @@ import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.sql.StaticSqlExecuter;
 import zzz404.safesql.util.NoisySupplier;
 
-public class Sql {
+public class SafeSql {
 
     public static final String BETWEEN = "between";
     public static final String IN = "IN";
     public static final String LIKE = "LIKE";
 
-    private Sql() {
+    private SafeSql() {
     }
 
     public static QuerierFactory use() {
@@ -48,10 +48,9 @@ public class Sql {
         return use("").from(class1, class2, class3);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Field<T> field(T field) {
+    public static Field field(Object field) {
         QueryContext ctx = QueryContext.get();
-        return (FieldImpl<T>) ctx.getLastField();
+        return ctx.getLastField();
     }
 
     public static <T> void count() {
@@ -65,16 +64,14 @@ public class Sql {
     }
 
     @SafeVarargs
-    public static <T> AbstractCondition cond(T fieldValue, String operator, T... values) {
+    public static AbstractCondition cond(Object fieldValue, String operator, Object... values) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("cond");
-        @SuppressWarnings("unchecked")
-        FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
+        FieldImpl field = ctx.takeField();
         AbstractCondition cond;
         if (ctx.hasMoreColumn()) {
-            @SuppressWarnings("unchecked")
-            FieldImpl<T> field2 = (FieldImpl<T>) ctx.takeField();
-            cond = new MutualCondition<T>(field, operator, field2);
+            FieldImpl field2 = ctx.takeField();
+            cond = new MutualCondition(field, operator, field2);
         }
         else {
             cond = AbstractCondition.of(field, operator, values);
@@ -83,21 +80,11 @@ public class Sql {
         return cond;
     }
 
-    public static <T> void innerJoin(T fieldValue1, String operator, T fieldValue2) {
-        QueryContext ctx = QueryContext.get();
-        ctx.getScope().checkCommand("innerJoin");
-        @SuppressWarnings("unchecked")
-        AbstractCondition cond = new MutualCondition<T>((FieldImpl<T>) ctx.takeField(), operator,
-                (FieldImpl<T>) ctx.takeField());
-        ctx.addCondition(cond);
-    }
-
     public static <T> void asc(T o) {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("asc");
 
-        @SuppressWarnings("unchecked")
-        FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
+        FieldImpl field = ctx.takeField();
         ctx.addOrderBy(new OrderBy(field, true));
     }
 
@@ -105,8 +92,7 @@ public class Sql {
         QueryContext ctx = QueryContext.get();
         ctx.getScope().checkCommand("desc");
 
-        @SuppressWarnings("unchecked")
-        FieldImpl<T> field = (FieldImpl<T>) ctx.takeField();
+        FieldImpl field = ctx.takeField();
         ctx.addOrderBy(new OrderBy(field, false));
     }
 
@@ -125,4 +111,5 @@ public class Sql {
     public static <T> DynamicDeleter<T> delete(Class<T> clazz) {
         return use("").delete(clazz);
     }
+
 }

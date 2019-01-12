@@ -13,11 +13,11 @@ class TestMutualCondition {
 
     @Test
     void cover_rest() {
-        FieldImpl<Object> field1 = new FieldImpl<>(new Entity<>(1, Document.class), "ownerId");
-        FieldImpl<Object> field2 = new FieldImpl<>(new Entity<>(2, User.class), "id");
-        MutualCondition<Object> cond = new MutualCondition<>(field1, "=", field2);
+        FieldImpl field1 = new FieldImpl(new Entity<>(1, Document.class), "ownerId");
+        FieldImpl field2 = new FieldImpl(new Entity<>(2, User.class), "id");
+        MutualCondition cond = new MutualCondition(field1, "=", field2);
         cond.toString();
-        MutualCondition<Object> cond2 = new MutualCondition<>(field1, ">", field2);
+        MutualCondition cond2 = new MutualCondition(field1, ">", field2);
         assertNotEquals(cond, cond2);
     }
 

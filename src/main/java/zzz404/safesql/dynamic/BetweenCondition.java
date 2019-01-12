@@ -5,12 +5,12 @@ import java.util.List;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class BetweenCondition<T> extends AbstractCondition {
+public class BetweenCondition extends AbstractCondition {
 
-    private TypedValue<T> value1;
-    private TypedValue<T> value2;
+    private TypedValue<?> value1;
+    private TypedValue<?> value2;
 
-    public BetweenCondition(FieldImpl<T> tableColumn, T value1, T value2) {
+    public BetweenCondition(FieldImpl tableColumn, Object value1, Object value2) {
         super(tableColumn);
         this.value1 = TypedValue.valueOf(value1);
         this.value2 = TypedValue.valueOf(value2);

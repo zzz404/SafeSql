@@ -30,7 +30,7 @@ public class GetterTracer<T> implements MethodInterceptor {
         }
         if (m.isGetter()) {
             QueryContext ctx = QueryContext.get();
-            ctx.addTableField(new FieldImpl<>(entity, m.getPropertyName(), m.getType()));
+            ctx.addTableField(new FieldImpl(entity, m.getPropertyName(), m.getType()));
         }
         return NoisySupplier.getQuietly(() -> proxy.invokeSuper(obj, args));
     }

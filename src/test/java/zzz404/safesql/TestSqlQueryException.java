@@ -3,7 +3,7 @@ package zzz404.safesql;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static zzz404.safesql.Sql.*;
+import static zzz404.safesql.SafeSql.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -19,9 +19,9 @@ import zzz404.safesql.util.NoisyRunnable;
 public abstract class DynamicQuerier extends SqlQuerier {
 
     protected List<Entity<?>> entities = new ArrayList<>();
-    protected List<FieldImpl<?>> fields = Collections.emptyList();
+    protected List<FieldImpl> fields = Collections.emptyList();
     protected List<AbstractCondition> conditions = Collections.emptyList();
-    protected List<FieldImpl<?>> groupBys = Collections.emptyList();
+    protected List<FieldImpl> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
     private Scope currentScope = null;

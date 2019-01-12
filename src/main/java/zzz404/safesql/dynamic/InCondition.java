@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.CommonUtils;
 
-public class InCondition<T> extends AbstractCondition {
+public class InCondition extends AbstractCondition {
 
-    private List<TypedValue<T>> values;
+    private List<TypedValue<?>> values;
 
-    public InCondition(FieldImpl<T> tableColumn, @SuppressWarnings("unchecked") T... values) {
+    public InCondition(FieldImpl tableColumn, Object... values) {
         super(tableColumn);
         this.values = Arrays.stream(values).map(TypedValue::valueOf).collect(Collectors.toList());
     }

@@ -8,9 +8,9 @@ import zzz404.safesql.util.CommonUtils;
 public class MutualCondition extends AbstractCondition {
 
     private String operator;
-    protected FieldImpl<?> field2;
+    protected FieldImpl field2;
 
-    public MutualCondition(FieldImpl<?> tableColumn, String operator, FieldImpl<?> tableColumn2) {
+    public MutualCondition(FieldImpl tableColumn, String operator, FieldImpl tableColumn2) {
         super(tableColumn);
         this.operator = operator;
         this.field2 = tableColumn2;
