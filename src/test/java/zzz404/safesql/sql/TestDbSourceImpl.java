@@ -111,14 +111,12 @@ public class TestDbSourceImpl {
 
     @Test
     void test_revise_snake() throws SQLException {
-        Connection conn = new FakeDatabase().pushMetaData("doc_title", "ownerId").pushMetaData("full_name")
-                .getMockedConnection();
-
+        Connection conn = new FakeSchemaBase().addTable("Document", "doc_title", "ownerId").addTable("User", "fullname").getMockedConnection();
         DbSourceImpl ds = new DbSourceImpl("");
-        ds.snakeFormCompatable(true).useConnectionPrivider(() -> new QuietConnection(conn));
+        ds.snakeFormCompatable(true).useConnectionPrivider(() -> conn);
 
         Entity<Document> docEntity = createEntity(1, Document.class, "docTitle", "ownerId");
-        Entity<User> userEntity = createEntity(2, User.class, "firstName", "fullName");
+        Entity<User> userEntity = createEntity(2, User.class, "fullName");
         Entity<Category> cateEntity = createEntity(3, Category.class, "parentId");
 
         ds.revise(docEntity, userEntity, cateEntity);

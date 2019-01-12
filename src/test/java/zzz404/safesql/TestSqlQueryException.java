@@ -13,18 +13,19 @@ import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.helper.Document;
+import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.UtilsForTest;
 
 public class TestSqlQueryException {
     @Test
     void test_throw() throws SQLException {
-        Connection conn = mock(Connection.class);
+        Connection conn = new FakeSchemaBase().addTable("Document").getMockedConnection();
         PreparedStatement pstmt = mock(PreparedStatement.class);
         when(conn.prepareStatement(anyString())).thenReturn(pstmt);
         when(pstmt.executeQuery()).thenThrow(new SQLException("zzz"));
         DbSource.create().useConnectionPrivider(() -> conn);
 
-        OneEntityQuerier<Document> querier = Sql.from(Document.class).where(d -> {
+        OneEntityQuerier<Document> querier = from(Document.class).where(d -> {
             cond(d.getId(), "=", 111);
             cond(d.getTitle(), "=", "zzz");
         });

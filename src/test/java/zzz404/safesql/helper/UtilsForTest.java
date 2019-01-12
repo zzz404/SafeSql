@@ -4,8 +4,10 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
@@ -48,6 +50,14 @@ public class UtilsForTest {
 
     public static FieldImpl<Integer> createSimpleField(String propertyName) {
         return new FieldImpl<>(new Entity<>(1, Object.class), propertyName);
+    }
+
+    public static <T> Set<T> newSet(@SuppressWarnings("unchecked") T... values) {
+        HashSet<T> set = new HashSet<>();
+        for (T value : values) {
+            set.add(value);
+        }
+        return set;
     }
 
     public static <K, V> Map<K, V> newMap(K k, V v) {

@@ -33,7 +33,7 @@ class RecordsResultBuilder {
         }
         else {
             when(meta.getColumnCount()).thenReturn(recs[0].getColumnCount());
-            when(meta.getColumnName(anyInt())).then(info -> {
+            when(meta.getColumnLabel(anyInt())).then(info -> {
                 int index = (Integer) info.getArgument(0);
                 return recs[0].getColumnName(index);
             });

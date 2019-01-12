@@ -15,7 +15,6 @@ import zzz404.safesql.dynamic.ThreeEntityQuerier;
 import zzz404.safesql.dynamic.TwoEntityQuerier;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
-import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.FakeSchemaBase;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.sql.DbSourceImpl;
@@ -68,8 +67,7 @@ public class TestSql {
 
     @Test
     void test_count() throws SQLException {
-        Connection conn = new FakeDatabase().getMockedConnection();
-        DbSource.create().useConnectionPrivider(() -> conn);
+        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
         OneEntityQuerier<Document> querier = from(Document.class).select(d -> {
             count();
             d.getId();
@@ -79,8 +77,7 @@ public class TestSql {
 
     @Test
     void test_all() throws SQLException {
-        Connection conn = new FakeDatabase().getMockedConnection();
-        DbSource.create().useConnectionPrivider(() -> conn);
+        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
         TwoEntityQuerier<Document, User> querier = from(Document.class, User.class).select((d, u) -> {
             all(d);
             u.getId();
@@ -90,9 +87,7 @@ public class TestSql {
 
     @Test
     void test_asc_desc() throws SQLException {
-        Connection conn = new FakeSchemaBase().addTable("Document", "id").addTable("User", "NAME")
-                .addTable("Category", "id").getMockedConnection();
-        DbSource.create().useConnectionPrivider(() -> conn);
+        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
 
         ThreeEntityQuerier<Document, User, Category> querier = from(Document.class, User.class, Category.class)
                 .orderBy((d, u, c) -> {
@@ -140,8 +135,9 @@ public class TestSql {
     }
 
     @Test
-    void test_innerJoin_() {
-        DbSource.create().useConnectionPrivider(() -> mock(Connection.class));
+    void test_innerJoin_() throws SQLException {
+        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
+
         TwoEntityQuerier<Document, User> querier = from(Document.class, User.class).where((d, u) -> {
             innerJoin(d.getOwnerId(), "=", u.getId());
         });

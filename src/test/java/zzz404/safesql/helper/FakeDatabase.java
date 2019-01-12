@@ -43,7 +43,7 @@ public class FakeDatabase {
         ResultSetMetaData meta = mock(ResultSetMetaData.class);
         when(rs.getMetaData()).thenReturn(meta);
         when(meta.getColumnCount()).thenReturn(columnNames.length);
-        when(meta.getColumnName(anyInt())).then(info -> {
+        when(meta.getColumnLabel(anyInt())).then(info -> {
             int index = (Integer) info.getArgument(0);
             return columnNames[index - 1];
         });

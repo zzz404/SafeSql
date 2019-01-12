@@ -11,7 +11,18 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import zzz404.safesql.util.NoisySupplier;
+
 public class FakeSchemaBase {
+
+    private static final Connection defaultConnection = NoisySupplier.getQuietly(() -> {
+        return new FakeSchemaBase().addTable("Document", "id", "ownerId", "title").addTable("User", "id", "name")
+                .addTable("Category", "id", "name").getMockedConnection();
+    });
+
+    public static Connection getDefaultconnection() {
+        return defaultConnection;
+    }
 
     protected Map<String, ResultSet> tableMap = new HashMap<>();
 
@@ -33,7 +44,7 @@ public class FakeSchemaBase {
     public static ResultSetMetaData mockMetaData(String... columnNames) throws SQLException {
         ResultSetMetaData metaData = mock(ResultSetMetaData.class);
         when(metaData.getColumnCount()).thenReturn(columnNames.length);
-        when(metaData.getColumnName(anyInt())).thenAnswer(info -> {
+        when(metaData.getColumnLabel(anyInt())).thenAnswer(info -> {
             int index = info.getArgument(0);
             return columnNames[index - 1];
         });
