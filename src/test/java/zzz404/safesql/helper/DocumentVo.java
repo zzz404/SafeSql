@@ -2,15 +2,15 @@ package zzz404.safesql.helper;
 
 public class DocumentVo {
     private Integer ownerId;
-    private String title2;
+    private String docTitle;
     private Category category; 
 
-    public String getTitle2() {
-        return title2;
+    public String getDocTitle() {
+        return docTitle;
     }
 
-    public void setTitle2(String title2) {
-        this.title2 = title2;
+    public void setDocTitle(String title2) {
+        this.docTitle = title2;
     }
 
     public Category getCategory() {

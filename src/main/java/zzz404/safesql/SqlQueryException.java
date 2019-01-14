@@ -6,9 +6,8 @@ import java.util.List;
 
 import zzz404.safesql.sql.type.TypedValue;
 
-public final class SqlQueryException extends RuntimeException {
-    private static final long serialVersionUID = -1139039721950839787L;
-
+@SuppressWarnings("serial")
+public final class SqlQueryException extends SafeSqlException {
     private String sql;
     private List<TypedValue<?>> paramValues;
 

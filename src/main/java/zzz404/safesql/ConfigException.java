@@ -1,8 +1,7 @@
 package zzz404.safesql;
 
-public class ConfigException extends RuntimeException {
-
-    private static final long serialVersionUID = -6997225309774336853L;
+@SuppressWarnings("serial")
+public class ConfigException extends SafeSqlException {
 
     public ConfigException(String message) {
         super(message);

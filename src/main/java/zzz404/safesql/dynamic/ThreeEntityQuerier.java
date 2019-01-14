@@ -24,6 +24,7 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
         entities.add(entity3 = new Entity<>(3, class3));
     }
 
+    @Override
     public <R> ThreeEntityBindResultQuerier<T, U, V, R> to(Class<R> clazz) {
         return new ThreeEntityBindResultQuerier<>(this, clazz);
     }

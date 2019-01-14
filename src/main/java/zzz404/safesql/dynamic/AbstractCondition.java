@@ -4,12 +4,12 @@ import static zzz404.safesql.SafeSql.*;
 
 import java.util.List;
 
-import org.apache.commons.lang3.Validate;
-
 import zzz404.safesql.SafeSqlException;
 import zzz404.safesql.sql.type.TypedValue;
 
 public abstract class AbstractCondition implements Condition {
+
+    private static final String errorMsgPattern = "Incorrect parameter number for operator '%s', must be %d";
 
     protected FieldImpl field;
 
@@ -20,7 +20,7 @@ public abstract class AbstractCondition implements Condition {
     public static AbstractCondition of(FieldImpl tableField, String operator, Object... values) {
         if (operator.equals(BETWEEN)) {
             if (values.length != 2) {
-                throw new SafeSqlException("A BetweenCondition must has exact two parameters!");
+                throw new SafeSqlException(String.format(errorMsgPattern, operator, 2));
             }
             return new BetweenCondition(tableField, values[0], values[1]);
         }
@@ -28,7 +28,9 @@ public abstract class AbstractCondition implements Condition {
             return new InCondition(tableField, values);
         }
         else {
-            Validate.isTrue(values.length == 1);
+            if (values.length != 1) {
+                throw new SafeSqlException(String.format(errorMsgPattern, operator, 1));
+            }
             return new OpCondition(tableField, operator, values[0]);
         }
     }

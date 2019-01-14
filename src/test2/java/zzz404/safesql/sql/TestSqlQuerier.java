@@ -1,34 +1,28 @@
-package zzz404.safesql.dynamic;
+package zzz404.safesql.sql;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.DbSourceBackDoor;
 import zzz404.safesql.Page;
-import zzz404.safesql.helper.FakeDatabase;
-import zzz404.safesql.helper.FakeDbSource;
-import zzz404.safesql.sql.SqlQuerier;
 import zzz404.safesql.sql.type.TypedValue;
 
 class TestSqlQuerier {
-
-    private FakeDatabase fakeDb;
-
-    @BeforeEach
-    void beforeEach() {
-        fakeDb = new FakeDatabase();
-    }
+    
+    private TempDb fakeDb;
 
     @AfterEach
     void afterEach() {
@@ -150,8 +144,8 @@ class TestSqlQuerier {
     public static class MySqlQuerier extends SqlQuerier {
         private List<TypedValue<?>> paramValues;
 
-        public MySqlQuerier(FakeDatabase fakeDb) {
-            super(new FakeDbSource(fakeDb));
+        public MySqlQuerier(TempDb fakeDb) {
+            super(null);
         }
 
         @Override
@@ -173,5 +167,39 @@ class TestSqlQuerier {
             this.paramValues = Arrays.stream(paramValues).map(TypedValue::valueOf).collect(Collectors.toList());
             return this;
         }
+    }
+    
+    public static class TempDb {
+
+        public void pushSingleColumnData(int... i) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public PreparedStatement getMockedPreparedStatement() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public Statement getMockedStatement() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public Connection getMockedConnection() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public void pushRecords() {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void pushSingleColumnData(String... string) {
+            // TODO Auto-generated method stub
+            
+        }
+        
     }
 }

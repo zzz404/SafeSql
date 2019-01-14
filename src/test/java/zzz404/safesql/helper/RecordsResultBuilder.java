@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-class RecordsResultBuilder {
+public class RecordsResultBuilder {
     private Record[] recs;
     private int position = -1;
     private ResultSet rs = mock(ResultSet.class);

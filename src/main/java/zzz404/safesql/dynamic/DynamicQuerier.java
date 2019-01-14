@@ -30,6 +30,8 @@ public abstract class DynamicQuerier extends SqlQuerier {
         super(dbSource);
     }
 
+    public abstract <R> BindResultQuerier<R> to(Class<R> clazz);
+
     protected void onSelectScope(NoisyRunnable collectColumns) {
         checkScope(Scope.select);
         QueryContext.underQueryContext(ctx -> {

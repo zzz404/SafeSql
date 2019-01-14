@@ -20,7 +20,7 @@ public class TestThreeEntityBindResultQuerier {
                 Category.class);
         ThreeEntityBindResultQuerier<Document, User, Category, DocumentVo> bq = q.to(DocumentVo.class);
         bq.select((d, u, c, v) -> {
-            field(d.getTitle()).as(v.getTitle2());
+            field(d.getTitle()).as(v.getDocTitle());
             u.getId();
             c.getId();
         });

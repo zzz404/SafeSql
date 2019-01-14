@@ -1,9 +1,10 @@
 package zzz404.safesql.sql;
 
-public class TableSchemeException extends RuntimeException {
+import zzz404.safesql.SafeSqlException;
 
-    private static final long serialVersionUID = -7635365686923947343L;
-    
+@SuppressWarnings("serial")
+public class TableSchemeException extends SafeSqlException {
+
     public TableSchemeException(String message) {
         super(message);
     }

@@ -9,79 +9,90 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.Map;
+
+import zzz404.safesql.util.NoisySupplier;
 
 public class FakeDatabase {
+    private static final Connection defaultConnection = NoisySupplier.getQuietly(() -> {
+        return new FakeDatabase().addTableColumns("Document", "id", "ownerId", "title")
+                .addTableColumns("User", "id", "name").addTableColumns("Category", "id", "name").getMockedConnection();
+    });
+
+    public static Connection getDefaultconnection() {
+        return FakeDatabase.defaultConnection;
+    }
+
     private Connection conn = null;
-    private PreparedStatement pstmt = null;
     private Statement stmt = null;
 
-    protected int row = -1;
-    protected Queue<ResultSet> data = new LinkedList<>();
+    protected Map<String, PreparedStatement> pstmtMap = new HashMap<>();
+    protected Map<String, ResultSet> rsMap = new HashMap<>();
 
-    public FakeDatabase pushSingleColumnData(int... values) throws SQLException {
-        Record[] records = Record.singleColumn(values);
-        pushRecords(records);
+    public FakeDatabase addTables(String... tables) throws SQLException {
+        for (String table : tables) {
+            addTableColumns(table);
+        }
         return this;
     }
 
-    public FakeDatabase pushSingleColumnData(String... values) throws SQLException {
-        Record[] records = Record.singleColumn(values);
-        pushRecords(records);
-        return this;
-    }
-
-    public FakeDatabase pushRecords(Record... records) throws SQLException {
-        ResultSet rs = new RecordsResultBuilder(records).getResultSet();
-        data.offer(rs);
-        return this;
-    }
-
-    public FakeDatabase pushMetaData(String... columnNames) throws SQLException {
+    public FakeDatabase addTableColumns(String table, String... columnLabels) throws SQLException {
         ResultSet rs = mock(ResultSet.class);
         ResultSetMetaData meta = mock(ResultSetMetaData.class);
         when(rs.getMetaData()).thenReturn(meta);
-        when(meta.getColumnCount()).thenReturn(columnNames.length);
-        when(meta.getColumnLabel(anyInt())).then(info -> {
-            int index = (Integer) info.getArgument(0);
-            return columnNames[index - 1];
-        });
-        data.offer(rs);
+        when(meta.getColumnCount()).thenReturn(columnLabels.length);
+        if (columnLabels.length > 0) {
+            when(meta.getColumnLabel(anyInt())).then(info -> {
+                int index = (Integer) info.getArgument(0);
+                return columnLabels[index - 1];
+            });
+        }
+        rsMap.put("SELECT * FROM " + table, rs);
         return this;
     }
 
-    public ResultSet getNextResultSet() {
-        return data.poll();
+    public FakeDatabase addRecords(String sql, Record... records) throws SQLException {
+        ResultSet rs = new RecordsResultBuilder(records).getResultSet();
+        rsMap.put(sql, rs);
+        return this;
+    }
+
+    public FakeDatabase addSingleColumnValues(String sql, String columnLabel, int... values) throws SQLException {
+        Record[] records = Record.singleColumn(columnLabel, values);
+        addRecords(sql, records);
+        return this;
+    }
+
+    public FakeDatabase addSingleColumnValues(String sql, String columnLabel, String... values) throws SQLException {
+        Record[] records = Record.singleColumn(columnLabel, values);
+        addRecords(sql, records);
+        return this;
     }
 
     public Connection getMockedConnection() throws SQLException {
         if (conn == null) {
             conn = mock(Connection.class);
-            this.pstmt = mock(PreparedStatement.class);
             this.stmt = mock(Statement.class);
-
-            when(conn.prepareStatement(anyString())).thenReturn(pstmt);
-            when(conn.prepareStatement(anyString(), anyInt(), anyInt())).thenReturn(pstmt);
-            when(pstmt.executeQuery()).then(info -> {
-                return getNextResultSet();
-            });
-
             when(conn.createStatement()).thenReturn(stmt);
             when(conn.createStatement(anyInt(), anyInt())).thenReturn(stmt);
             when(stmt.executeQuery(anyString())).then(info -> {
-                return getNextResultSet();
+                String sql = info.getArgument(0);
+                return rsMap.get(sql);
+            });
+
+            when(conn.prepareStatement(anyString())).then(info -> {
+                String sql = info.getArgument(0);
+                PreparedStatement pstmt = pstmtMap.get(sql);
+                if (pstmt == null) {
+                    pstmt = mock(PreparedStatement.class);
+                    when(pstmt.executeQuery(anyString())).thenReturn(rsMap.get(sql));
+                    pstmtMap.put(sql, pstmt);
+                }
+                return pstmt;
             });
         }
         return conn;
-    }
-
-    public Statement getMockedStatement() {
-        return stmt;
-    }
-
-    public PreparedStatement getMockedPreparedStatement() {
-        return pstmt;
     }
 
 }

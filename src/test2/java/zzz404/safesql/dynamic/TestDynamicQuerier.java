@@ -13,7 +13,7 @@ import zzz404.safesql.DbSource;
 import zzz404.safesql.Page;
 import zzz404.safesql.helper.Category;
 import zzz404.safesql.helper.Document;
-import zzz404.safesql.helper.FakeSchemaBase;
+import zzz404.safesql.helper.FakeDatabase;
 import zzz404.safesql.helper.User;
 import zzz404.safesql.helper.UtilsForTest;
 import zzz404.safesql.sql.DbSourceImpl;
@@ -134,7 +134,7 @@ class TestDynamicQuerier {
 
     @Test
     void test_count() throws SQLException {
-        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
+        DbSource.create().useConnectionPrivider(() -> FakeDatabase.getDefaultconnection());
         OneEntityQuerier<Document> querier = from(Document.class).select(d -> {
             count();
             d.getId();
@@ -144,7 +144,7 @@ class TestDynamicQuerier {
 
     @Test
     void test_all() throws SQLException {
-        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
+        DbSource.create().useConnectionPrivider(() -> FakeDatabase.getDefaultconnection());
         TwoEntityQuerier<Document, User> querier = from(Document.class, User.class).select((d, u) -> {
             all(d);
             u.getId();
@@ -154,7 +154,7 @@ class TestDynamicQuerier {
 
     @Test
     void test_asc_desc() throws SQLException {
-        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
+        DbSource.create().useConnectionPrivider(() -> FakeDatabase.getDefaultconnection());
 
         ThreeEntityQuerier<Document, User, Category> querier = from(Document.class, User.class, Category.class)
                 .orderBy((d, u, c) -> {
@@ -185,6 +185,12 @@ class TestDynamicQuerier {
 
         @Override
         public Page<?> queryPage() {
+            return null;
+        }
+
+        @Override
+        public <R> BindResultQuerier<R> to(Class<R> clazz) {
+            // TODO Auto-generated method stub
             return null;
         }
 

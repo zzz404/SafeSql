@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 import zzz404.safesql.dynamic.Scope;
 import zzz404.safesql.dynamic.ScopeErrorException;
 import zzz404.safesql.helper.Document;
-import zzz404.safesql.helper.FakeSchemaBase;
+import zzz404.safesql.helper.FakeDatabase;
 
 public class TestScope {
 
     @BeforeEach
     void setUp() {
-        DbSource.create().useConnectionPrivider(() -> FakeSchemaBase.getDefaultconnection());
+        DbSource.create().useConnectionPrivider(() -> FakeDatabase.getDefaultconnection());
     }
 
     @AfterEach

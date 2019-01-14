@@ -1,8 +1,9 @@
 package zzz404.safesql.dynamic;
 
-public class ScopeErrorException extends RuntimeException {
+import zzz404.safesql.SafeSqlException;
 
-    private static final long serialVersionUID = 363254132009013789L;
+@SuppressWarnings("serial")
+public class ScopeErrorException extends SafeSqlException {
 
     private String command;
     private Scope scope;

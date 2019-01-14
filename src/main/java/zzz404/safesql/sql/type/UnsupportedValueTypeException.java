@@ -1,8 +1,9 @@
 package zzz404.safesql.sql.type;
 
-public class UnsupportedValueTypeException extends RuntimeException {
+import zzz404.safesql.SafeSqlException;
 
-    private static final long serialVersionUID = 3050447529361203247L;
+@SuppressWarnings("serial")
+public class UnsupportedValueTypeException extends SafeSqlException {
     
     private Class<?> clazz;
 

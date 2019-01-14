@@ -6,18 +6,18 @@ public class Record {
     private ArrayList<String> columns = new ArrayList<>();
     private ArrayList<Object> values = new ArrayList<>();
 
-    public static Record[] singleColumn(int... values) {
+    public static Record[] singleColumn(String columnLabel, int... values) {
         Record[] records = new Record[values.length];
         for (int i = 0; i < values.length; i++) {
-            records[i] = new Record().setValue("", values[i]);
+            records[i] = new Record().setValue(columnLabel, values[i]);
         }
         return records;
     }
 
-    public static Record[] singleColumn(String... values) {
+    public static Record[] singleColumn(String columnLabel, String... values) {
         Record[] records = new Record[values.length];
         for (int i = 0; i < values.length; i++) {
-            records[i] = new Record().setValue("", values[i]);
+            records[i] = new Record().setValue(columnLabel, values[i]);
         }
         return records;
     }

@@ -19,6 +19,7 @@ public class OneEntityQuerier<T> extends DynamicQuerier {
         entities.add(entity);
     }
 
+    @Override
     public <R> OneEntityBindResultQuerier<T, R> to(Class<R> clazz) {
         return new OneEntityBindResultQuerier<>(this, clazz);
     }

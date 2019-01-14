@@ -18,7 +18,7 @@ public class TestTwoEntityBindResultQuerier {
         TwoEntityQuerier<Document, User> q = new TwoEntityQuerier<>(null, Document.class, User.class);
         TwoEntityBindResultQuerier<Document, User, DocumentVo> bq = q.to(DocumentVo.class);
         bq.select((d, u, v) -> {
-            field(d.getTitle()).as(v.getTitle2());
+            field(d.getTitle()).as(v.getDocTitle());
             u.getId();
         });
         assertEquals("t1.title, t2.id", q.getColumnsClause());
