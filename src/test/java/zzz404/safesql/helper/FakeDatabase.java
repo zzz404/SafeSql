@@ -12,6 +12,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mockito.stubbing.Answer;
+
 import zzz404.safesql.util.NoisySupplier;
 
 public class FakeDatabase {
@@ -81,16 +83,19 @@ public class FakeDatabase {
                 return rsMap.get(sql);
             });
 
-            when(conn.prepareStatement(anyString())).then(info -> {
+            Answer<?> answer = info -> {
                 String sql = info.getArgument(0);
                 PreparedStatement pstmt = pstmtMap.get(sql);
                 if (pstmt == null) {
                     pstmt = mock(PreparedStatement.class);
-                    when(pstmt.executeQuery(anyString())).thenReturn(rsMap.get(sql));
+                    ResultSet rs = rsMap.get(sql);
+                    when(pstmt.executeQuery()).thenReturn(rs);
                     pstmtMap.put(sql, pstmt);
                 }
                 return pstmt;
-            });
+            };
+            when(conn.prepareStatement(anyString())).then(answer);
+            when(conn.prepareStatement(anyString(), anyInt(), anyInt())).then(answer);
         }
         return conn;
     }

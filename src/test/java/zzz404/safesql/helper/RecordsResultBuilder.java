@@ -37,6 +37,10 @@ public class RecordsResultBuilder {
                 int index = (Integer) info.getArgument(0);
                 return recs[0].getColumnName(index);
             });
+            when(meta.getTableName(anyInt())).then(info -> {
+                int index = (Integer) info.getArgument(0);
+                return recs[0].getTableName(index);
+            });
         }
         return this;
     }

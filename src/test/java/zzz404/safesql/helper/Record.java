@@ -3,6 +3,7 @@ package zzz404.safesql.helper;
 import java.util.ArrayList;
 
 public class Record {
+    private ArrayList<String> tables = new ArrayList<>();
     private ArrayList<String> columns = new ArrayList<>();
     private ArrayList<Object> values = new ArrayList<>();
 
@@ -23,6 +24,14 @@ public class Record {
     }
 
     public Record setValue(String columnName, Object value) {
+        this.tables.add(null);
+        this.columns.add(columnName);
+        this.values.add(value);
+        return this;
+    }
+
+    public Record setValue(String tableName, String columnName, Object value) {
+        this.tables.add(tableName);
         this.columns.add(columnName);
         this.values.add(value);
         return this;
@@ -39,6 +48,10 @@ public class Record {
 
     public int getColumnCount() {
         return columns.size();
+    }
+
+    public String getTableName(int index) {
+        return tables.get(index - 1);
     }
 
     public String getColumnName(int index) {

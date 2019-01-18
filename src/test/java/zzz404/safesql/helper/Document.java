@@ -4,6 +4,7 @@ public class Document {
     private Integer id;
     private Integer ownerId;
     private String title;
+    private int categoryId;
 
     public Integer getId() {
         return id;
@@ -27,5 +28,13 @@ public class Document {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 }

@@ -109,7 +109,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         return this.orderBys.stream().map(OrderBy::toClause).collect(Collectors.joining(", "));
     }
 
-    protected String sql() {
+    public String sql() {
         dbSource.revise(entities.toArray(new Entity[entities.size()]));
         String tableName = getTablesClause();
         String sql = "SELECT " + getColumnsClause() + " FROM " + tableName;

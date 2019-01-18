@@ -27,7 +27,8 @@ public class OrMapper {
 
         Collection<ColumnInfo> columnInfos;
         if (matchTableName) {
-            columnInfos = rsAnalyzer.getAllColumns(dbSource.getTableName(clazz.getSimpleName().toLowerCase()));
+            String lcTableName = dbSource.getSchema(clazz.getSimpleName()).getTableName().toLowerCase();
+            columnInfos = rsAnalyzer.getAllColumns(lcTableName);
         }
         else {
             columnInfos = rsAnalyzer.getAllColumns();

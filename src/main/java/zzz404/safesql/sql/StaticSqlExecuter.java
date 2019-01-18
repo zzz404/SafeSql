@@ -44,7 +44,7 @@ public class StaticSqlExecuter extends SqlQuerier {
         return this;
     }
 
-    protected String sql() {
+    public String sql() {
         return sql;
     }
 

@@ -64,10 +64,6 @@ public class DbSourceImpl extends DbSource {
         return snakeFormCompatable;
     }
 
-    public String getTableName(String entityName) {
-        return getSchema(entityName).getTableName();
-    }
-
     public void revise(Entity<?>... entities) {
         if (snakeFormCompatable) {
             for (Entity<?> entity : entities) {

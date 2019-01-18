@@ -21,4 +21,9 @@ public class Tuple2<T, U> {
     public boolean equals(Object that) {
         return CommonUtils.isEquals(this, that, t -> new Object[] { t.first, t.second });
     }
+
+    @Override
+    public String toString() {
+        return "(" + first + ", " + second + ")";
+    }
 }

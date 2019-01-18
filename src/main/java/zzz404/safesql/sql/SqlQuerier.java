@@ -73,7 +73,7 @@ public abstract class SqlQuerier {
             });
         }
         catch (RuntimeException e) {
-            throw new SqlQueryException(sql, paramValues, e.getCause());
+            throw new SqlQueryException(sql, paramValues, e);
         }
     }
 
@@ -183,7 +183,7 @@ public abstract class SqlQuerier {
         });
     }
 
-    protected abstract String sql();
+    public abstract String sql();
 
     protected abstract String sql_for_queryCount();
 
