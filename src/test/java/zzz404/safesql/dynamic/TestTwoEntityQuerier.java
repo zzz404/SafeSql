@@ -106,7 +106,7 @@ class TestTwoEntityQuerier {
                     .getMockedConnection();
         });
 
-        List<Tuple2<String, Integer>> tuples = from(Document.class, User.class).select((d, u) -> {
+        TwoEntityQuerier<Document, User> querier = from(Document.class, User.class).select((d, u) -> {
             u.getName();
             count();
         }).where((d, u) -> {
@@ -115,7 +115,8 @@ class TestTwoEntityQuerier {
             u.getName();
         }).orderBy((d, u) -> {
             asc(u.getName());
-        }).queryList_by_mapEach(rs -> {
+        });
+        List<Tuple2<String, Integer>> tuples = querier.queryList_by_mapEach(rs -> {
             String name = rs.getString(1);
             int count = rs.getInt(2);
             return new Tuple2<>(name, count);

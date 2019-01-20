@@ -53,12 +53,14 @@ public class SafeSql {
         return ctx.getLastField();
     }
 
-    public static <T> void count() {
+    public static FieldImpl count() {
         QueryContext ctx = QueryContext.get();
-        ctx.addTableField(FieldImpl.count());
+        FieldImpl field = FieldImpl.count();
+        ctx.addTableField(field);
+        return field;
     }
 
-    public static <T> void all(Object mockedObject) {
+    public static void all(Object mockedObject) {
         QueryContext ctx = QueryContext.get();
         ctx.addTableField(FieldImpl.all((EntityGettable) mockedObject));
     }

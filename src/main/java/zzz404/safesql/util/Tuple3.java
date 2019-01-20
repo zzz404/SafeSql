@@ -28,4 +28,9 @@ public class Tuple3<T, U, V> {
         return CommonUtils.isEquals(this, that, t -> new Object[] { t.first, t.second, t.third });
     }
 
+    @Override
+    public String toString() {
+        return "(" + first + ", " + second + ", " + third + ")";
+    }
+
 }

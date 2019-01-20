@@ -12,8 +12,11 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mockito.InOrder;
 import org.mockito.stubbing.Answer;
 
+import zzz404.safesql.sql.proxy.QuietPreparedStatement;
+import zzz404.safesql.sql.type.TypedValue;
 import zzz404.safesql.util.NoisySupplier;
 
 public class FakeDatabase {
@@ -98,6 +101,16 @@ public class FakeDatabase {
             when(conn.prepareStatement(anyString(), anyInt(), anyInt())).then(answer);
         }
         return conn;
+    }
+
+    public void assertParamValues(String sql, Object... paramValues) {
+        PreparedStatement pstmt = pstmtMap.get(sql);
+        InOrder inOrder = inOrder(pstmt);
+        int i = 0;
+        for (Object o : paramValues) {
+            TypedValue<?> value = TypedValue.valueOf(o);
+            value.setToPstmt(new QuietPreparedStatement(inOrder.verify(pstmt)), ++i);
+        }
     }
 
 }

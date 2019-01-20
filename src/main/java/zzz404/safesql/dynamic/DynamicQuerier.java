@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.Validate;
-
 import zzz404.safesql.Page;
 import zzz404.safesql.sql.DbSourceImpl;
 import zzz404.safesql.sql.OrMapper;
@@ -24,8 +22,6 @@ public abstract class DynamicQuerier extends SqlQuerier {
     protected List<FieldImpl> groupBys = Collections.emptyList();
     protected List<OrderBy> orderBys = Collections.emptyList();
 
-    private Scope currentScope = null;
-
     public DynamicQuerier(DbSourceImpl dbSource) {
         super(dbSource);
     }
@@ -33,7 +29,6 @@ public abstract class DynamicQuerier extends SqlQuerier {
     public abstract <R> BindResultQuerier<R> to(Class<R> clazz);
 
     protected void onSelectScope(NoisyRunnable collectColumns) {
-        checkScope(Scope.select);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.select);
 
@@ -44,14 +39,7 @@ public abstract class DynamicQuerier extends SqlQuerier {
         });
     }
 
-    private void checkScope(Scope scope) {
-        Scope previousScope = this.currentScope;
-        Validate.isTrue(previousScope == null || scope.ordinal() >= previousScope.ordinal());
-        currentScope = scope;
-    }
-
     protected void onWhereScope(NoisyRunnable collectConditions) {
-        checkScope(Scope.where);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.where);
 
@@ -62,7 +50,6 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     protected void onGroupByScope(NoisyRunnable collectColumns) {
-        checkScope(Scope.groupBy);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.groupBy);
 
@@ -73,7 +60,6 @@ public abstract class DynamicQuerier extends SqlQuerier {
     }
 
     protected void onOrderByScope(NoisyRunnable collectColumns) {
-        checkScope(Scope.orderBy);
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.orderBy);
 

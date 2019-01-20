@@ -3,6 +3,7 @@ package zzz404.safesql.dynamic;
 import static org.junit.jupiter.api.Assertions.*;
 import static zzz404.safesql.SafeSql.*;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,18 +21,22 @@ import zzz404.safesql.util.Tuple2;
 
 class TestOneEntityQuerier {
 
+    private String sql = "SELECT t1.id, t1.title FROM Document t1 WHERE t1.id < ? ORDER BY t1.id DESC";
+    private String sql_for_count = "SELECT COUNT(*) FROM Document t1 WHERE t1.id < ?";
+    private FakeDatabase fakeDb;
+    
     @AfterEach
     void afterEach() {
+        fakeDb = null;
         DbSourceBackDoor.removeAllFactories();
     }
 
-    private void registerDefaultConnectionProvider() {
-        String sql = "SELECT t1.id, t1.title FROM Document t1 WHERE t1.id < ? ORDER BY t1.id DESC";
-        String sql_for_count = "SELECT COUNT(*) FROM Document t1 WHERE t1.id < ?";
+    private void registerDefaultConnectionProvider() throws SQLException {
+        fakeDb = new FakeDatabase().addTableColumns("Document", "id", "title", "ownerId")
+                .addSingleColumnValues(sql_for_count, "", 4)
+                .addSingleColumnValues(sql, "title", "aaa", "bbb", "ccc", "ddd");
         DbSource.create().useConnectionPrivider(() -> {
-            return new FakeDatabase().addTableColumns("Document", "id", "title", "ownerId")
-                    .addSingleColumnValues(sql_for_count, "", 4)
-                    .addSingleColumnValues(sql, "title", "aaa", "bbb", "ccc", "ddd").getMockedConnection();
+            return fakeDb.getMockedConnection();
         });
     }
 
@@ -47,15 +52,17 @@ class TestOneEntityQuerier {
     }
 
     @Test
-    void test_queryOne() {
+    void test_queryOne() throws SQLException {
         registerDefaultConnectionProvider();
 
-        Document doc = createQuerier().queryOne().get();
+        OneEntityQuerier<Document> q = createQuerier();
+        Document doc = q.queryOne().get();
         assertEquals("bbb", doc.getTitle());
+        fakeDb.assertParamValues(sql, 100);
     }
 
     @Test
-    void test_queryList() {
+    void test_queryList() throws SQLException {
         registerDefaultConnectionProvider();
 
         List<String> titles = createQuerier().queryList().stream().map(Document::getTitle).collect(Collectors.toList());
@@ -63,17 +70,20 @@ class TestOneEntityQuerier {
     }
 
     @Test
-    void test_queryPage() {
+    void test_queryPage() throws SQLException {
         registerDefaultConnectionProvider();
 
         Page<Document> page = createQuerier().queryPage();
         assertEquals(4, page.getTotalCount());
         assertEquals(Arrays.asList("bbb", "ccc"),
                 page.getResult().stream().map(Document::getTitle).collect(Collectors.toList()));
+        
+        fakeDb.assertParamValues(sql, 100);
+        fakeDb.assertParamValues(sql_for_count, 100);
     }
 
     @Test
-    void test_queryEntityStream() {
+    void test_queryEntityStream() throws SQLException {
         registerDefaultConnectionProvider();
 
         List<String> titles = createQuerier().queryEntityStream(stream -> {
@@ -83,16 +93,17 @@ class TestOneEntityQuerier {
     }
 
     @Test
-    void test_groupBy() {
+    void test_groupBy() throws SQLException {
         String sql = "SELECT t1.ownerId, COUNT(*) FROM Document t1 WHERE t1.id < ? GROUP BY t1.ownerId ORDER BY t1.ownerId ASC";
+        FakeDatabase fakeDb = new FakeDatabase().addTableColumns("Document", "id", "title", "ownerId")
+                .addRecords(sql, new Record().setValue("Document", "ownerId", 1).setValue("count", 2),
+                        new Record().setValue("ownerId", 3).setValue("count", 4));
         DbSource.create().useConnectionPrivider(() -> {
-            return new FakeDatabase().addTableColumns("Document", "id", "title", "ownerId")
-                    .addRecords(sql, new Record().setValue("Document", "ownerId", 1).setValue("count", 2),
-                            new Record().setValue("ownerId", 3).setValue("count", 4))
+            return fakeDb
                     .getMockedConnection();
         });
 
-        List<Tuple2<Integer, Integer>> tuples = from(Document.class).select(d -> {
+        OneEntityQuerier<Document> querier = from(Document.class).select(d -> {
             d.getOwnerId();
             count();
         }).where(d -> {
@@ -101,13 +112,16 @@ class TestOneEntityQuerier {
             d.getOwnerId();
         }).orderBy(d -> {
             asc(d.getOwnerId());
-        }).queryStream(stream -> {
+        });
+        List<Tuple2<Integer, Integer>> tuples = querier.queryStream(stream -> {
             return stream.map(rs -> {
                 int ownerId = rs.getInt(1);
                 int count = rs.getInt(2);
                 return new Tuple2<>(ownerId, count);
             }).collect(Collectors.toList());
         });
+
+        fakeDb.assertParamValues(sql, 100);
         assertEquals(Arrays.asList(new Tuple2<>(1, 2), new Tuple2<>(3, 4)), tuples);
     }
 
