@@ -27,7 +27,7 @@ abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
         this.objSchema = ObjectSchema.get(o.getClass());
     }
 
-    protected DynamicObjectExecuter<T> set(OneObjectPlayer<T> columnsCollector) {
+    protected DynamicObjectExecuter<T> collectFields(OneObjectPlayer<T> columnsCollector) {
         QueryContext.underQueryContext(ctx -> {
             NoisyRunnable.runQuietly(() -> columnsCollector.play(entity.getMockedObject()));
             fields = ctx.takeAllTableFieldsUniquely();

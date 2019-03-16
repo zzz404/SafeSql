@@ -14,7 +14,7 @@ public class DynamicUpdater<T> extends DynamicObjectExecuter<T> {
     }
 
     public DynamicUpdater<T> set(OneObjectPlayer<T> columnsCollector) {
-        super.set(columnsCollector);
+        super.collectFields(columnsCollector);
         return this;
     }
 

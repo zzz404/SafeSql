@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import zzz404.safesql.DbSource;
@@ -22,6 +23,11 @@ import zzz404.safesql.sql.SqlQuerierBackDoor;
 public class TestBindResultQuerier {
     @AfterEach
     void afterEach() {
+        DbSourceBackDoor.removeAllFactories();
+    }
+
+    @BeforeEach
+    void setUp() {
         DbSourceBackDoor.removeAllFactories();
     }
 

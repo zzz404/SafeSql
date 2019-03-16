@@ -13,7 +13,7 @@ public class DynamicInserter<T> extends DynamicObjectExecuter<T> {
     }
 
     public DynamicInserter<T> values(OneObjectPlayer<T> columnsCollector) {
-        super.set(columnsCollector);
+        super.collectFields(columnsCollector);
         return this;
     }
 
