@@ -19,25 +19,14 @@ import zzz404.safesql.helper.FakeDatabase;
 class TestDynamicUpdater {
 
     private FakeDatabase fakeDb;
-    private int id = 1;
-    private int categoryId = 2;
-    private int ownerId = 3;
-    private String title = "zzz";
-
-    private Document doc;
 
     @BeforeEach
-    void beforeEach() {
-        this.fakeDb = new FakeDatabase().addTableColumns("Document", "id", "ownerId", "title", "abc");
+    void beforeEach() throws SQLException {
+        this.fakeDb = new FakeDatabase().addTableColumns("Document");
 
         DbSource.create().useConnectionPrivider(() -> {
             return fakeDb.getMockedConnection();
         });
-        doc = new Document();
-        doc.setId(id);
-        doc.setCategoryId(categoryId);
-        doc.setOwnerId(ownerId);
-        doc.setTitle(title);
     }
 
     @AfterEach
@@ -46,23 +35,49 @@ class TestDynamicUpdater {
     }
 
     @Test
-    void test_update_hasParams() throws SQLException {
-        String sql = "UPDATE Document SET title = ?,  FROM Document WHERE id = ? AND ownerId = ?";
+    void test_update() throws SQLException {
+        String sql = "UPDATE Document SET ownerId=?, title=? WHERE id <> ? AND categoryId = ?";
 
-        Connection conn = fakeDb.addTables("Document").getMockedConnection();
+        Connection conn = fakeDb.getMockedConnection();
 
-        update(doc);
-        update(Document.class).collectFields(d -> {
-            d.getTitle();
+        update(Document.class).set(d -> {
+            d.setOwnerId(12);
+            d.setTitle("zzz");
         }).where(d -> {
-            cond(d.getId(), "=", 11);
+            cond(d.getId(), "<>", 11);
+            cond(d.getCategoryId(), "=", 22);
         }).execute();
 
-        verify(conn, times(1)).prepareStatement(sql);
+        verify(conn).prepareStatement(sql);
 
         PreparedStatement pstmt = conn.prepareStatement(sql);
-        verify(pstmt, times(1)).setInt(1, 11);
-        verify(pstmt, times(1)).setInt(2, 2);
+        verify(pstmt).setInt(1, 12);
+        verify(pstmt).setString(2, "zzz");
+        verify(pstmt).setInt(3, 11);
+        verify(pstmt).setInt(4, 22);
+    }
+
+    @Test
+    void test_update_nullValue() throws SQLException {
+        String sql = "UPDATE Document SET ownerId=?, title=? WHERE ownerId = ? AND title = ?";
+
+        Connection conn = fakeDb.getMockedConnection();
+
+        update(Document.class).set(d -> {
+            d.setOwnerId(null);
+            d.setTitle(null);
+        }).where(d -> {
+            cond(d.getOwnerId(), "=", (Integer) null);
+            cond(d.getTitle(), "=", (String) null);
+        }).execute();
+
+        verify(conn).prepareStatement(sql);
+
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        verify(pstmt).setObject(1, null);
+        verify(pstmt).setString(2, null);
+        verify(pstmt).setObject(3, null);
+        verify(pstmt).setString(4, null);
     }
 
 }

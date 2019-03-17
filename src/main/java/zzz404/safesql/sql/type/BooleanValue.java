@@ -19,7 +19,12 @@ public class BooleanValue extends TypedValue<Boolean> {
 
     @Override
     public BooleanValue setToPstmt(QuietPreparedStatement pstmt, int index) {
-        pstmt.setBoolean(index, value);
+        if (value != null) {
+            pstmt.setBoolean(index, value);
+        }
+        else {
+            pstmt.setObject(index, null);
+        }
         return this;
     }
 

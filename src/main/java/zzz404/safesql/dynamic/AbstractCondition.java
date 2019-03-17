@@ -28,10 +28,10 @@ public abstract class AbstractCondition implements Condition {
             return new InCondition(tableField, values);
         }
         else {
-            if (values.length != 1) {
+            if (values != null && values.length != 1) {
                 throw new SafeSqlException(String.format(errorMsgPattern, operator, 1));
             }
-            return new OpCondition(tableField, operator, values[0]);
+            return new OpCondition(tableField, operator, values != null ? values[0] : null);
         }
     }
 

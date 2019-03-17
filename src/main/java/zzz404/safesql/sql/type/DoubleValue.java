@@ -19,7 +19,12 @@ public class DoubleValue extends TypedValue<Double> {
 
     @Override
     public DoubleValue setToPstmt(QuietPreparedStatement pstmt, int index) {
-        pstmt.setDouble(index, value);
+        if (value != null) {
+            pstmt.setDouble(index, value);
+        }
+        else {
+            pstmt.setObject(index, null);
+        }
         return this;
     }
 

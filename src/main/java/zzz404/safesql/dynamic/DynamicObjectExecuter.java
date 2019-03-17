@@ -29,7 +29,7 @@ abstract class DynamicObjectExecuter<T> extends DynamicExecuter<T> {
 
     protected DynamicObjectExecuter<T> collectFields(OneObjectPlayer<T> columnsCollector) {
         QueryContext.underQueryContext(ctx -> {
-            NoisyRunnable.runQuietly(() -> columnsCollector.play(entity.getMockedObject()));
+            NoisyRunnable.runQuietly(() -> columnsCollector.play(entity.getMockedObject_for_traceGetter()));
             fields = ctx.takeAllTableFieldsUniquely();
             fields.forEach(FieldImpl::checkType);
         });

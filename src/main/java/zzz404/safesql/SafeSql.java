@@ -102,12 +102,12 @@ public class SafeSql {
         return use("").withTheSameConnection(supplier);
     }
 
-    public static <T> DynamicInserter<T> insert(T entity) {
-        return use("").insert(entity);
+    public static <T> DynamicInserter<T> insert(Class<T> clazz) {
+        return use("").insert(clazz);
     }
 
-    public static <T> DynamicUpdater<T> update(T entity) {
-        return use("").update(entity);
+    public static <T> DynamicUpdater<T> update(Class<T> clazz) {
+        return use("").update(clazz);
     }
 
     public static <T> DynamicDeleter<T> delete(Class<T> clazz) {

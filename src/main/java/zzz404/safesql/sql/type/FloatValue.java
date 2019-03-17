@@ -19,7 +19,12 @@ public class FloatValue extends TypedValue<Float> {
 
     @Override
     public FloatValue setToPstmt(QuietPreparedStatement pstmt, int index) {
-        pstmt.setFloat(index, value);
+        if (value != null) {
+            pstmt.setFloat(index, value);
+        }
+        else {
+            pstmt.setObject(index, null);
+        }
         return this;
     }
 

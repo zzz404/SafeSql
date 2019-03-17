@@ -19,7 +19,12 @@ public class IntegerValue extends TypedValue<Integer> {
 
     @Override
     public IntegerValue setToPstmt(QuietPreparedStatement pstmt, int index) {
-        pstmt.setInt(index, value);
+        if (value != null) {
+            pstmt.setInt(index, value);
+        }
+        else {
+            pstmt.setObject(index, null);
+        }
         return this;
     }
 

@@ -19,7 +19,12 @@ public class LongValue extends TypedValue<Long> {
 
     @Override
     public LongValue setToPstmt(QuietPreparedStatement pstmt, int index) {
-        pstmt.setLong(index, value);
+        if (value != null) {
+            pstmt.setLong(index, value);
+        }
+        else {
+            pstmt.setObject(index, null);
+        }
         return this;
     }
 

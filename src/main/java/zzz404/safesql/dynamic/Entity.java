@@ -5,27 +5,27 @@ import java.util.List;
 import java.util.Objects;
 
 import net.sf.cglib.proxy.Enhancer;
-import zzz404.safesql.reflection.GetterTracer;
+import zzz404.safesql.reflection.PropertyTracer;
 import zzz404.safesql.util.CommonUtils;
 
 public class Entity<T> {
     private int index;
     private Class<T> objClass;
-    private T mockedObject;
+    private T mockedObject_for_traceGetter;
+    private T mockedObject_for_traceSetter;
 
     private List<FieldImpl> fields = new ArrayList<>();
 
     public Entity(int index, Class<T> clazz) {
         this.index = index;
         this.objClass = clazz;
-        this.mockedObject = createMockedObject(clazz, index);
     }
 
-    private T createMockedObject(Class<T> clazz, int index) {
+    private T createMockedObject(Class<T> clazz, int index, boolean traceGetter, boolean traceSetter) {
         Enhancer en = new Enhancer();
         en.setSuperclass(clazz);
-        en.setInterfaces(new Class[] {EntityGettable.class});
-        GetterTracer<T> getterLogger = new GetterTracer<>(this);
+        en.setInterfaces(new Class[] { EntityGettable.class });
+        PropertyTracer<T> getterLogger = new PropertyTracer<>(this, traceGetter, traceSetter);
         en.setCallback(getterLogger);
 
         @SuppressWarnings("unchecked")
@@ -53,8 +53,18 @@ public class Entity<T> {
         return objClass;
     }
 
-    public T getMockedObject() {
-        return mockedObject;
+    public T getMockedObject_for_traceGetter() {
+        if (mockedObject_for_traceGetter == null) {
+            mockedObject_for_traceGetter = createMockedObject(objClass, index, true, false);
+        }
+        return mockedObject_for_traceGetter;
+    }
+
+    public T getMockedObject_for_traceSetter() {
+        if (mockedObject_for_traceSetter == null) {
+            mockedObject_for_traceSetter = createMockedObject(objClass, index, false, true);
+        }
+        return mockedObject_for_traceSetter;
     }
 
     @Override

@@ -19,7 +19,12 @@ public class ShortValue extends TypedValue<Short> {
 
     @Override
     public ShortValue setToPstmt(QuietPreparedStatement pstmt, int index) {
-        pstmt.setShort(index, value);
+        if (value != null) {
+            pstmt.setShort(index, value);
+        }
+        else {
+            pstmt.setObject(index, null);
+        }
         return this;
     }
 

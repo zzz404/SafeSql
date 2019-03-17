@@ -7,11 +7,13 @@ import zzz404.safesql.util.CommonUtils;
 
 public class FieldImpl implements Field {
     private Entity<?> entity;
-    private Class<?> clazz;
+    private Class<?> valueClass;
     private String propertyName;
     private String columnName;
     private String function;
 
+    private Object value; 
+    
     private FieldImpl asField;
 
     public FieldImpl(Entity<?> entity, String propertyName) {
@@ -23,9 +25,9 @@ public class FieldImpl implements Field {
         }
     }
 
-    public FieldImpl(Entity<?> entity, String propertyName, Class<?> clazz) {
+    public FieldImpl(Entity<?> entity, String propertyName, Class<?> valueClass) {
         this(entity, propertyName);
-        this.clazz = clazz;
+        this.valueClass = valueClass;
     }
 
     String getPropertyName() {
@@ -87,13 +89,25 @@ public class FieldImpl implements Field {
     }
 
     void checkType() {
-        if (clazz != null) {
-            TypedValue.valueOf(clazz);
+        if (valueClass != null) {
+            TypedValue.valueOf(valueClass);
         }
     }
 
     String getColumnName() {
         return columnName;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
+    public Class<?> getValueClass() {
+        return valueClass;
     }
 
 }

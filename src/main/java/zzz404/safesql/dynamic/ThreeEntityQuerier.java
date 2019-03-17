@@ -31,28 +31,28 @@ public class ThreeEntityQuerier<T, U, V> extends DynamicQuerier {
 
     public ThreeEntityQuerier<T, U, V> select(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onSelectScope(() -> {
-            columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject(), entity3.getMockedObject());
+            columnsCollector.play(entity1.getMockedObject_for_traceGetter(), entity2.getMockedObject_for_traceGetter(), entity3.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public ThreeEntityQuerier<T, U, V> where(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onWhereScope(() -> {
-            columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject(), entity3.getMockedObject());
+            columnsCollector.play(entity1.getMockedObject_for_traceGetter(), entity2.getMockedObject_for_traceGetter(), entity3.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public ThreeEntityQuerier<T, U, V> groupBy(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onGroupByScope(() -> {
-            columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject(), entity3.getMockedObject());
+            columnsCollector.play(entity1.getMockedObject_for_traceGetter(), entity2.getMockedObject_for_traceGetter(), entity3.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public ThreeEntityQuerier<T, U, V> orderBy(ThreeObjectPlayer<T, U, V> columnsCollector) {
         onOrderByScope(() -> {
-            columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject(), entity3.getMockedObject());
+            columnsCollector.play(entity1.getMockedObject_for_traceGetter(), entity2.getMockedObject_for_traceGetter(), entity3.getMockedObject_for_traceGetter());
         });
         return this;
     }

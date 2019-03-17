@@ -26,28 +26,28 @@ public class OneEntityQuerier<T> extends DynamicQuerier {
 
     public OneEntityQuerier<T> select(OneObjectPlayer<T> columnsCollector) {
         onSelectScope(() -> {
-            columnsCollector.play(entity.getMockedObject());
+            columnsCollector.play(entity.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public OneEntityQuerier<T> where(OneObjectPlayer<T> conditionsCollector) {
         onWhereScope(() -> {
-            conditionsCollector.play(entity.getMockedObject());
+            conditionsCollector.play(entity.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public OneEntityQuerier<T> groupBy(OneObjectPlayer<T> columnsCollector) {
         onGroupByScope(() -> {
-            columnsCollector.play(entity.getMockedObject());
+            columnsCollector.play(entity.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public OneEntityQuerier<T> orderBy(OneObjectPlayer<T> columnsCollector) {
         onOrderByScope(() -> {
-            columnsCollector.play(entity.getMockedObject());
+            columnsCollector.play(entity.getMockedObject_for_traceGetter());
         });
         return this;
     }

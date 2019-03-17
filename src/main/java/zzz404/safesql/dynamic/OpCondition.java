@@ -13,7 +13,12 @@ public class OpCondition extends AbstractCondition {
     public OpCondition(FieldImpl field, String operator, Object value) {
         super(field);
         this.operator = operator;
-        this.value = TypedValue.valueOf(value);
+        if (value != null) {
+            this.value = TypedValue.valueOf(value);
+        }
+        else {
+            this.value = TypedValue.valueOf(field.getValueClass());
+        }
     }
 
     @Override

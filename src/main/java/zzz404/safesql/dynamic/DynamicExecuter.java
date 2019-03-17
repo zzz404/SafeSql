@@ -14,8 +14,10 @@ public abstract class DynamicExecuter<T> {
 
     protected DbSourceImpl dbSource;
     protected Entity<T> entity;
-    protected List<AbstractCondition> conditions = null;
+
     protected String tableName;
+    protected List<FieldImpl> fields;
+    protected List<AbstractCondition> conditions = null;
 
     public DynamicExecuter(DbSourceImpl dbSource, Class<T> clazz) {
         this.dbSource = dbSource;
@@ -23,11 +25,19 @@ public abstract class DynamicExecuter<T> {
         this.tableName = dbSource.getSchema(entity.getName()).getTableName();
     }
 
+    protected void collectFields(OneObjectPlayer<T> columnsCollector) {
+        QueryContext.underQueryContext(ctx -> {
+            NoisyRunnable.runQuietly(() -> columnsCollector.play(entity.getMockedObject_for_traceSetter()));
+            fields = ctx.takeAllTableFieldsUniquely();
+            fields.forEach(FieldImpl::checkType);
+        });
+    }
+
     protected DynamicExecuter<T> where(OneObjectPlayer<T> conditionsCollector) {
         QueryContext.underQueryContext(ctx -> {
             ctx.setScope(Scope.where);
             NoisyRunnable.runQuietly(() -> ((NoisyRunnable) () -> {
-                conditionsCollector.play(entity.getMockedObject());
+                conditionsCollector.play(entity.getMockedObject_for_traceGetter());
             }).run());
             this.conditions = ctx.getConditions();
         });
@@ -38,6 +48,13 @@ public abstract class DynamicExecuter<T> {
 
     protected List<TypedValue<?>> paramValues() {
         List<TypedValue<?>> paramValues = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(fields)) {
+            fields.forEach(field -> {
+                Object o = field.getValue();
+                TypedValue<?> value = (o != null) ? TypedValue.valueOf(o) : TypedValue.valueOf(field.getValueClass());
+                paramValues.add(value);
+            });
+        }
         if (CollectionUtils.isNotEmpty(conditions)) {
             conditions.forEach(cond -> {
                 cond.appendValuesTo(paramValues);

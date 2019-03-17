@@ -1,15 +1,13 @@
 package zzz404.safesql.dynamic;
 
-import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import zzz404.safesql.reflection.OneObjectPlayer;
 import zzz404.safesql.sql.DbSourceImpl;
 
 public class DynamicDeleter<T> extends DynamicExecuter<T> {
-    protected DbSourceImpl dbSource;
-    protected Entity<T> entity;
-    protected List<AbstractCondition> conditions;
 
     public DynamicDeleter(DbSourceImpl dbSource, Class<T> clazz) {
         super(dbSource, clazz);
@@ -23,7 +21,7 @@ public class DynamicDeleter<T> extends DynamicExecuter<T> {
     protected String sql() {
         dbSource.revise(entity);
         String sql = "DELETE FROM " + tableName;
-        if (!this.conditions.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(conditions)) {
             sql += " WHERE "
                     + this.conditions.stream().map(AbstractCondition::toClause).collect(Collectors.joining(" AND "));
         }

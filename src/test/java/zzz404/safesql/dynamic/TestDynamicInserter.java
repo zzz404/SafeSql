@@ -6,7 +6,6 @@ import static zzz404.safesql.SafeSql.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,7 @@ import zzz404.safesql.DbSourceBackDoor;
 import zzz404.safesql.helper.Document;
 import zzz404.safesql.helper.FakeDatabase;
 
-class TestDynamicDeleter {
+class TestDynamicInserter {
 
     private FakeDatabase fakeDb;
 
@@ -36,36 +35,37 @@ class TestDynamicDeleter {
     }
 
     @Test
-    void test_delete_hasParams() throws SQLException {
-        String sql = "DELETE FROM Document WHERE id = ? AND ownerId = ?";
-
-        Connection conn = fakeDb.getMockedConnection();
-
-        delete(Document.class).where(d -> {
-            cond(d.getId(), "=", 11);
-            cond(d.getOwnerId(), "=", 2);
+    void test_insert() throws SQLException {
+        insert(Document.class).values(d -> {
+            d.setOwnerId(12);
+            d.setTitle("zzz");
         }).execute();
 
-        verify(conn, times(1)).prepareStatement(sql);
+        String sql = "INSERT INTO Document (ownerId, title) VALUES (?, ?)";
+
+        Connection conn = fakeDb.getMockedConnection();
+        verify(conn).prepareStatement(sql);
 
         PreparedStatement pstmt = conn.prepareStatement(sql);
-        verify(pstmt).setInt(1, 11);
-        verify(pstmt).setInt(2, 2);
-        verify(pstmt).executeUpdate();
+        verify(pstmt).setInt(1, 12);
+        verify(pstmt).setString(2, "zzz");
     }
 
     @Test
-    void test_delete_noParams() throws SQLException {
-        String sql = "DELETE FROM Document";
+    void test_insert_nullValue() throws SQLException {
+        insert(Document.class).values(d -> {
+            d.setOwnerId(null);
+            d.setTitle(null);
+        }).execute();
+
+        String sql = "INSERT INTO Document (ownerId, title) VALUES (?, ?)";
 
         Connection conn = fakeDb.getMockedConnection();
+        verify(conn).prepareStatement(sql);
 
-        delete(Document.class).execute();
-
-        verify(conn, times(2)).createStatement(); // query table 用了一次
-
-        Statement stmt = conn.createStatement();
-        verify(stmt).executeUpdate(sql);
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        verify(pstmt).setObject(1, null);
+        verify(pstmt).setString(2, null);
     }
 
 }

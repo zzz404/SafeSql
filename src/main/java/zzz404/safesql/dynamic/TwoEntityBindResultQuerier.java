@@ -14,8 +14,8 @@ public class TwoEntityBindResultQuerier<T, U, R> extends BindResultQuerier<R> {
 
     public TwoEntityBindResultQuerier<T, U, R> select(ThreeObjectPlayer<T, U, R> columnsCollector) {
         super.onSelectScope(() -> {
-            columnsCollector.play(querier.entity1.getMockedObject(), querier.entity2.getMockedObject(),
-                    resultEntity.getMockedObject());
+            columnsCollector.play(querier.entity1.getMockedObject_for_traceGetter(), querier.entity2.getMockedObject_for_traceGetter(),
+                    resultEntity.getMockedObject_for_traceGetter());
         });
         return this;
     }

@@ -29,28 +29,28 @@ public class TwoEntityQuerier<T, U> extends DynamicQuerier {
 
     public TwoEntityQuerier<T, U> select(TwoObjectPlayer<T, U> columnsCollector) {
         onSelectScope(() -> {
-            columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject());
+            columnsCollector.play(entity1.getMockedObject_for_traceGetter(), entity2.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public TwoEntityQuerier<T, U> where(TwoObjectPlayer<T, U> columnsCollector) {
         onWhereScope(() -> {
-            columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject());
+            columnsCollector.play(entity1.getMockedObject_for_traceGetter(), entity2.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public TwoEntityQuerier<T, U> groupBy(TwoObjectPlayer<T, U> columnsCollector) {
         onGroupByScope(() -> {
-            columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject());
+            columnsCollector.play(entity1.getMockedObject_for_traceGetter(), entity2.getMockedObject_for_traceGetter());
         });
         return this;
     }
 
     public TwoEntityQuerier<T, U> orderBy(TwoObjectPlayer<T, U> columnsCollector) {
         onOrderByScope(() -> {
-            columnsCollector.play(entity1.getMockedObject(), entity2.getMockedObject());
+            columnsCollector.play(entity1.getMockedObject_for_traceGetter(), entity2.getMockedObject_for_traceGetter());
         });
         return this;
     }

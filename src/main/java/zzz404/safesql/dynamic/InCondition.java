@@ -14,6 +14,9 @@ public class InCondition extends AbstractCondition {
 
     public InCondition(FieldImpl tableColumn, Object... values) {
         super(tableColumn);
+        if (values == null) {
+            values = new Object[0];
+        }
         this.values = Arrays.stream(values).map(TypedValue::valueOf).collect(Collectors.toList());
     }
 
