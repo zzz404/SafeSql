@@ -114,4 +114,16 @@ public class SafeSql {
         return use("").delete(clazz);
     }
 
+    public static <T> T quickInsert (T entity, boolean assignPrimaryKey) {
+        return use("").quickInsert(entity);
+    }
+
+    public static <T> T quickUpdate (T entity) {
+        return use("").quickUpdate(entity);
+    }
+
+    public static void quickDelete (Object entity) {
+        use("").quickDelete(entity);
+    }
+
 }

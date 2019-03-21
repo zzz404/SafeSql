@@ -1,7 +1,11 @@
 package zzz404.safesql.helper;
 
+import zzz404.safesql.dynamic.PrimaryKey;
+
 public class Category {
+    @PrimaryKey
     private Integer id;
+    @PrimaryKey
     private String name;
     private String title;
 

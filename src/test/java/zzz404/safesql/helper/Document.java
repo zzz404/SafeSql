@@ -1,6 +1,9 @@
 package zzz404.safesql.helper;
 
+import zzz404.safesql.dynamic.PrimaryKey;
+
 public class Document {
+    @PrimaryKey
     private Integer id;
     private Integer ownerId;
     private String title;

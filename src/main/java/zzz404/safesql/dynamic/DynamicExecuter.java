@@ -19,7 +19,7 @@ public abstract class DynamicExecuter<T> {
     protected List<FieldImpl> fields;
     protected List<AbstractCondition> conditions = null;
 
-    public DynamicExecuter(DbSourceImpl dbSource, Class<T> clazz) {
+    public DynamicExecuter(Class<T> clazz, DbSourceImpl dbSource) {
         this.dbSource = dbSource;
         this.entity = new Entity<>(0, clazz);
         this.tableName = dbSource.getSchema(entity.getName()).getTableName();

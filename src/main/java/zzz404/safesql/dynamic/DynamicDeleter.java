@@ -9,8 +9,8 @@ import zzz404.safesql.sql.DbSourceImpl;
 
 public class DynamicDeleter<T> extends DynamicExecuter<T> {
 
-    public DynamicDeleter(DbSourceImpl dbSource, Class<T> clazz) {
-        super(dbSource, clazz);
+    public DynamicDeleter(Class<T> clazz, DbSourceImpl dbSource) {
+        super(clazz, dbSource);
     }
 
     public DynamicDeleter<T> where(OneObjectPlayer<T> conditionsCollector) {

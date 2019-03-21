@@ -11,8 +11,8 @@ import zzz404.safesql.sql.DbSourceImpl;
 
 public class DynamicInserter<T> extends DynamicExecuter<T> {
 
-    public DynamicInserter(DbSourceImpl dbSource, Class<T> clazz) {
-        super(dbSource, clazz);
+    public DynamicInserter(Class<T> clazz, DbSourceImpl dbSource) {
+        super(clazz, dbSource);
     }
 
     public DynamicInserter<T> values(OneObjectPlayer<T> columnsCollector) {

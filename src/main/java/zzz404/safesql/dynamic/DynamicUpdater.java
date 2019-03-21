@@ -10,8 +10,8 @@ import zzz404.safesql.sql.DbSourceImpl;
 
 public class DynamicUpdater<T> extends DynamicExecuter<T> {
 
-    public DynamicUpdater(DbSourceImpl dbSource, Class<T> clazz) {
-        super(dbSource, clazz);
+    public DynamicUpdater(Class<T> clazz, DbSourceImpl dbSource) {
+        super(clazz, dbSource);
     }
 
     public DynamicUpdater<T> set(OneObjectPlayer<T> columnsCollector) {

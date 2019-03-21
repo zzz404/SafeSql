@@ -2,6 +2,9 @@ package zzz404.safesql;
 
 import zzz404.safesql.dynamic.DynamicDeleter;
 import zzz404.safesql.dynamic.DynamicInserter;
+import zzz404.safesql.dynamic.DynamicObjectDeleter;
+import zzz404.safesql.dynamic.DynamicObjectInserter;
+import zzz404.safesql.dynamic.DynamicObjectUpdater;
 import zzz404.safesql.dynamic.DynamicUpdater;
 import zzz404.safesql.dynamic.OneEntityQuerier;
 import zzz404.safesql.dynamic.ThreeEntityQuerier;
@@ -38,14 +41,32 @@ public class QuerierFactory {
     }
 
     public <T> DynamicInserter<T> insert(Class<T> clazz) {
-        return new DynamicInserter<>(dbSource, clazz);
+        return new DynamicInserter<>(clazz, dbSource);
     }
 
     public <T> DynamicUpdater<T> update(Class<T> clazz) {
-        return new DynamicUpdater<>(dbSource, clazz);
+        return new DynamicUpdater<>(clazz, dbSource);
     }
 
     public <T> DynamicDeleter<T> delete(Class<T> clazz) {
-        return new DynamicDeleter<>(dbSource, clazz);
+        return new DynamicDeleter<>(clazz, dbSource);
+    }
+
+    public <T> T quickInsert(T entity) {
+        return quickInsert(entity, false);
+    }
+
+    public <T> T quickInsert(T entity, boolean assignPkValue) {
+        new DynamicObjectInserter(entity, dbSource, assignPkValue).execute();
+        return entity;
+    }
+
+    public <T> T quickUpdate(T entity) {
+        new DynamicObjectUpdater(entity, dbSource).execute();
+        return entity;
+    }
+
+    public void quickDelete(Object entity) {
+        new DynamicObjectDeleter(entity, dbSource).execute();
     }
 }

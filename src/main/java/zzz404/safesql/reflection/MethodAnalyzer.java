@@ -1,9 +1,11 @@
 package zzz404.safesql.reflection;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.Validate;
 
+import zzz404.safesql.dynamic.PrimaryKey;
 import zzz404.safesql.util.NoisyRunnable;
 import zzz404.safesql.util.NoisySupplier;
 
@@ -19,6 +21,7 @@ public class MethodAnalyzer {
     private boolean isSetter = false;
     private String propertyName;
     private Class<?> type;
+    private boolean isPrimaryKey;
 
     public MethodAnalyzer(Method method) {
         this.method = method;
@@ -32,6 +35,21 @@ public class MethodAnalyzer {
         }
         else if (checkPrefix(methodName, GETTER_PREFIX)) {
             analyzeGetter(false);
+            if (isGetter) {
+                if (method.getAnnotation(PrimaryKey.class) != null) {
+                    isPrimaryKey = true;
+                }
+                else {
+                    try {
+                        Field field = method.getDeclaringClass().getField(propertyName);
+                        if (field.getAnnotation(PrimaryKey.class) != null) {
+                            isPrimaryKey = true;
+                        }
+                    }
+                    catch (NoSuchFieldException ignored) {
+                    }
+                }
+            }
         }
         else if (checkPrefix(methodName, GETTER_boolean_PREFIX)) {
             analyzeGetter(true);
@@ -101,6 +119,10 @@ public class MethodAnalyzer {
 
     public String getPropertyName() {
         return propertyName;
+    }
+
+    public boolean isPrimaryKey() {
+        return isPrimaryKey;
     }
 
 }
