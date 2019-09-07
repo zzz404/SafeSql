@@ -1,9 +1,11 @@
 package zzz404.safesql.sql.type;
 
-import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -27,7 +29,6 @@ public abstract class TypedValue<T> {
         map.put(boolean.class, () -> new BooleanValue());
         map.put(Long.class, () -> new LongValue());
         map.put(long.class, () -> new LongValue());
-        map.put(Date.class, () -> new SqlDateValue());
         map.put(Double.class, () -> new DoubleValue());
         map.put(double.class, () -> new DoubleValue());
         map.put(Float.class, () -> new FloatValue());
@@ -38,7 +39,9 @@ public abstract class TypedValue<T> {
         map.put(Timestamp.class, () -> new TimestampValue());
 
         // additional
-        map.put(java.util.Date.class, () -> new UtilDateValue());
+        map.put(Date.class, () -> new UtilDateValue());
+        map.put(LocalDate.class, () -> new LocalDateValue());
+        map.put(LocalDateTime.class, () -> new LocalDateTimeValue());
         map.put(Instant.class, () -> new InstantValue());
     }
 
@@ -50,6 +53,11 @@ public abstract class TypedValue<T> {
     public static <E> TypedValue<E> valueOf(Class<E> clazz) {
         if (map.containsKey(clazz)) {
             return map.get(clazz).get();
+        }
+        else if (clazz.isEnum()) {
+            @SuppressWarnings("rawtypes")
+            EnumValue enumValue = new EnumValue(clazz);
+            return enumValue;
         }
         else {
             throw new UnsupportedValueTypeException(clazz);
